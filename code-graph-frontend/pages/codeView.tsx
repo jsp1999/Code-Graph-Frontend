@@ -5,11 +5,11 @@ export default function CodeView() {
 //    const map = new Map(Object.entries(JSON.parse(data)));
     return (
         <div>
-            <header className="w-screen h-20 bg-blue-800 p-3 mb-5">
+            <header className="w-screen h-16 bg-blue-900 p-3 mb-5">
                 <h1 className="font-bold text-3xl">Code View</h1>
             </header>
-            <table className="table-auto w-[20%] max-h-screen float-left">
-                <thead>
+            <table className="table-auto w-[20%] max-h-screen float-left border-2 ml-3">
+                <thead className="border-2 bg-gray-100">
                 <tr>
                     <th>Code</th>
                 </tr>
@@ -44,8 +44,8 @@ export default function CodeView() {
                 </tr>
                 </tbody>
             </table>
-            <table className="table-auto w-[20%] max-h-screen float-right">
-                <thead>
+            <table className="table-auto w-[20%] max-h-screen float-right border-2 mr-3">
+                <thead className="border-2 bg-gray-100">
                 <tr>
                     <th>Category</th>
                 </tr>
