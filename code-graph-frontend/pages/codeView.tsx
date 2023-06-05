@@ -1,9 +1,71 @@
 import Link from "next/link";
+import data from "../src/data.json";
 
 export default function CodeView() {
+//    const map = new Map(Object.entries(JSON.parse(data)));
     return (
         <div>
-            <h1>Codes are displayed here</h1>
+            <header className="w-screen h-20 bg-blue-800 p-3 mb-5">
+                <h1 className="font-bold text-3xl">Code View</h1>
+            </header>
+            <table className="table-auto w-[20%] max-h-screen float-left">
+                <thead>
+                <tr>
+                    <th>Code</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+                </tr>
+                <tr>
+                    <td>Witchy Woman</td>
+                </tr>
+                <tr>
+                    <td>Shining Star</td>
+                </tr>
+                <tr>
+                    <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+                </tr>
+                <tr>
+                    <td>Witchy Woman</td>
+                </tr>
+                <tr>
+                    <td>Shining Star</td>
+                </tr>
+                <tr>
+                    <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+                </tr>
+                <tr>
+                    <td>Witchy Woman</td>
+                </tr>
+                <tr>
+                    <td>Shining Star</td>
+                </tr>
+                </tbody>
+            </table>
+            <table className="table-auto w-[20%] max-h-screen float-right">
+                <thead>
+                <tr>
+                    <th>Category</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+                </tr>
+                <tr>
+                    <td>Witchy Woman</td>
+                </tr>
+                <tr>
+                    <td>Shining Star</td>
+                </tr>
+                <tr>
+                    <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+                </tr>
+
+                </tbody>
+            </table>
             <Link className="absolute right-5 bottom-5 button" href="/clusterView">Change View</Link>
         </div>
     )
