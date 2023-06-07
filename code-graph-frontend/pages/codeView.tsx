@@ -1,5 +1,8 @@
 import Link from "next/link";
 import data from "../src/data.json";
+import {useState} from "react";
+import icon from '../public/code_icon.svg';
+import Image from "next/image";
 
 export default function CodeView() {
 
@@ -11,6 +14,14 @@ export default function CodeView() {
     const datenList = Object.keys(jsonData)
         .slice(0, 25) // Slice the first ten elements
         .map(key => jsonData[key].daten);
+
+    const [selectedItem, setSelectedItem] = useState("");
+
+    // Handle item click event
+    const handleItemClick = (daten: string) => {
+        setSelectedItem(daten);
+    };
+
 
     return (
         <div>
@@ -26,11 +37,18 @@ export default function CodeView() {
                 </thead>
                 <tbody>
                 {datenList.map((daten, index) => (
-                    <tr className="border" key={index}>{daten}</tr>
+                    <tr className="border" key={index} onClick={() => handleItemClick(daten)}>{daten}</tr>
                 ))}
                 </tbody>
             </table>
             </div>
+            {selectedItem && (
+                <div className="items-center">
+                    <Image src={icon} alt="" width={50} height={50} priority/>
+
+                    {selectedItem}
+                </div>
+            )}
             <div className="max-h-[400px] w-[20%] float-right mr-3 overflow-auto">
             <table className="table-auto border-2">
                 <thead className="border-2 bg-gray-100">
