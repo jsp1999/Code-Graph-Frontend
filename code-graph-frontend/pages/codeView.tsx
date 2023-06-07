@@ -42,13 +42,15 @@ export default function CodeView() {
                 </tbody>
             </table>
             </div>
+            <div className="w-fit float-left ml-6">
             {selectedItem && (
-                <div className="items-center">
-                    <Image src={icon} alt="" width={50} height={50} priority/>
+                <div className="w-24">
+                    <Image className="mx-auto" src={icon} alt="" width={50} height={50} priority/>
 
                     {selectedItem}
                 </div>
             )}
+            </div>
             <div className="max-h-[400px] w-[20%] float-right mr-3 overflow-auto">
             <table className="table-auto border-2">
                 <thead className="border-2 bg-gray-100">
