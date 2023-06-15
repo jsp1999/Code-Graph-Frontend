@@ -12,14 +12,24 @@ export default function CodeView() {
 
     // Map over the JSON object and access "daten" property
     const datenList = Object.keys(jsonData)
-        .slice(0, 25) // Slice the first ten elements
+        .slice(0, 200) // Slice the first ten elements
         .map(key => jsonData[key].daten);
 
-    const [selectedItem, setSelectedItem] = useState("");
+    const [selectedItem, setSelectedItem] = useState<Array<string>>([]);
+    const [itemCount, setItemCount] = useState(0);
 
     // Handle item click event
     const handleItemClick = (daten: string) => {
-        setSelectedItem(daten);
+
+        if (itemCount < 8){
+            if(selectedItem.indexOf(daten) <= -1) {
+                selectedItem.push(daten);
+                setItemCount(itemCount + 1);
+            } else {
+                selectedItem.splice(selectedItem.indexOf(daten), 1);
+                setItemCount(itemCount - 1);
+            }
+        }
     };
 
 
@@ -42,13 +52,16 @@ export default function CodeView() {
                 </tbody>
             </table>
             </div>
-            <div className="w-fit float-left ml-6">
-            {selectedItem && (
-                <div className="w-24">
+            <p className="absolute bottom-3 left-3">You have selected {itemCount} Code points</p>
+            <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
+            {selectedItem.length <= 8 && (
+                selectedItem.map((value, index, array) =>
+                <div className="w-24" key={index}>
                     <Image className="mx-auto" src={icon} alt="" width={50} height={50} priority/>
 
-                    {selectedItem}
+                    {value}
                 </div>
+                )
             )}
             </div>
             <div className="max-h-[400px] w-[20%] float-right mr-3 overflow-auto">
