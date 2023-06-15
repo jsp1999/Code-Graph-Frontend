@@ -1,9 +1,9 @@
 For easy editing, the JSON file should have a structure somewhat like this:
 
-[{"daten": "code_name", "position": [ "x" , "y"], "topic_index": 1, "category": "user_category"}]
+[{id: 1, "daten": "highlighted_text", "position": [ "x" , "y"], "topic_index": "code_name", "category": "user_category"}]
 
 Requests:
 
 * GET /database (unklar ob auf gewisse Anzahl begrenzen, 2000 gehen locker, 5000 gehen okay, darüber kritisch)
-* POST /category (irgendwie dem Backend sagen welche categorien der user ausgesucht hat und mit welchen Punkten)
+* POST/PUT /category (irgendwie dem Backend sagen welche categorien der user ausgesucht hat und mit welchen Punkten)
 * GET /embedding (vielleicht irgendwas bei dem man nur die position von punkten abfragt oder so)

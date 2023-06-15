@@ -3,10 +3,11 @@ import data from "../src/data.json";
 import {useState} from "react";
 import icon from '../public/code_icon.svg';
 import Image from "next/image";
+import Header from "@/components/Header";
 
 export default function CodeView() {
 
-    // its a little spaghetti but it works
+    // it is a little spaghetti but it works
     const jsonString = JSON.stringify(data, null, 2);
     const jsonData = JSON.parse(jsonString);
 
@@ -21,7 +22,7 @@ export default function CodeView() {
     // Handle item click event
     const handleItemClick = (daten: string) => {
 
-        if (itemCount < 8){
+        if (itemCount <= 8){
             if(selectedItem.indexOf(daten) <= -1) {
                 selectedItem.push(daten);
                 setItemCount(itemCount + 1);
@@ -35,9 +36,7 @@ export default function CodeView() {
 
     return (
         <div>
-            <header className="w-screen h-16 bg-blue-900 p-3 mb-5">
-                <h1 className="font-bold text-3xl">Code View</h1>
-            </header>
+            <Header />
             <div className="w-[20%] max-h-[600px] overflow-auto float-left ml-3">
             <table className="table-auto border-2">
                 <thead className="border-2 bg-gray-100">
@@ -58,7 +57,6 @@ export default function CodeView() {
                 selectedItem.map((value, index, array) =>
                 <div className="w-24" key={index}>
                     <Image className="mx-auto" src={icon} alt="" width={50} height={50} priority/>
-
                     {value}
                 </div>
                 )
