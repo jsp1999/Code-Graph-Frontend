@@ -11,6 +11,7 @@ export default function CodeView() {
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const contextMenuRef = useRef<HTMLDivElement>(null);
+    const [rightClickedItem, setRightClickedItem] = useState("")
 
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -20,7 +21,10 @@ export default function CodeView() {
     };
 
     const handleContextMenuAction = (action: string) => {
-        console.log(`Selected action: ${action}`);
+        if(action === "unselect") {
+            selectedItem.splice(selectedItem.indexOf(rightClickedItem), 1);
+            setItemCount(itemCount - 1);
+        }
         setShowContextMenu(false);
     };
 
@@ -52,7 +56,6 @@ export default function CodeView() {
 
     // Handle item click event
     const handleItemClick = (daten: string) => {
-
         if (itemCount <= 8){
             if(selectedItem.indexOf(daten) <= -1) {
                 selectedItem.push(daten);
@@ -85,8 +88,11 @@ export default function CodeView() {
             <p className="absolute bottom-3 left-3">You have selected {itemCount} Code points</p>
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
             {selectedItem.length <= 8 && (
-                selectedItem.map((value, index, array) =>
-                <div className="w-24" key={index} onContextMenu={handleContextMenu} ref={contextMenuRef}>
+                selectedItem.map((value, index) =>
+                <div className="w-24" key={index} onContextMenu={(e: React.MouseEvent) => {
+                    handleContextMenu(e);
+                    setRightClickedItem(value);
+                }} ref={contextMenuRef}>
                     <Image className="mx-auto" src={icon} alt="" width={50} height={50} priority/>
                     {value}
                     {showContextMenu && (
@@ -94,10 +100,10 @@ export default function CodeView() {
                             className="absolute bg-white border"
                             style={{ top: contextMenuPosition.y, left: contextMenuPosition.x }}
                         >
-                            <div className="border" onClick={() => handleContextMenuAction('unselect')}>
+                            <div className="border" onClick={() => handleContextMenuAction("unselect")}>
                                 Unselect
                             </div>
-                            <div className="border" onClick={() => handleContextMenuAction('add to category')}>
+                            <div className="border" onClick={() => handleContextMenuAction("add to category")}>
                                 Add to Category
                             </div>
                         </div>
@@ -117,16 +123,6 @@ export default function CodeView() {
                 <tr>
                     <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
                 </tr>
-                <tr>
-                    <td>Witchy Woman</td>
-                </tr>
-                <tr>
-                    <td>Shining Star</td>
-                </tr>
-                <tr>
-                    <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
-                </tr>
-
                 </tbody>
             </table>
             </div>
