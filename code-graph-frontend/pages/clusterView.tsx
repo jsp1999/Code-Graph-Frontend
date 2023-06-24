@@ -1,34 +1,37 @@
 import * as d3 from "d3";
 import * as React from "react";
 import data from "../src/data.json";
+import {Scrubber} from '@mbostock/scrubber'
 import { AnyNode } from "postcss";
 
 //DATA
 
-var positions = Object.entries(data).map(([id, entry]) => ({
+const nodes_limit = 1000;
+
+var node_data = Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
   info: entry.daten,
   x: parseFloat(entry.position[0]),
   y: parseFloat(entry.position[1]),
   topic_index: entry.topic_index
-}));
+})).slice(0, nodes_limit);
 
 var arrows =  Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
   topic_index: entry.topic_index
-}));
+})).slice(0, nodes_limit);
 
 const unique_topic_index = Array.from(new Set(arrows.map(d => d.topic_index)))
 
 //HYPER PARAMETER
-const height = 1000
-const width = 1000
+const height = 500
+const width = 500
 const radius = 2
 
-const min_x_position = d3.min(positions, d => d.x) as number;
-const max_x_position = d3.max(positions, d => d.x) as number;
-const min_y_position = d3.min(positions, d => d.y) as number;
-const max_y_position = d3.max(positions, d => d.y) as number;
+const min_x_position = d3.min(node_data, d => d.x) as number;
+const max_x_position = d3.max(node_data, d => d.x) as number;
+const min_y_position = d3.min(node_data, d => d.y) as number;
+const max_y_position = d3.max(node_data, d => d.y) as number;
 
 //SCALING
 const xScale = d3.scaleLinear()
@@ -61,12 +64,12 @@ function createCanva(height: number, width: number){
 }
 
 //DRAW ON CANVA
-function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width: number, positions: any, arrows: any) {
+function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width: number, nodes: any, arrows: any) {
   const svg = d3.select(svgRef.current);
 
 
-  const circle = svg.selectAll("circle")
-    .data(positions)
+  const circles = svg.selectAll("circle")
+    .data(nodes)
     .enter()
     .append("circle")
     .attr("cx", (d: any)  => xScale(d.x))
@@ -119,20 +122,39 @@ function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width
   // function mouseover(d: any) { text.style("opacity", 1);}
 
   
-  return svg.node();
+  return circles;;
 }
 
+interface ClusterProps {
+  collideScrubberValue: number;
+}
 
 //COMPONENT THAT CALLS CANVA AND DRAW
-const ClusterGraph: React.FunctionComponent = () => {
-  var svg = createCanva(height, width);
-  React.useEffect(() => {
-    drawChart(svg, height, width, positions, arrows);
-  }, [svg]);
+const ClusterGraph: React.FC<ClusterProps> = ({collideScrubberValue}) => {
+  var nodes = node_data.map(d => Object.create(d))
+  var svgRef = createCanva(height, width);
+  const svg = d3.select(svgRef.current)
+
+  const sim = d3.forceSimulation(nodes)
+  .force("x", d3.forceX(width/2).strength(0.5))
+  .force("y", d3.forceY(height/2).strength(0.5))
+  .force("collide", d3.forceCollide(5))
+  .on('tick', () => {
+    // Update node positions
+    svg.selectAll('circle')
+      .attr('cx', (d: any) => d.x)
+      .attr('cy', (d: any) => d.y);
+  });
+
+
+  const circles = drawChart(svgRef, height, width, nodes, arrows);
+
+  
+  
 
   return (
     <div id="chart">
-      <svg ref={svg} />
+      <svg ref={svgRef} />
     </div>
   );
 };
@@ -145,17 +167,16 @@ interface SimScrubberProps {
   onScrubberChange: (value: number) => void;
 }
 
-const SimScrubber: React.FC<SimScrubberProps> = ({
+const CollideSimScrubber: React.FC<SimScrubberProps> = ({
   scrubberValue,
-  onScrubberChange,
-}) => {
+  onScrubberChange,}) => {
   const handleScrubberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
     onScrubberChange(value);
   };
 
   return (
-    <div id="scrubber">
+    <div id="collide_scrubber">
       <input
         type="range"
         min="0"
@@ -169,17 +190,18 @@ const SimScrubber: React.FC<SimScrubberProps> = ({
 };
 
 
+//MAIN PAGE
 const Page : React.FC = () => {
-  const [scrubberValue, setScrubberValue] = React.useState<number>(0);
+  const [collideScrubberValue, setScrubberValue] = React.useState<number>(0);
   const handleScrubberChange = (value: number) => {
     setScrubberValue(value);
   };
 
   return (
     <div>
-      <SimScrubber scrubberValue={scrubberValue}
-        onScrubberChange={handleScrubberChange}></SimScrubber>
-      <ClusterGraph></ClusterGraph>
+      <CollideSimScrubber scrubberValue={collideScrubberValue}
+        onScrubberChange={handleScrubberChange}></CollideSimScrubber>
+      <ClusterGraph collideScrubberValue={collideScrubberValue}></ClusterGraph>
     </div>
   )
 }
