@@ -7,7 +7,8 @@ import data from "../src/data.json";
 var positions = Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
   x: parseFloat(entry.position[0]),
-  y: parseFloat(entry.position[1])
+  y: parseFloat(entry.position[1]),
+  topic_index: entry.topic_index
 }));
 
 var arrows =  Object.entries(data).map(([id, entry]) => ({
@@ -15,9 +16,11 @@ var arrows =  Object.entries(data).map(([id, entry]) => ({
   topic_index: entry.topic_index
 }));
 
+const unique_topic_index = Array.from(new Set(arrows.map(d => d.topic_index)))
+
 //HYPER PARAMETER
-const height = 600
-const width = 400
+const height = 1000
+const width = 1000
 
 const min_x_position = d3.min(positions, d => d.x) as number;
 const max_x_position = d3.max(positions, d => d.x) as number;
@@ -33,6 +36,7 @@ const yScale = d3.scaleLinear()
   .domain([min_y_position, max_y_position]) // Assuming x coordinates are non-negative
   .range([0, width]);
 
+const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10)
 
 
 //DRAWING
@@ -61,8 +65,8 @@ function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width
     .append("circle")
     .attr("cx", (d: any)  => xScale(d.x))
     .attr("cy", (d: any)  => yScale(d.y))
-    .attr("r", 5)
-    .attr("fill", "black")
+    .attr("r", 2)
+    .attr("fill", (d: any) => cluster_color(d.topic_index))
   return svg.node();
 }
 
