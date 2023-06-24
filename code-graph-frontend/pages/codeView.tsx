@@ -91,13 +91,13 @@ export default function CodeView() {
                     {value}
                     {showContextMenu && (
                         <div
-                            className="context-menu"
+                            className="absolute bg-white border"
                             style={{ top: contextMenuPosition.y, left: contextMenuPosition.x }}
                         >
-                            <div onClick={() => handleContextMenuAction('unselect')}>
+                            <div className="border" onClick={() => handleContextMenuAction('unselect')}>
                                 Unselect
                             </div>
-                            <div onClick={() => handleContextMenuAction('add to category')}>
+                            <div className="border" onClick={() => handleContextMenuAction('add to category')}>
                                 Add to Category
                             </div>
                         </div>
