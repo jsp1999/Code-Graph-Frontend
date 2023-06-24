@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import * as React from "react";
 import data from "../src/data.json";
+import { AnyNode } from "postcss";
 
 //DATA
 
@@ -51,6 +52,7 @@ function createCanva(height: number, width: number){
       // Access the SVG element using svgRef.current and modify its attributes
       svgRef.current.setAttribute('width', (width+border).toString());
       svgRef.current.setAttribute('height', (height+border).toString());
+      svgRef.current.style.backgroundColor = 'rgb(250, 250, 250)';
     }
   }, [])
   return svgRef
@@ -71,9 +73,6 @@ function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width
 }
 
 
-
-
-
 //COMPONENT THAT CALLS CANVA AND DRAW
 const ClusterGraph: React.FunctionComponent = () => {
   var svg = createCanva(height, width);
@@ -88,5 +87,52 @@ const ClusterGraph: React.FunctionComponent = () => {
   );
 };
 
-export default ClusterGraph;
+
+///SCRUBER
+
+interface SimScrubberProps {
+  scrubberValue: number;
+  onScrubberChange: (value: number) => void;
+}
+
+const SimScrubber: React.FC<SimScrubberProps> = ({
+  scrubberValue,
+  onScrubberChange,
+}) => {
+  const handleScrubberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10);
+    onScrubberChange(value);
+  };
+
+  return (
+    <div id="scrubber">
+      <input
+        type="range"
+        min="0"
+        max="100"
+        value={scrubberValue}
+        onChange={handleScrubberChange}
+      />
+      <div>Scrubber Value: {scrubberValue}</div>
+    </div>
+  );
+};
+
+
+const Page : React.FC = () => {
+  const [scrubberValue, setScrubberValue] = React.useState<number>(0);
+  const handleScrubberChange = (value: number) => {
+    setScrubberValue(value);
+  };
+
+  return (
+    <div>
+      <SimScrubber scrubberValue={scrubberValue}
+        onScrubberChange={handleScrubberChange}></SimScrubber>
+      <ClusterGraph></ClusterGraph>
+    </div>
+  )
+}
+
+export default Page;
 
