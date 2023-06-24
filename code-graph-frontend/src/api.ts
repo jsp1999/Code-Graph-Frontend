@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 
 // Define the base URL of your FastAPI server
-const baseURL = 'http://api.example.com';
+const baseURL = 'http://localhost:8000';
 
 // Define your API service methods
 export const getUsers = (): Promise<AxiosResponse<User[]>> => {
