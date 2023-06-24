@@ -4,6 +4,8 @@ import React, {useEffect, useRef, useState} from "react";
 import icon from '../public/code_icon.svg';
 import Image from "next/image";
 import Header from "@/components/Header";
+import {Modal} from "@mui/material";
+import {Button} from "@mui/material";
 
 export default function CodeView() {
     const [selectedItem, setSelectedItem] = useState<Array<string>>([]);
@@ -12,7 +14,9 @@ export default function CodeView() {
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const contextMenuRef = useRef<HTMLDivElement>(null);
     const [rightClickedItem, setRightClickedItem] = useState("")
-
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         const { clientX, clientY } = e;
@@ -24,6 +28,9 @@ export default function CodeView() {
         if(action === "unselect") {
             selectedItem.splice(selectedItem.indexOf(rightClickedItem), 1);
             setItemCount(itemCount - 1);
+        }
+        if(action === "add to category") {
+            handleOpen()
         }
         setShowContextMenu(false);
     };
@@ -71,6 +78,15 @@ export default function CodeView() {
     return (
         <div>
             <Header />
+            <Modal
+                open={open}
+                onClose={handleClose}
+            >
+                <div className="w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[15rem]">
+                    <div>modal Text</div>
+                    <Button variant="outlined" onClick={handleClose}>Close</Button>
+                </div>
+            </Modal>
             <div className="w-[20%] max-h-[600px] overflow-auto float-left ml-3">
             <table className="table-auto border-2">
                 <thead className="border-2 bg-gray-100">
@@ -126,7 +142,11 @@ export default function CodeView() {
                 </tbody>
             </table>
             </div>
-            <Link className="absolute right-5 bottom-5 button" href="/clusterView">Change View</Link>
+            <div className="absolute right-5 bottom-5">
+                <Button variant="contained">
+                    <Link href="/clusterView">Change View</Link>
+                </Button>
+            </div>
         </div>
     )
 }
