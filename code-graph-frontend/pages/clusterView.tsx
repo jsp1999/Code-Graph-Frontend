@@ -7,6 +7,7 @@ import { AnyNode } from "postcss";
 
 var positions = Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
+  info: entry.daten,
   x: parseFloat(entry.position[0]),
   y: parseFloat(entry.position[1]),
   topic_index: entry.topic_index
@@ -22,6 +23,7 @@ const unique_topic_index = Array.from(new Set(arrows.map(d => d.topic_index)))
 //HYPER PARAMETER
 const height = 1000
 const width = 1000
+const radius = 2
 
 const min_x_position = d3.min(positions, d => d.x) as number;
 const max_x_position = d3.max(positions, d => d.x) as number;
@@ -61,14 +63,62 @@ function createCanva(height: number, width: number){
 //DRAW ON CANVA
 function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width: number, positions: any, arrows: any) {
   const svg = d3.select(svgRef.current);
-  svg.selectAll("circle")
+
+
+  const circle = svg.selectAll("circle")
     .data(positions)
     .enter()
     .append("circle")
     .attr("cx", (d: any)  => xScale(d.x))
     .attr("cy", (d: any)  => yScale(d.y))
-    .attr("r", 2)
+    .attr("r", radius)
     .attr("fill", (d: any) => cluster_color(d.topic_index))
+    .on("mouseover", mouseover)
+    .on("mouseout", mouseout);;
+
+  function mouseover(this: any, d: any) {
+    this.parentElement.appendChild(this)
+    
+    d3.select(this).attr("r", radius*5);
+
+    //TODO TEXT COULD NOT BE SHOWN
+    svg.append("text")
+    .attr("class", "node-label")
+    .attr("x", xScale(d.x))
+    .attr("y", yScale(d.y) - 30)
+    .text("lets go")
+    .attr("font-size", "50px")
+    .attr("text-anchor", "middle")
+    .attr("opacity", 1)
+    .raise();
+  }
+  
+  function mouseout(this: any) {
+    svg.selectAll(".node-label").remove();
+    d3.select(this).attr("r", radius)
+  };
+    
+  // const text = svg
+  //   .selectAll("text")
+  //   .data(positions)
+  //   .enter()
+  //   .append("text")
+  //   .attr("class", "node-label")
+  //   .attr("x", (d: any) => xScale(d.x))
+  //   .attr("y", (d: any) => yScale(d.y) - 10)
+  //   .text((d: any) => d.id)
+  //   .attr("font-size", "2px")
+  //   .attr("text-anchor", "middle")
+  //   .style("opacity",  0)
+  
+  // circle.on("mouseover", mouseover).on("mouseout", mouseout);
+
+  
+  
+  // function mouseout(d: any) {  text.style("opacity",  0);}
+  // function mouseover(d: any) { text.style("opacity", 1);}
+
+  
   return svg.node();
 }
 
@@ -88,7 +138,7 @@ const ClusterGraph: React.FunctionComponent = () => {
 };
 
 
-///SCRUBER
+///SCRUBER FOR ZOOMING
 
 interface SimScrubberProps {
   scrubberValue: number;
