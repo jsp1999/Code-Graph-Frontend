@@ -78,23 +78,28 @@ function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width
     .attr("r", radius)
     .attr("fill", (d: any) => cluster_color(d.topic_index))
     .on("mouseover", mouseover)
-    .on("mouseout", mouseout);;
+    .on("mouseout", mouseout);
 
   function mouseover(this: any, d: any) {
     this.parentElement.appendChild(this)
+
     
     d3.select(this).attr("r", radius*5);
+    d3.select(this).append("text")
+    .attr("class", "node-label")
+    .attr("x", d.x)
+    .attr("y", d.y - 30)
+    .text("lets go")
 
     //TODO TEXT COULD NOT BE SHOWN
-    svg.append("text")
-    .attr("class", "node-label")
-    .attr("x", xScale(d.x))
-    .attr("y", yScale(d.y) - 30)
-    .text("lets go")
-    .attr("font-size", "50px")
-    .attr("text-anchor", "middle")
-    .attr("opacity", 1)
-    .raise();
+    // svg.append("text")
+    // .attr("class", "node-label")
+    // .attr("x", xScale(d.x))
+    // .attr("y", yScale(d.y) - 30)
+    // .text("lets go")
+    // .attr("font-size", "50px")
+    // .attr("text-anchor", "middle")
+    // .attr("opacity", 1)
   }
   
   function mouseout(this: any) {
@@ -102,26 +107,6 @@ function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width
     d3.select(this).attr("r", radius)
   };
     
-  // const text = svg
-  //   .selectAll("text")
-  //   .data(positions)
-  //   .enter()
-  //   .append("text")
-  //   .attr("class", "node-label")
-  //   .attr("x", (d: any) => xScale(d.x))
-  //   .attr("y", (d: any) => yScale(d.y) - 10)
-  //   .text((d: any) => d.id)
-  //   .attr("font-size", "2px")
-  //   .attr("text-anchor", "middle")
-  //   .style("opacity",  0)
-  
-  // circle.on("mouseover", mouseover).on("mouseout", mouseout);
-
-  
-  
-  // function mouseout(d: any) {  text.style("opacity",  0);}
-  // function mouseover(d: any) { text.style("opacity", 1);}
-
   
   return circles;;
 }
@@ -131,7 +116,7 @@ interface ClusterProps {
 }
 
 //COMPONENT THAT CALLS CANVA AND DRAW
-const ClusterGraph: React.FC<ClusterProps> = ({ collideScrubberValue }) => {
+const ClusterGraph: React.FC<ClusterProps> = ({ collideScrubberValue: force }) => {
   var svgRef = createCanva(height, width);
   const nodes = node_data.map(d => Object.create(d)).map(({ id, info, x, y, topic_index }) => {
     const scaledX = xScale(x)+ w_border/2;
@@ -139,19 +124,18 @@ const ClusterGraph: React.FC<ClusterProps> = ({ collideScrubberValue }) => {
     return { id: id, info: info, x: scaledX, y: scaledY, topic_index: topic_index };
   });
 
-  React.useEffect(() => {
+  const svg = d3.select(svgRef.current);
+
+  var simulation = d3.forceSimulation(nodes)
+    .force('x', d3.forceX(width / 2).strength(force/10000))
+    .force('y', d3.forceY(height / 2).strength(force/10000))
+    .force('collide', d3.forceCollide(radius*(force/200)))
+    .force("charge", d3.forceManyBody().strength(-radius*(force/200)))
+    // .stop()
+
       
-    
 
-    const svg = d3.select(svgRef.current);
-
-    var simulation = d3.forceSimulation(nodes)
-      .force('x', d3.forceX(width / 2).strength(0.02))
-      .force('y', d3.forceY(height / 2).strength(0.02))
-      .force('collide', d3.forceCollide(radius ))
-      .force("charge", d3.forceManyBody().strength(-radius))
-  
-
+  React.useEffect(() => {
 
     const circles = drawChart(svgRef, height, width, nodes, arrows);
 
@@ -161,23 +145,20 @@ const ClusterGraph: React.FC<ClusterProps> = ({ collideScrubberValue }) => {
         .attr('cy', (d: any) => d.y);
     }
 
-
     simulation.on('tick', ticked);
 
     // Update the simulation when collideScrubberValue changes
-    simulation.tick(collideScrubberValue);
-
-    
+    // simulation.tick(frames);
 
     // Clean up any resources or event listeners here
     return () => {
       simulation.on('tick', null);
     };
-  }, [collideScrubberValue]);
+  }, [force]);
 
   return (
     <div id="chart">
-      <>{collideScrubberValue}</>
+      <>{force}</>
       <svg ref={svgRef} />
     </div>
   );
@@ -204,7 +185,7 @@ const CollideSimScrubber: React.FC<SimScrubberProps> = ({
       <input
         type="range"
         min="0"
-        max="100"
+        max="200"
         value={scrubberValue}
         onChange={handleScrubberChange}
       />
@@ -216,7 +197,7 @@ const CollideSimScrubber: React.FC<SimScrubberProps> = ({
 
 //MAIN PAGE
 const Page : React.FC = () => {
-  const [collideScrubberValue, setScrubberValue] = React.useState<number>(1);
+  const [collideScrubberValue, setScrubberValue] = React.useState<number>(0);
   const handleScrubberChange = (value: number) => {
     setScrubberValue(value);
   };
