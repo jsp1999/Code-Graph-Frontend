@@ -4,6 +4,8 @@ import {useState} from "react";
 import icon from '../public/code_icon.svg';
 import Image from "next/image";
 import Header from "@/components/Header";
+import { useEffect } from "react";
+import { getCodes } from "@/src/api";
 
 export default function CodeView() {
 
@@ -33,7 +35,22 @@ export default function CodeView() {
         }
     };
 
-
+    const fetchCode = async (datasetName: string) => {
+        try {
+          return await getCodes(datasetName);
+        } catch (error) {
+          console.error('Error fetching codes:', error);
+        }
+      };
+      
+      const fetchData = async () => {
+        const result = await fetchCode("few_nerd");
+        console.log("codes", result);
+      };
+    
+    console.log("codes")
+    console.log(fetchData())
+        
     return (
         <div>
             <Header />
