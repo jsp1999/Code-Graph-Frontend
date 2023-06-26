@@ -157,7 +157,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({
       simulation.stop();
     };
     // Set the duration in milliseconds
-    const duration = 1000; // 1 seconds
+    const duration = 5000; // 1 seconds
     // Start the simulation
     simulation.restart();
     // Set a timeout to stop the simulation after the specified duration
