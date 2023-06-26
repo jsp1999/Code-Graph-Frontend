@@ -5,7 +5,7 @@ import { AnyNode } from "postcss";
 
 //DATA
 
-const nodes_limit = 2000;
+const nodes_limit = 5000;
 
 var node_data = Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
@@ -139,7 +139,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({
       .force('x', d3.forceX(width / 2).strength(center_force / 10000))
       .force('y', d3.forceY(height / 2).strength(center_force / 10000))
       .force('collide', d3.forceCollide(radius * (collide_force)))
-      .force("charge", d3.forceManyBody().strength(attraction_force))
+      .force("charge", d3.forceManyBody().strength(attraction_force/100))
       .on('tick', ticked)
 
     const circles = drawChart(svgRef, height, width, nodes, arrows);
@@ -153,11 +153,21 @@ const ClusterGraph: React.FC<ClusterProps> = ({
     // Update the simulation when collideScrubberValue changes
     simulation.tick();
 
-    return () => {
-      // simulation.on('tick', null);
-      simulation.stop()
+    const stopSimulation = () => {
+      simulation.stop();
     };
+    // Set the duration in milliseconds
+    const duration = 1000; // 1 seconds
+    // Start the simulation
+    simulation.restart();
+    // Set a timeout to stop the simulation after the specified duration
+    const timeout = setTimeout(stopSimulation, duration);
+
+    // Clean up the timeout when the component unmounts or the duration changes
+    return () => clearTimeout(timeout);
+
   }, [center_force, collide_force, attraction_force, limit]);
+
 
   return (
     <div id="chart">
@@ -229,12 +239,12 @@ const AttractionForceScrubber: React.FC<ScrubberProps> = ({
   };
 
   return (
-    <div id="collid_force">
+    <div id="attraction_force">
       <div>Attraction force Value: {scrubberValue}</div>
       <input
         type="range"
-        min="-10"
-        max="10"
+        min="-100"
+        max="100"
         value={scrubberValue}
         onChange={handleScrubberChange}
       />
@@ -259,7 +269,7 @@ const LimitScruber: React.FC<ScrubberProps> = ({
       <input
         type="range"
         min="0"
-        max="2000"
+        max="5000"
         value={scrubberValue}
         onChange={handleScrubberChange}
       />
