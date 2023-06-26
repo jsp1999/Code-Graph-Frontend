@@ -1,12 +1,11 @@
 import * as d3 from "d3";
 import * as React from "react";
 import data from "../src/data.json";
-import {Scrubber} from '@mbostock/scrubber'
 import { AnyNode } from "postcss";
 
 //DATA
 
-const nodes_limit = 1000;
+const nodes_limit = 100;
 
 var node_data = Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
@@ -24,9 +23,11 @@ var arrows =  Object.entries(data).map(([id, entry]) => ({
 const unique_topic_index = Array.from(new Set(arrows.map(d => d.topic_index)))
 
 //HYPER PARAMETER
-const height = 500
-const width = 500
-const radius = 2
+const height = 700
+const width = 2000
+const radius = 4
+const w_border = width*0.1;
+const h_border = height*0.1
 
 const min_x_position = d3.min(node_data, d => d.x) as number;
 const max_x_position = d3.max(node_data, d => d.x) as number;
@@ -40,7 +41,7 @@ const xScale = d3.scaleLinear()
 
 const yScale = d3.scaleLinear()
   .domain([min_y_position, max_y_position]) // Assuming x coordinates are non-negative
-  .range([0, width]);
+  .range([0, height]);
 
 const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10)
 
@@ -51,12 +52,11 @@ const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10)
 //CREATE CANVA
 function createCanva(height: number, width: number){
   const svgRef = React.useRef<SVGSVGElement>(null);
-  const border = 20;
   React.useEffect(() => {
     if (svgRef.current) {
       // Access the SVG element using svgRef.current and modify its attributes
-      svgRef.current.setAttribute('width', (width+border).toString());
-      svgRef.current.setAttribute('height', (height+border).toString());
+      svgRef.current.setAttribute('width', (width+w_border).toString());
+      svgRef.current.setAttribute('height', (height+h_border).toString());
       svgRef.current.style.backgroundColor = 'rgb(250, 250, 250)';
     }
   }, [])
@@ -72,8 +72,9 @@ function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width
     .data(nodes)
     .enter()
     .append("circle")
-    .attr("cx", (d: any)  => xScale(d.x))
-    .attr("cy", (d: any)  => yScale(d.y))
+    .classed("node", true)
+    .attr("cx", (d: any)  => d.x)
+    .attr("cy", (d: any)  => d.y)
     .attr("r", radius)
     .attr("fill", (d: any) => cluster_color(d.topic_index))
     .on("mouseover", mouseover)
@@ -130,30 +131,53 @@ interface ClusterProps {
 }
 
 //COMPONENT THAT CALLS CANVA AND DRAW
-const ClusterGraph: React.FC<ClusterProps> = ({collideScrubberValue}) => {
-  var nodes = node_data.map(d => Object.create(d))
+const ClusterGraph: React.FC<ClusterProps> = ({ collideScrubberValue }) => {
   var svgRef = createCanva(height, width);
-  const svg = d3.select(svgRef.current)
-
-  const sim = d3.forceSimulation(nodes)
-  .force("x", d3.forceX(width/2).strength(0.5))
-  .force("y", d3.forceY(height/2).strength(0.5))
-  .force("collide", d3.forceCollide(5))
-  .on('tick', () => {
-    // Update node positions
-    svg.selectAll('circle')
-      .attr('cx', (d: any) => d.x)
-      .attr('cy', (d: any) => d.y);
+  const nodes = node_data.map(d => Object.create(d)).map(({ id, info, x, y, topic_index }) => {
+    const scaledX = xScale(x)+ w_border/2;
+    const scaledY = yScale(y)+ h_border/2;
+    return { id: id, info: info, x: scaledX, y: scaledY, topic_index: topic_index };
   });
 
+  React.useEffect(() => {
+      
+    
 
-  const circles = drawChart(svgRef, height, width, nodes, arrows);
+    const svg = d3.select(svgRef.current);
 
+    var simulation = d3.forceSimulation(nodes)
+      .force('x', d3.forceX(width / 2).strength(0.02))
+      .force('y', d3.forceY(height / 2).strength(0.02))
+      .force('collide', d3.forceCollide(radius ))
+      .force("charge", d3.forceManyBody().strength(-radius))
   
-  
+
+
+    const circles = drawChart(svgRef, height, width, nodes, arrows);
+
+    function ticked() {
+      svg.selectAll('circle')
+        .attr('cx', (d: any) => d.x)
+        .attr('cy', (d: any) => d.y);
+    }
+
+
+    simulation.on('tick', ticked);
+
+    // Update the simulation when collideScrubberValue changes
+    simulation.tick(collideScrubberValue);
+
+    
+
+    // Clean up any resources or event listeners here
+    return () => {
+      simulation.on('tick', null);
+    };
+  }, [collideScrubberValue]);
 
   return (
     <div id="chart">
+      <>{collideScrubberValue}</>
       <svg ref={svgRef} />
     </div>
   );
@@ -192,7 +216,7 @@ const CollideSimScrubber: React.FC<SimScrubberProps> = ({
 
 //MAIN PAGE
 const Page : React.FC = () => {
-  const [collideScrubberValue, setScrubberValue] = React.useState<number>(0);
+  const [collideScrubberValue, setScrubberValue] = React.useState<number>(1);
   const handleScrubberChange = (value: number) => {
     setScrubberValue(value);
   };
