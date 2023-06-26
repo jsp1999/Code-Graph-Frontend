@@ -5,7 +5,7 @@ import { AnyNode } from "postcss";
 
 //DATA
 
-const nodes_limit = 100;
+const nodes_limit = 2000;
 
 var node_data = Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
@@ -13,19 +13,21 @@ var node_data = Object.entries(data).map(([id, entry]) => ({
   x: parseFloat(entry.position[0]),
   y: parseFloat(entry.position[1]),
   topic_index: entry.topic_index
-})).slice(0, nodes_limit);
+}))
+.slice(0, nodes_limit)
 
 var arrows =  Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
   topic_index: entry.topic_index
-})).slice(0, nodes_limit);
+}))
+.slice(0, nodes_limit)
 
 const unique_topic_index = Array.from(new Set(arrows.map(d => d.topic_index)))
 
 //HYPER PARAMETER
 const height = 700
 const width = 2000
-const radius = 4
+const radius = 3
 const w_border = width*0.1;
 const h_border = height*0.1
 
@@ -90,16 +92,6 @@ function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width
     .attr("x", d.x)
     .attr("y", d.y - 30)
     .text("lets go")
-
-    //TODO TEXT COULD NOT BE SHOWN
-    // svg.append("text")
-    // .attr("class", "node-label")
-    // .attr("x", xScale(d.x))
-    // .attr("y", yScale(d.y) - 30)
-    // .text("lets go")
-    // .attr("font-size", "50px")
-    // .attr("text-anchor", "middle")
-    // .attr("opacity", 1)
   }
   
   function mouseout(this: any) {
@@ -113,29 +105,29 @@ function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width
 
 interface ClusterProps {
   collideScrubberValue: number;
+  limitScrubberValue: number;
 }
 
 //COMPONENT THAT CALLS CANVA AND DRAW
-const ClusterGraph: React.FC<ClusterProps> = ({ collideScrubberValue: force }) => {
+const ClusterGraph: React.FC<ClusterProps> = ({ collideScrubberValue: force, collideScrubberValue: limit  }) => {
   var svgRef = createCanva(height, width);
-  const nodes = node_data.map(d => Object.create(d)).map(({ id, info, x, y, topic_index }) => {
-    const scaledX = xScale(x)+ w_border/2;
-    const scaledY = yScale(y)+ h_border/2;
-    return { id: id, info: info, x: scaledX, y: scaledY, topic_index: topic_index };
-  });
-
-  const svg = d3.select(svgRef.current);
-
-  var simulation = d3.forceSimulation(nodes)
-    .force('x', d3.forceX(width / 2).strength(force/10000))
-    .force('y', d3.forceY(height / 2).strength(force/10000))
-    .force('collide', d3.forceCollide(radius*(force/200)))
-    .force("charge", d3.forceManyBody().strength(-radius*(force/200)))
-    // .stop()
-
-      
+  
 
   React.useEffect(() => {
+    const nodes = node_data.map(d => Object.create(d)).map(({ id, info, x, y, topic_index }) => {
+      const scaledX = xScale(x)+ w_border/2;
+      const scaledY = yScale(y)+ h_border/2;
+      return { id: id, info: info, x: scaledX, y: scaledY, topic_index: topic_index };
+    }).slice(0, limit);
+  
+    const svg = d3.select(svgRef.current);
+  
+    var simulation = d3.forceSimulation(nodes)
+      .force('x', d3.forceX(width / 2).strength(force/10000))
+      .force('y', d3.forceY(height / 2).strength(force/10000))
+      .force('collide', d3.forceCollide(radius*(force/200)))
+      .force("charge", d3.forceManyBody().strength(-radius*(force/200)))
+      // .stop()
 
     const circles = drawChart(svgRef, height, width, nodes, arrows);
 
@@ -154,7 +146,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({ collideScrubberValue: force }) =
     return () => {
       simulation.on('tick', null);
     };
-  }, [force]);
+  }, [force, limit]);
 
   return (
     <div id="chart">
@@ -163,6 +155,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({ collideScrubberValue: force }) =
     </div>
   );
 };
+//
 
 
 ///SCRUBER FOR ZOOMING
@@ -194,6 +187,27 @@ const CollideSimScrubber: React.FC<SimScrubberProps> = ({
   );
 };
 
+const LimitScruber: React.FC<SimScrubberProps> = ({
+  scrubberValue,
+  onScrubberChange,}) => {
+  const handleScrubberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10);
+    onScrubberChange(value);
+  };
+
+  return (
+    <div id="limit">
+      <input
+        type="range"
+        min="0"
+        max="2000"
+        value={scrubberValue}
+        onChange={handleScrubberChange}
+      />
+      <div>Node Limit: {scrubberValue}</div>
+    </div>
+  );
+};
 
 //MAIN PAGE
 const Page : React.FC = () => {
@@ -202,11 +216,19 @@ const Page : React.FC = () => {
     setScrubberValue(value);
   };
 
+  const [limitcrubberValue, setLimitScrubberValue] = React.useState<number>(100);
+  const handleLimitScrubberChange = (value: number) => {
+    setLimitScrubberValue(value);
+  };
+
   return (
     <div>
+      <LimitScruber scrubberValue={limitcrubberValue}
+        onScrubberChange={handleLimitScrubberChange}></LimitScruber>
       <CollideSimScrubber scrubberValue={collideScrubberValue}
         onScrubberChange={handleScrubberChange}></CollideSimScrubber>
-      <ClusterGraph collideScrubberValue={collideScrubberValue}></ClusterGraph>
+      <ClusterGraph collideScrubberValue={collideScrubberValue}
+      limitScrubberValue={limitcrubberValue}></ClusterGraph>
     </div>
   )
 }
