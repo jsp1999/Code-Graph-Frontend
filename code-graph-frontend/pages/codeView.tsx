@@ -8,6 +8,8 @@ import {Modal} from "@mui/material";
 import {Button} from "@mui/material";
 import { getCodes } from "@/src/api";
 import { DataGrid } from '@mui/x-data-grid';
+import CodeItem from "@/components/CodeItem";
+import ContextMenu from "@/components/ContextMenu";
 
 export default function CodeView() {
     const [selectedItems, setSelectedItems] = useState<Array<string>>([]);
@@ -127,20 +129,12 @@ export default function CodeView() {
                     handleContextMenu(e);
                     setRightClickedItem(value);
                 }} ref={contextMenuRef}>
-                    <Image className="mx-auto" src={icon} alt="" width={50} height={50} priority/>
-                    {value}
+                    <CodeItem value={value} />
                     {showContextMenu && (
-                        <div
-                            className="absolute bg-white border"
-                            style={{ top: contextMenuPosition.y, left: contextMenuPosition.x }}
-                        >
-                            <div className="border" onClick={() => handleContextMenuAction("unselect")}>
-                                Unselect
-                            </div>
-                            <div className="border" onClick={() => handleContextMenuAction("add to category")}>
-                                Add to Category
-                            </div>
-                        </div>
+                        <ContextMenu 
+                            contextMenuPosition={contextMenuPosition}
+                            handleContextMenuAction={handleContextMenuAction}
+                            contextMenuItems={["unselect", "add to category"]} />
                     )}
                 </div>
                 )
