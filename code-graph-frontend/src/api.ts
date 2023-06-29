@@ -9,7 +9,6 @@ export const getCodes = (datasetName : string): Promise<any> => {
     return axios.get<any>(`${baseURL}/annotations/${datasetName}`);
 }
 
-
 export const getUser = (userId: number): Promise<AxiosResponse<User>> => {
     return axios.get<User>(`${baseURL}/users/${userId}`);
 };
