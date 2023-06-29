@@ -115,7 +115,7 @@ export default function CodeView() {
             <div className="w-[20%] max-h-[600px] float-left ml-3">
                 <DataGrid
                     rows={exampleRows}
-                    columns={[{ field: 'col1', headerName: 'Codes' }]}
+                    columns={[{ field: 'col1', headerName: 'Codes', width: 300 }]}
                     rowSelectionModel={selectedItems}
                     onCellClick={(params, event, details) =>
                         handleItemClick(exampleRows[params.id as number - 1].col1)
@@ -131,7 +131,7 @@ export default function CodeView() {
                 }} ref={contextMenuRef}>
                     <CodeItem value={value} />
                     {showContextMenu && (
-                        <ContextMenu 
+                        <ContextMenu
                             contextMenuPosition={contextMenuPosition}
                             handleContextMenuAction={handleContextMenuAction}
                             contextMenuItems={["unselect", "add to category"]} />
