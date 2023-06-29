@@ -6,6 +6,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import {Modal} from "@mui/material";
 import {Button} from "@mui/material";
+import { getCodes } from "@/src/api";
 
 export default function CodeView() {
     const [selectedItem, setSelectedItem] = useState<Array<string>>([]);
@@ -23,6 +24,22 @@ export default function CodeView() {
         setContextMenuPosition({ x: clientX, y: clientY });
         setShowContextMenu(true);
     };
+
+    const fetchCode = async (datasetName: string) => {
+        try {
+            return await getCodes(datasetName);
+        } catch (error) {
+            console.error('Error fetching codes:', error);
+        }
+    };
+
+    const fetchData = async () => {
+        const result = await fetchCode("few_nerd");
+        console.log("codes", result);
+    };
+
+    console.log("codes")
+    console.log(fetchData())
 
     const handleContextMenuAction = (action: string) => {
         if(action === "unselect") {
