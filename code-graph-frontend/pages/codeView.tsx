@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import {Modal} from "@mui/material";
 import {Button} from "@mui/material";
 import { getCodes } from "@/src/api";
+import { DataGrid } from '@mui/x-data-grid';
 
 export default function CodeView() {
     const [selectedItem, setSelectedItem] = useState<Array<string>>([]);
@@ -68,6 +69,11 @@ export default function CodeView() {
         };
     }, []);
 
+    const exampleRows = [
+        { id: 1, col1: 'Hello' },
+        { id: 2, col1: 'DataGridPro' },
+        { id: 3, col1: 'MUI' },
+    ];
 
     // it is a little spaghetti but it works
     const jsonString = JSON.stringify(data, null, 2);
@@ -105,18 +111,28 @@ export default function CodeView() {
                 </div>
             </Modal>
             <div className="w-[20%] max-h-[600px] overflow-auto float-left ml-3">
-            <table className="table-auto border-2">
-                <thead className="border-2 bg-gray-100">
-                <tr>
-                    <th>Code</th>
-                </tr>
-                </thead>
-                <tbody>
-                {datenList.map((daten, index) => (
-                    <tr className="border" key={index} onClick={() => handleItemClick(daten)}>{daten}</tr>
-                ))}
-                </tbody>
-            </table>
+                <DataGrid
+                    rows={exampleRows}
+                    columns={[{ field: 'col1', headerName: 'Codes', width: 150 }]}
+                    checkboxSelection
+                    onCellClick={(params, event, details) =>
+                        handleItemClick(exampleRows[params.id as number - 1].col1)
+                }
+                />
+                { /**
+                    <table className="table-auto border-2">
+                    <thead className="border-2 bg-gray-100">
+                    <tr>
+                        <th>Code</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {datenList.map((daten, index) => (
+                        <tr className="border" key={index} onClick={() => handleItemClick(daten)}>{daten}</tr>
+                    ))}
+                    </tbody>
+                </table>
+ **/}
             </div>
             <p className="absolute bottom-3 left-3">You have selected {itemCount} Code points</p>
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
