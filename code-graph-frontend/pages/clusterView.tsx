@@ -2,6 +2,9 @@ import * as d3 from "d3";
 import * as React from "react";
 import data from "../src/data.json";
 import { AnyNode } from "postcss";
+import Header from "@/components/Header";
+import {Button} from "@mui/material";
+import Link from "next/link";
 
 //DATA
 
@@ -177,30 +180,55 @@ const ClusterGraph: React.FC<ClusterProps> = ({
 
 
 
-  //ZOOM
-  React.useEffect(() => {
-    // Get the DOM element associated with the ref
-    const svgElement = d3.select(svgRef.current);
-    // Create a zoom behavior
-    const zoom = d3.zoom().scaleExtent([1, 10]).on('zoom', zoomed);
-    // Attach the zoom behavior to the SVG element
-    svgElement.call(zoom); ////////////////////// IT IS ERROR, IDK HOW TO FIX BUT IT STILL WORKS 
-    // Define the zoom event handler
-    function zoomed(event: any) {
-      // Get the current zoom transformation
-      const transform = event.transform;
-      // Apply the zoom transformation to the SVG elements
-      svgElement.attr('transform', transform);
-    }
+  // ZOOM
+  // React.useEffect(() => {
+  //   // Get the DOM element associated with the ref
+  //   const svgElement = d3.select(svgRef.current);
+  //   // Create a zoom behavior
+  //   const zoom = d3.zoom().scaleExtent([1, 3]).on('zoom', zoomed);
+  //   // Attach the zoom behavior to the SVG element
+  //   svgElement.call(zoom);
+  //   // Define the zoom event handler
+  //   function zoomed(event: any) {
+  //     // Get the current zoom transformation
+  //     const { transform } = event;
+  //     // Apply the zoom transformation to the SVG elements
+  //     svgElement.attr('transform', transform);
+  //     // Apply constraints to prevent overflowing
+  //     const { x, y, k } = transform;
+  //     svgElement
+  //       .attr('width', width * k)
+  //       .attr('height', height * k)
+  //       .attr('x', Math.min(0, x))
+  //       .attr('y', Math.min(0, y));
+  //   }
   
-    // Cleanup function
-    return () => {
-      // Remove the zoom behavior
-      svgElement.on('.zoom', null);
-    };
+  //   // Save the original width and height of the SVG element
+  //   const width = svgElement.attr('width');
+  //   const height = svgElement.attr('height');
+  
+  //   // Cleanup function
+  //   return () => {
+  //     // Remove the zoom behavior
+  //     svgElement.on('.zoom', null);
+  //   };
+  // }, []);
+
+  React.useEffect(() => {
+    const svg = d3.select(svgRef.current);
+    const zoom = d3.zoom().scaleExtent([0.5, 5]).on('zoom', zoomed);
+    svg.call(zoom);
+  
+    function zoomed(event) {
+      const { transform } = event;
+      svg.attr('transform', transform)
+      .append("g");
+      // svg.attr('style', `clip-path: inset(0px ${-transform.x}px ${-transform.y}px 0px)`);
+    }
   }, []);
   
-
+  
+  // DRAG QUEEN, DOES NOT WORK
   // React.useEffect(() => {
   //   // Get the DOM element associated with the ref
   //   const svg = d3.select(svgRef.current);
@@ -371,7 +399,9 @@ const Page: React.FC = () => {
 
 
   return (
+    
     <div>
+      <Header title="Cluster View"/>
       <LimitScruber scrubberValue={limitValue}
         onScrubberChange={handleLimitScrubberChange}></LimitScruber>
 
@@ -384,13 +414,37 @@ const Page: React.FC = () => {
 
       <CenterForceScrubber scrubberValue={centerForceValue}
         onScrubberChange={handleCenterForceChange}></CenterForceScrubber>
-      <ClusterGraph collideValue={collideValue}
-        limitValue={limitValue}
-        attractionValue={attractionValue}
-        centerForceValue={centerForceValue}></ClusterGraph>
+
+  <div style={{ 
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'fixed',  // Fix the position
+    top: '50%',        // Example: vertically centered
+    left: '50%',       // Example: horizontally centered
+    transform: 'translate(-50%, -50%)',  // Center horizontally and vertically
+    height: height.toString(),   // Set a specific height
+    width: width.toString(),    // Set a specific width
+    overflow: 'hidden'
+  }}>
+  <ClusterGraph
+    collideValue={collideValue}
+    limitValue={limitValue}
+    attractionValue={attractionValue}
+    centerForceValue={centerForceValue}
+  />
+</div>
+
+    <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
+                    <Button variant="contained" className="">
+                        <Link href="/">Change View</Link>
+                    </Button>
+                </div>
     </div>
   )
 }
+
+
 
 export default Page;
 

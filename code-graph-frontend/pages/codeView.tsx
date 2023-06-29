@@ -99,22 +99,7 @@ export default function CodeView() {
         }
     };
 
-    const fetchCode = async (datasetName: string) => {
-        try {
-          return await getCodes(datasetName);
-        } catch (error) {
-          console.error('Error fetching codes:', error);
-        }
-      };
-      
-      const fetchData = async () => {
-        const result = await fetchCode("few_nerd");
-        console.log("codes", result);
-      };
-    
-    console.log("codes")
-    console.log(fetchData())
-        
+
     return (
         <div>
             <Header title="Code View"/>
