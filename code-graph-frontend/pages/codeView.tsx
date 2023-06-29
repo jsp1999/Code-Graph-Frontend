@@ -10,7 +10,7 @@ import { getCodes } from "@/src/api";
 import { DataGrid } from '@mui/x-data-grid';
 
 export default function CodeView() {
-    const [selectedItem, setSelectedItem] = useState<Array<string>>([]);
+    const [selectedItems, setSelectedItems] = useState<Array<string>>([]);
     const [itemCount, setItemCount] = useState(0);
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
@@ -44,7 +44,7 @@ export default function CodeView() {
 
     const handleContextMenuAction = (action: string) => {
         if(action === "unselect") {
-            selectedItem.splice(selectedItem.indexOf(rightClickedItem), 1);
+            selectedItems.splice(selectedItems.indexOf(rightClickedItem), 1);
             setItemCount(itemCount - 1);
         }
         if(action === "add to category") {
@@ -87,11 +87,11 @@ export default function CodeView() {
     // Handle item click event
     const handleItemClick = (daten: string) => {
         if (itemCount <= 8){
-            if(selectedItem.indexOf(daten) <= -1) {
-                selectedItem.push(daten);
+            if(!selectedItems.includes(daten)) {
+                selectedItems.push(daten);
                 setItemCount(itemCount + 1);
             } else {
-                selectedItem.splice(selectedItem.indexOf(daten), 1);
+                selectedItems.splice(selectedItems.indexOf(daten), 1);
                 setItemCount(itemCount - 1);
             }
         }
@@ -100,7 +100,7 @@ export default function CodeView() {
 
     return (
         <div>
-            <Header />
+            <Header title="Code View"/>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -110,34 +110,19 @@ export default function CodeView() {
                     <Button variant="outlined" onClick={handleClose}>Close</Button>
                 </div>
             </Modal>
-            <div className="w-[20%] max-h-[600px] overflow-auto float-left ml-3">
+            <div className="w-[20%] max-h-[600px] float-left ml-3">
                 <DataGrid
                     rows={exampleRows}
-                    columns={[{ field: 'col1', headerName: 'Codes', width: 150 }]}
-                    checkboxSelection
+                    columns={[{ field: 'col1', headerName: 'Codes' }]}
+                    rowSelectionModel={selectedItems}
                     onCellClick={(params, event, details) =>
                         handleItemClick(exampleRows[params.id as number - 1].col1)
                 }
                 />
-                { /**
-                    <table className="table-auto border-2">
-                    <thead className="border-2 bg-gray-100">
-                    <tr>
-                        <th>Code</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {datenList.map((daten, index) => (
-                        <tr className="border" key={index} onClick={() => handleItemClick(daten)}>{daten}</tr>
-                    ))}
-                    </tbody>
-                </table>
- **/}
             </div>
-            <p className="absolute bottom-3 left-3">You have selected {itemCount} Code points</p>
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
-            {selectedItem.length <= 8 && (
-                selectedItem.map((value, index) =>
+            {selectedItems.length <= 8 && (
+                selectedItems.map((value, index) =>
                 <div className="w-24" key={index} onContextMenu={(e: React.MouseEvent) => {
                     handleContextMenu(e);
                     setRightClickedItem(value);
@@ -175,8 +160,8 @@ export default function CodeView() {
                 </tbody>
             </table>
             </div>
-            <div className="absolute right-5 bottom-5">
-                <Button variant="contained">
+            <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
+                <Button variant="contained" className="">
                     <Link href="/clusterView">Change View</Link>
                 </Button>
             </div>
