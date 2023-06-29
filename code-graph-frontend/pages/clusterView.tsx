@@ -5,7 +5,7 @@ import { AnyNode } from "postcss";
 
 //DATA
 
-const nodes_limit = 5000;
+const nodes_limit = 3000;
 
 var node_data = Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
@@ -26,7 +26,7 @@ const unique_topic_index = Array.from(new Set(arrows.map(d => d.topic_index)))
 
 //HYPER PARAMETER
 const height = 700
-const width = 2000
+const width = 700
 const radius = 3
 const w_border = width * 0.1;
 const h_border = height * 0.1
@@ -60,6 +60,7 @@ function createCanva(height: number, width: number) {
       svgRef.current.setAttribute('width', (width + w_border).toString());
       svgRef.current.setAttribute('height', (height + h_border).toString());
       svgRef.current.style.backgroundColor = 'rgb(250, 250, 250)';
+
     }
   }, [])
   return svgRef
@@ -68,7 +69,6 @@ function createCanva(height: number, width: number) {
 //DRAW ON CANVA
 function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width: number, nodes: any, arrows: any) {
   const svg = d3.select(svgRef.current);
-
 
   const circles = svg.selectAll("circle")
     .data(nodes)
@@ -82,16 +82,21 @@ function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width
     .on("mouseover", mouseover)
     .on("mouseout", mouseout);
 
-  function mouseover(this: any, d: any) {
-    this.parentElement.appendChild(this)
-
-
-    d3.select(this).attr("r", radius * 5);
-    d3.select(this).append("text")
+  function mouseover(this: any, mouse_event: any, data: any) {
+    // this.parentElement.appendChild(this)
+     d3.select(this).attr("r", radius * 5);
+  
+    
+    d3.select(this.parentNode)
+      .append("text")
       .attr("class", "node-label")
-      .attr("x", d.x)
-      .attr("y", d.y - 30)
-      .text("lets go")
+      .attr("x", data.x*1)
+      .attr("y", data.y - height*0.04)
+      .text(data.info)
+      .style("font-size", (radius + 10).toString())
+      .style("text-anchor", "middle")
+      .style("dominant-baseline", "middle")
+      .style("pointer-events", "none");
   }
 
   function mouseout(this: any) {
@@ -124,6 +129,10 @@ const ClusterGraph: React.FC<ClusterProps> = ({
     return { id: id, info: info, x: scaledX, y: scaledY, topic_index: topic_index };
   })
 
+
+
+
+  // NODE LIMIT
   React.useEffect(() => {
     const nodes = all_nodes.slice(0, limit);
     const svg = d3.select(svgRef.current);
@@ -132,6 +141,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({
     };
   }, [limit]);
 
+  //FORCE
   React.useEffect(() => {
     const nodes = all_nodes.slice(0, limit);
     const svg = d3.select(svgRef.current);
@@ -153,13 +163,15 @@ const ClusterGraph: React.FC<ClusterProps> = ({
     // Update the simulation when collideScrubberValue changes
     simulation.tick();
 
+    
     const stopSimulation = () => {
       simulation.stop();
     };
     // Set the duration in milliseconds
-    const duration = 5000; // 1 seconds
+    const duration = 10000; // 1 seconds
     // Start the simulation
     simulation.restart();
+
     // Set a timeout to stop the simulation after the specified duration
     const timeout = setTimeout(stopSimulation, duration);
 
@@ -167,6 +179,11 @@ const ClusterGraph: React.FC<ClusterProps> = ({
     return () => clearTimeout(timeout);
 
   }, [center_force, collide_force, attraction_force, limit]);
+
+
+  //ZOOM
+
+
 
 
   return (
