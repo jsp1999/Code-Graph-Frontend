@@ -151,6 +151,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({
       .force('collide', d3.forceCollide(radius * (collide_force)))
       .force("charge", d3.forceManyBody().strength(attraction_force/100))
       .on('tick', ticked)
+      .stop()
 
     const circles = drawChart(svgRef, height, width, nodes, arrows);
 
@@ -160,31 +161,81 @@ const ClusterGraph: React.FC<ClusterProps> = ({
         .attr('cy', (d: any) => d.y);
     }
 
-    // Update the simulation when collideScrubberValue changes
-    simulation.tick();
-
-    
+    //TIME OUT 
     const stopSimulation = () => {
       simulation.stop();
     };
     // Set the duration in milliseconds
-    const duration = 10000; // 1 seconds
+    const duration = 2000; // 1 seconds
     // Start the simulation
     simulation.restart();
-
     // Set a timeout to stop the simulation after the specified duration
     const timeout = setTimeout(stopSimulation, duration);
-
     // Clean up the timeout when the component unmounts or the duration changes
     return () => clearTimeout(timeout);
-
   }, [center_force, collide_force, attraction_force, limit]);
 
 
+
   //ZOOM
+  React.useEffect(() => {
+    // Get the DOM element associated with the ref
+    const svgElement = d3.select(svgRef.current);
+    // Create a zoom behavior
+    const zoom = d3.zoom().scaleExtent([1, 10]).on('zoom', zoomed);
+    // Attach the zoom behavior to the SVG element
+    svgElement.call(zoom); ////////////////////// IT IS ERROR, IDK HOW TO FIX BUT IT STILL WORKS 
+    // Define the zoom event handler
+    function zoomed(event: any) {
+      // Get the current zoom transformation
+      const transform = event.transform;
+      // Apply the zoom transformation to the SVG elements
+      svgElement.attr('transform', transform);
+    }
+  
+    // Cleanup function
+    return () => {
+      // Remove the zoom behavior
+      svgElement.on('.zoom', null);
+    };
+  }, []);
+  
 
-
-
+  // React.useEffect(() => {
+  //   // Get the DOM element associated with the ref
+  //   const svg = d3.select(svgRef.current);
+  
+  //   // Drag event handlers
+  //   function dragStarted(this: any, event: any, d: any) {
+  //     d3.select(this).raise().classed('active', true);
+  //   }
+  
+  //   function dragged(this: any, event: any, d: any) {
+  //     d3.select(this)
+  //       .attr('cx', (event.x + 10).toString())
+  //       .attr('cy', (event.y + 10).toString());
+  //   }
+    
+  
+  //   function dragEnded(this: any, event: any, d: any) {
+  //     d3.select(this).classed('active', false);
+  //   }
+  
+  //   // Define the drag behavior
+  //   const dragHandler = d3.drag()
+  //     .on('start', dragStarted)
+  //     .on('drag', dragged)
+  //     .on('end', dragEnded);
+  
+  //   // Create and render the nodes
+  //   svg.call(dragHandler);
+  
+  //   // Cleanup function
+  //   return () => {
+  //     // Remove the drag behavior
+  //     svg.on('.drag', null);
+  //   };
+  // }, []);
 
   return (
     <div id="chart">
