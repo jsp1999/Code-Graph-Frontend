@@ -3,8 +3,12 @@ import * as React from "react";
 import data from "../src/data.json";
 import { AnyNode } from "postcss";
 import Header from "@/components/Header";
-import {Button} from "@mui/material";
+import { Button } from "@mui/material";
 import Link from "next/link";
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
 
 //DATA
 
@@ -19,6 +23,7 @@ var node_data = Object.entries(data).map(([id, entry]) => ({
 }))
   .slice(0, nodes_limit)
 
+
 var arrows = Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
   topic_index: entry.topic_index
@@ -28,8 +33,8 @@ var arrows = Object.entries(data).map(([id, entry]) => ({
 const unique_topic_index = Array.from(new Set(arrows.map(d => d.topic_index)))
 
 //HYPER PARAMETER
-const height = 700
-const width = 700
+const height = 500
+const width = 500
 const radius = 3
 const w_border = width * 0.1;
 const h_border = height * 0.1
@@ -62,7 +67,7 @@ function createCanva(height: number, width: number) {
       // Access the SVG element using svgRef.current and modify its attributes
       svgRef.current.setAttribute('width', (width + w_border).toString());
       svgRef.current.setAttribute('height', (height + h_border).toString());
-      svgRef.current.style.backgroundColor = 'rgb(250, 250, 250)';
+      svgRef.current.style.backgroundColor = 'rgb(255, 255, 255)';
 
     }
   }, [])
@@ -87,14 +92,14 @@ function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width
 
   function mouseover(this: any, mouse_event: any, data: any) {
     // this.parentElement.appendChild(this)
-     d3.select(this).attr("r", radius * 5);
-  
-    
+    d3.select(this).attr("r", radius * 5);
+
+
     d3.select(this.parentNode)
       .append("text")
       .attr("class", "node-label")
-      .attr("x", data.x*1)
-      .attr("y", data.y - height*0.04)
+      .attr("x", data.x * 1)
+      .attr("y", data.y - height * 0.04)
       .text(data.info)
       .style("font-size", (radius + 10).toString())
       .style("text-anchor", "middle")
@@ -152,7 +157,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({
       .force('x', d3.forceX(width / 2).strength(center_force / 10000))
       .force('y', d3.forceY(height / 2).strength(center_force / 10000))
       .force('collide', d3.forceCollide(radius * (collide_force)))
-      .force("charge", d3.forceManyBody().strength(attraction_force/100))
+      .force("charge", d3.forceManyBody().strength(attraction_force / 100))
       .on('tick', ticked)
       .stop()
 
@@ -179,85 +184,56 @@ const ClusterGraph: React.FC<ClusterProps> = ({
   }, [center_force, collide_force, attraction_force, limit]);
 
 
-
-  // ZOOM
-  // React.useEffect(() => {
-  //   // Get the DOM element associated with the ref
-  //   const svgElement = d3.select(svgRef.current);
-  //   // Create a zoom behavior
-  //   const zoom = d3.zoom().scaleExtent([1, 3]).on('zoom', zoomed);
-  //   // Attach the zoom behavior to the SVG element
-  //   svgElement.call(zoom);
-  //   // Define the zoom event handler
-  //   function zoomed(event: any) {
-  //     // Get the current zoom transformation
-  //     const { transform } = event;
-  //     // Apply the zoom transformation to the SVG elements
-  //     svgElement.attr('transform', transform);
-  //     // Apply constraints to prevent overflowing
-  //     const { x, y, k } = transform;
-  //     svgElement
-  //       .attr('width', width * k)
-  //       .attr('height', height * k)
-  //       .attr('x', Math.min(0, x))
-  //       .attr('y', Math.min(0, y));
-  //   }
-  
-  //   // Save the original width and height of the SVG element
-  //   const width = svgElement.attr('width');
-  //   const height = svgElement.attr('height');
-  
-  //   // Cleanup function
-  //   return () => {
-  //     // Remove the zoom behavior
-  //     svgElement.on('.zoom', null);
-  //   };
-  // }, []);
-
   React.useEffect(() => {
     const svg = d3.select(svgRef.current);
-    const zoom = d3.zoom().scaleExtent([0.5, 5]).on('zoom', zoomed);
+    const zoom = d3.zoom().scaleExtent([1, 3]).on('zoom', zoomed);
     svg.call(zoom);
   
     function zoomed(event) {
       const { transform } = event;
       svg.attr('transform', transform)
-      .append("g");
+      .append('g');
       // svg.attr('style', `clip-path: inset(0px ${-transform.x}px ${-transform.y}px 0px)`);
     }
+  
+    return () => {
+      svg.on('.zoom', null);
+    };
   }, []);
+  ``
   
-  
+
+
   // DRAG QUEEN, DOES NOT WORK
   // React.useEffect(() => {
   //   // Get the DOM element associated with the ref
   //   const svg = d3.select(svgRef.current);
-  
+
   //   // Drag event handlers
   //   function dragStarted(this: any, event: any, d: any) {
   //     d3.select(this).raise().classed('active', true);
   //   }
-  
+
   //   function dragged(this: any, event: any, d: any) {
   //     d3.select(this)
   //       .attr('cx', (event.x + 10).toString())
   //       .attr('cy', (event.y + 10).toString());
   //   }
-    
-  
+
+
   //   function dragEnded(this: any, event: any, d: any) {
   //     d3.select(this).classed('active', false);
   //   }
-  
+
   //   // Define the drag behavior
   //   const dragHandler = d3.drag()
   //     .on('start', dragStarted)
   //     .on('drag', dragged)
   //     .on('end', dragEnded);
-  
+
   //   // Create and render the nodes
   //   svg.call(dragHandler);
-  
+
   //   // Cleanup function
   //   return () => {
   //     // Remove the drag behavior
@@ -291,7 +267,7 @@ const CollideForceScrubber: React.FC<ScrubberProps> = ({
 
   return (
     <div id="collid_force">
-            <div>Collide force Value: {scrubberValue}</div>
+      <div>Collide force Value: {scrubberValue}</div>
       <input
         type="range"
         min="-10"
@@ -374,6 +350,8 @@ const LimitScruber: React.FC<ScrubberProps> = ({
   );
 };
 
+const defaultTheme = createTheme();
+
 //MAIN PAGE
 const Page: React.FC = () => {
   //COLIDE
@@ -399,52 +377,72 @@ const Page: React.FC = () => {
 
 
   return (
-    
-    <div>
-      <Header title="Cluster View"/>
-      <LimitScruber scrubberValue={limitValue}
-        onScrubberChange={handleLimitScrubberChange}></LimitScruber>
+    <ThemeProvider theme={defaultTheme}>
+      <div>
+        <Header title="Cluster View" />
+        <LimitScruber scrubberValue={limitValue}
+          onScrubberChange={handleLimitScrubberChange}></LimitScruber>
 
-      <CollideForceScrubber
-        scrubberValue={collideValue}
-        onScrubberChange={handleScrubberChange}></CollideForceScrubber>
+        <CollideForceScrubber
+          scrubberValue={collideValue}
+          onScrubberChange={handleScrubberChange}></CollideForceScrubber>
 
-      <AttractionForceScrubber scrubberValue={attractionValue}
-        onScrubberChange={handleAttractionChange}></AttractionForceScrubber>
+        <AttractionForceScrubber scrubberValue={attractionValue}
+          onScrubberChange={handleAttractionChange}></AttractionForceScrubber>
 
-      <CenterForceScrubber scrubberValue={centerForceValue}
-        onScrubberChange={handleCenterForceChange}></CenterForceScrubber>
+        <CenterForceScrubber scrubberValue={centerForceValue}
+          onScrubberChange={handleCenterForceChange}></CenterForceScrubber>
+        <Box
+          component="main"
+          sx={{
+            backgroundColor: (theme) =>
+              theme.palette.mode === 'light'
+                ? theme.palette.grey[100]
+                : theme.palette.grey[900],
+            flexGrow: 1,
+            height: '100vh',
+            overflow: 'hidden',
+          }}
+        >
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Paper
+              sx={{
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }}
+            >
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <ClusterGraph
+                  collideValue={collideValue}
+                  limitValue={limitValue}
+                  attractionValue={attractionValue}
+                  centerForceValue={centerForceValue}
+                />
+              </Box>
+            </Paper>
+          </Container>
+        </Box>
 
-  <div style={{ 
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'fixed',  // Fix the position
-    top: '50%',        // Example: vertically centered
-    left: '50%',       // Example: horizontally centered
-    transform: 'translate(-50%, -50%)',  // Center horizontally and vertically
-    height: height.toString(),   // Set a specific height
-    width: width.toString(),    // Set a specific width
-    overflow: 'hidden'
-  }}>
-  <ClusterGraph
-    collideValue={collideValue}
-    limitValue={limitValue}
-    attractionValue={attractionValue}
-    centerForceValue={centerForceValue}
-  />
-</div>
 
-    <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
-                    <Button variant="contained" className="">
-                        <Link href="/">Change View</Link>
-                    </Button>
-                </div>
-    </div>
+        <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
+          <Button variant="contained" className="">
+            <Link href="/">Change View</Link>
+          </Button>
+        </div>
+      </div>
+    </ThemeProvider>
   )
-}
-
-
+};
 
 export default Page;
 
