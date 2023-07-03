@@ -8,6 +8,7 @@ import { getCodes } from "@/src/api";
 import { DataGrid } from '@mui/x-data-grid';
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
+import CodeList from "@/components/CodeList";
 import CategoryList from "@/components/CategoryList";
 
 export default function CodeView() {
@@ -111,17 +112,20 @@ export default function CodeView() {
                     <Button variant="outlined" onClick={handleClose}>Close</Button>
                 </div>
             </Modal>
-            <div className="w-[20%] max-h-[600px] float-left ml-3">
-                <DataGrid
-                    rows={exampleRows}
-                    columns={[{ field: 'col1', headerName: 'Codes', width: 300 }]}
-                    rowSelectionModel={selectedItems}
-                    onCellClick={(params, event, details) =>
+            <div className="w-[20%] max-h-[800px] float-left ml-3 overflow-auto">
+                {/**
+                 <DataGrid
+                 rows={exampleRows}
+                 columns={[{ field: 'col1', headerName: 'Codes', width: 300 }]}
+                 rowSelectionModel={selectedItems}
+                 onCellClick={(params, event, details) =>
                         handleItemClick(exampleRows[params.id as number - 1].col1)
                 }
-                />
-                <h1>Categories</h1>
-                <CategoryList categories={data} />
+                 />
+                 **/}
+
+                <h1 className="border bg-gray-100">Codes</h1>
+                <CodeList categories={data} />
             </div>
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
             {selectedItems.length <= 8 && (
@@ -141,19 +145,9 @@ export default function CodeView() {
                 )
             )}
             </div>
-            <div className="max-h-[400px] w-[20%] float-right mr-3 overflow-auto">
-            <table className="table-auto border-2">
-                <thead className="border-2 bg-gray-100">
-                <tr>
-                    <th>Category</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
-                </tr>
-                </tbody>
-            </table>
+            <div className="max-h-[800px] w-[20%] float-right mr-3 overflow-auto">
+                <h1 className="border bg-gray-100">Categories</h1>
+                <CategoryList categories={data} />
             </div>
             <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
                 <Button variant="contained" className="">

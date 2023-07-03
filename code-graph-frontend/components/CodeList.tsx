@@ -1,33 +1,30 @@
 import React from 'react';
 
-interface Category {
+interface Code {
     id: number;
     name: string;
     subcategories: {
-        [key: string]: Category;
+        [key: string]: Code;
     };
 }
 
-interface CategoryListProps {
+interface CodeListProps {
     categories: {
-        [key: string]: Category;
+        [key: string]: Code;
     };
 }
 
-const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
-    const renderCategories = (categories: { [key: string]: Category }): JSX.Element[] => {
+const CodeList: React.FC<CodeListProps> = ({ categories }) => {
+    const renderCategories = (categories: { [key: string]: Code }): JSX.Element[] => {
         return Object.values(categories).flatMap(category => {
             if (Object.keys(category.subcategories).length === 0) {
                 return (
-                    <div key={""}>
-                        <span>{}</span>
+                    <div key={category.id}>
+                        <span>{category.name}</span>
                     </div>
                 );
             } else {
                 return [
-                    <div key={category.id}>
-                        <span>{category.name}</span>
-                    </div>,
                     ...renderCategories(category.subcategories)
                 ];
             }
@@ -37,4 +34,4 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
     return <div>{renderCategories(categories)}</div>;
 };
 
-export default CategoryList;
+export default CodeList;
