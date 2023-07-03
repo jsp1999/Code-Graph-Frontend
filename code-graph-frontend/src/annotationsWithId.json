@@ -1,0 +1,255 @@
+{
+  "O": {
+    "id": 0
+  },
+  "person": {
+    "id": 30002,
+    "artist": {
+      "id": 20001,
+      "author": {
+        "id": 10001
+      }
+    },
+    "actor": {
+      "id": 10002
+    },
+    "director": {
+      "id": 10003
+    },
+    "other": {
+      "id": 10004
+    },
+    "athlete": {
+      "id": 10005
+    },
+    "scholar": {
+      "id": 10006
+    },
+    "soldier": {
+      "id": 10007
+    },
+    "politician": {
+      "id": 10008
+    }
+  },
+  "art": {
+    "id": 20030,
+    "writtenart": {
+      "id": 10009
+    },
+    "broadcastprogram": {
+      "id": 10010
+    },
+    "music": {
+      "id": 10011
+    },
+    "film": {
+      "id": 10012
+    },
+    "other": {
+      "id": 10013
+    },
+    "painting": {
+      "id": 10014
+    }
+  },
+  "organization": {
+    "id": 20020,
+    "other": {
+      "id": 10015
+    },
+    "company": {
+      "id": 10016
+    },
+    "sportsteam": {
+      "id": 10017
+    },
+    "sportsleague": {
+      "id": 10018
+    },
+    "government": {
+      "id": 20002,
+      "governmentagency": {
+        "id": 10019
+      }
+    },
+    "education": {
+      "id": 10020
+    },
+    "media": {
+      "id": 20003,
+      "newspaper": {
+        "id": 10021
+      }
+    },
+    "showorganization": {
+      "id": 10022
+    },
+    "politicalparty": {
+      "id": 10023
+    },
+    "religion": {
+      "id": 10024
+    }
+  },
+  "product": {
+    "id": 20004,
+    "car": {
+      "id": 10025
+    },
+    "other": {
+      "id": 10026
+    },
+    "weapon": {
+      "id": 10027
+    },
+    "airplane": {
+      "id": 10028
+    },
+    "software": {
+      "id": 10029
+    },
+    "game": {
+      "id": 10030
+    },
+    "ship": {
+      "id": 10031
+    },
+    "food": {
+      "id": 10032
+    },
+    "train": {
+      "id": 10033
+    }
+  },
+  "event": {
+    "id": 20005,
+    "protest": {
+      "id": 10034
+    },
+    "other": {
+      "id": 10035
+    },
+    "sportsevent": {
+      "id": 10036
+    },
+    "election": {
+      "id": 10037
+    },
+    "attack": {
+      "id": 40001,
+      "battle": {
+        "id": 30001,
+        "war": {
+          "id": 20006,
+          "militaryconflict": {
+            "id": 10038
+          }
+        }
+      }
+    },
+    "disaster": {
+      "id": 10039
+    }
+  },
+  "other": {
+    "id": 20007,
+    "biologything": {
+      "id": 10040
+    },
+    "language": {
+      "id": 10041
+    },
+    "chemicalthing": {
+      "id": 10042
+    },
+    "law": {
+      "id": 10043
+    },
+    "astronomything": {
+      "id": 10044
+    },
+    "award": {
+      "id": 10045
+    },
+    "educationaldegree": {
+      "id": 10046
+    },
+    "disease": {
+      "id": 10047
+    },
+    "currency": {
+      "id": 10048
+    },
+    "livingthing": {
+      "id": 10049
+    },
+    "medical": {
+      "id": 10050
+    },
+    "god": {
+      "id": 10051
+    }
+  },
+  "location": {
+    "id": 20008,
+    "GPE": {
+      "id": 10052
+    },
+    "other": {
+      "id": 10053
+    },
+    "road": {
+      "id": 40001,
+      "railway": {
+        "id": 30001,
+        "highway": {
+          "id": 20009,
+          "transit": {
+            "id": 10054
+          }
+        }
+      }
+    },
+    "mountain": {
+      "id": 10055
+    },
+    "island": {
+      "id": 10056
+    },
+    "bodiesofwater": {
+      "id": 10057
+    },
+    "park": {
+      "id": 10058
+    }
+  },
+  "building": {
+    "id": 20010,
+    "other": {
+      "id": 10059
+    },
+    "airport": {
+      "id": 10060
+    },
+    "sportsfacility": {
+      "id": 10061
+    },
+    "hospital": {
+      "id": 10062
+    },
+    "library": {
+      "id": 10063
+    },
+    "hotel": {
+      "id": 10064
+    },
+    "theater": {
+      "id": 10065
+    },
+    "restaurant": {
+      "id": 10066
+    }
+  }
+}
+
