@@ -1,8 +1,6 @@
 import Link from "next/link";
-import data from "../src/data.json";
+import data from "../src/annotationsWithId.json";
 import React, {useEffect, useRef, useState} from "react";
-import icon from '../public/code_icon.svg';
-import Image from "next/image";
 import Header from "@/components/Header";
 import {Modal} from "@mui/material";
 import {Button} from "@mui/material";
@@ -10,6 +8,7 @@ import { getCodes } from "@/src/api";
 import { DataGrid } from '@mui/x-data-grid';
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
+import CategoryList from "@/components/CategoryList";
 
 export default function CodeView() {
     const [selectedItems, setSelectedItems] = useState<Array<string>>([]);
@@ -121,6 +120,8 @@ export default function CodeView() {
                         handleItemClick(exampleRows[params.id as number - 1].col1)
                 }
                 />
+                <h1>Categories</h1>
+                <CategoryList categories={data} />
             </div>
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
             {selectedItems.length <= 8 && (
