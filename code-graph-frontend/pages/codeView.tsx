@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import {Modal} from "@mui/material";
 import {Button} from "@mui/material";
 import { getCodes } from "@/src/api";
-import { DataGrid } from '@mui/x-data-grid';
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
 import CodeList from "@/components/CodeList";
@@ -112,7 +111,7 @@ export default function CodeView() {
                     <Button variant="outlined" onClick={handleClose}>Close</Button>
                 </div>
             </Modal>
-            <div className="flex max-w-[20%] max-h-[20rem] float-left ml-3">
+            <div className="flex max-w-[20%] float-left ml-3">
                 {/**
                  <DataGrid
                  rows={exampleRows}
@@ -123,7 +122,7 @@ export default function CodeView() {
                 }
                  />
                  **/}
-                <CodeList categories={data} />
+                <CodeList categories={data} selectedItems={selectedItems} handleItemClick={handleItemClick} />
             </div>
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
             {selectedItems.length <= 8 && (
@@ -143,7 +142,7 @@ export default function CodeView() {
                 )
             )}
             </div>
-            <div className="flex max-w-[15%] max-h-[800px] float-right mr-3">
+            <div className="flex max-w-[15%] float-right mr-3">
                 <CategoryList categories={data} />
             </div>
             <div className="absolute right-5 bottom-5 bg-blue-900 rounded">

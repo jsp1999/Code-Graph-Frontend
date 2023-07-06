@@ -56,7 +56,9 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
         <DataGrid
             rows={dataPoints}
             columns={[{ field: 'col1', headerName: 'Categories', width: 200}]}
-            hideFooterPagination
+            initialState={{
+                pagination: { paginationModel: { pageSize: 10 } },
+            }}
         />
     </>;
 };

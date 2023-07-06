@@ -33,9 +33,11 @@ interface CodeListProps {
     categories: {
         [key: string]: Code;
     };
+    handleItemClick : (daten: string) => void;
+    selectedItems: string[];
 }
 
-const CodeList: React.FC<CodeListProps> = ({ categories }) => {
+const CodeList: React.FC<CodeListProps> = (props: CodeListProps) => {
     const getDataPoints = (categories: { [key: string]: Category }): DataPoint[] => {
         const dataPoints: DataPoint[] = [];
 
@@ -50,7 +52,10 @@ const CodeList: React.FC<CodeListProps> = ({ categories }) => {
         return dataPoints;
     };
 
-    const dataPoints = getDataPoints(categories);
+    const dataPoints = getDataPoints(props.categories);
+    const getItemById = (id: number): string => {
+        return dataPoints.find((dataPoint) => dataPoint.id === id)?.col1!;
+    };
 
     return <>
         <DataGrid
@@ -59,6 +64,10 @@ const CodeList: React.FC<CodeListProps> = ({ categories }) => {
             initialState={{
                 pagination: { paginationModel: { pageSize: 10 } },
             }}
+            rowSelectionModel={props.selectedItems}
+            onCellClick={(params, event, details) =>
+                props.handleItemClick(getItemById(params.id as number))
+            }
         />
     </>;
 };
