@@ -112,7 +112,7 @@ export default function CodeView() {
                     <Button variant="outlined" onClick={handleClose}>Close</Button>
                 </div>
             </Modal>
-            <div className="w-[20%] max-h-[800px] float-left ml-3 overflow-auto">
+            <div className="flex max-w-[20%] max-h-[20rem] float-left ml-3">
                 {/**
                  <DataGrid
                  rows={exampleRows}
@@ -123,8 +123,6 @@ export default function CodeView() {
                 }
                  />
                  **/}
-
-                <h1 className="border bg-gray-100">Codes</h1>
                 <CodeList categories={data} />
             </div>
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
@@ -145,8 +143,7 @@ export default function CodeView() {
                 )
             )}
             </div>
-            <div className="max-h-[800px] w-[20%] float-right mr-3 overflow-auto">
-                <h1 className="border bg-gray-100">Categories</h1>
+            <div className="flex max-w-[15%] max-h-[800px] float-right mr-3">
                 <CategoryList categories={data} />
             </div>
             <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
