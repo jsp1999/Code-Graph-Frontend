@@ -1,4 +1,4 @@
-import {Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup} from "@mui/material";
+import {Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField} from "@mui/material";
 import React from "react";
 import {getCategoryPoints} from "@/components/CategoryList";
 
@@ -28,22 +28,27 @@ export default function CategoryModal(props: CategoryModalProps) {
                 open={props.open}
                 onClose={props.handleClose}
             >
-                <div className="relative w-[50%] bg-white p-5 rounded-lg shadow mx-auto mt-[15rem]">
-                    <FormControl component="fieldset" className="overflow-auto">
-                        <FormLabel component="legend">Add to Category</FormLabel>
-                        <RadioGroup aria-label="Add to Category" name="add" value={"Add to Category"} >
-                            {categoryList.map((value,index) =>
-                                <FormControlLabel
-                                    value={value.col1}
-                                    control={<Radio />}
-                                    label={value.col1}
-                                    key={index}
-                                    checked={checked === value.col1}
-                                    onChange={() => setChecked(value.col1)}
-                                />
-                            )}
-                        </RadioGroup>
-                    </FormControl>
+                <div className="relative w-[30%] bg-white p-5 rounded-lg shadow mx-auto mt-[10rem] ">
+                    <div >
+                        <TextField className="w-[25rem]" id="standard-basic" label="New Category" />
+                    </div>
+                    <div className="overflow-auto mt-8">
+                        <FormControl component="fieldset" >
+                            <FormLabel component="legend">Add to Category</FormLabel>
+                            <RadioGroup aria-label="Add to Category" name="add" value={"Add to Category"} >
+                                {categoryList.map((value,index) =>
+                                    <FormControlLabel
+                                        value={value.col1}
+                                        control={<Radio />}
+                                        label={value.col1}
+                                        key={index}
+                                        checked={checked === value.col1}
+                                        onChange={() => setChecked(value.col1)}
+                                    />
+                                )}
+                            </RadioGroup>
+                        </FormControl>
+                    </div>
                     <div className="absolute bottom-2 right-2" >
                         <Button className="mx-2" variant="outlined" onClick={props.handleClose}>
                             Close
