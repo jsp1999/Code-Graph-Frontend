@@ -2,13 +2,14 @@ import Link from "next/link";
 import data from "../src/annotationsWithId.json";
 import React, {useEffect, useRef, useState} from "react";
 import Header from "@/components/Header";
-import {Modal} from "@mui/material";
+import {FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup} from "@mui/material";
 import {Button} from "@mui/material";
 import { getCodes } from "@/src/api";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
 import CodeList from "@/components/CodeList";
 import CategoryList from "@/components/CategoryList";
+import CategoryModal from "@/components/CategoryModal";
 
 export default function CodeView() {
     const [selectedItems, setSelectedItems] = useState<Array<string>>([]);
@@ -102,15 +103,7 @@ export default function CodeView() {
     return (
         <div>
             <Header title="Code View"/>
-            <Modal
-                open={open}
-                onClose={handleClose}
-            >
-                <div className="w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[15rem]">
-                    <div>modal Text</div>
-                    <Button variant="outlined" onClick={handleClose}>Close</Button>
-                </div>
-            </Modal>
+            <CategoryModal open={open} handleClose={handleClose} />
             <div className="flex max-w-[20%] float-left ml-3">
                 {/**
                  <DataGrid
