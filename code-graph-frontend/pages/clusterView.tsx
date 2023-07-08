@@ -9,7 +9,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
-import { drawChart } from "./cluster_chart";
+import { drawChart, createCanva, drawLegend } from "./cluster_chart";
 import { Grid } from "@mui/material";
 
 //DATA
@@ -32,7 +32,8 @@ var arrows = Object.entries(data).map(([id, entry]) => ({
 }))
   .slice(0, nodes_limit)
 
-const unique_topic_index = Array.from(new Set(arrows.map(d => d.topic_index)))
+const unique_topic_index = Array.from(new Set(arrows.map((d: { topic_index: any; }) => d.topic_index)));
+const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10);
 
 //HYPER PARAMETER
 const height = 800
@@ -55,28 +56,57 @@ const yScale = d3.scaleLinear()
   .domain([min_y_position, max_y_position]) // Assuming x coordinates are non-negative
   .range([0, height]);
 
-const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10)
-
-
 //DRAWING
 
+const Legend: React.FC = () => {
+  var svgLegend = createCanva(300, 200, 10, 10);
 
-//CREATE CANVA
-function createCanva(height: number, width: number) {
-  const svgRef = React.useRef<SVGSVGElement>(null);
-  React.useEffect(() => {
-    if (svgRef.current) {
-      // Access the SVG element using svgRef.current and modify its attributes
-      svgRef.current.setAttribute('width', (width + w_border).toString());
-      svgRef.current.setAttribute('height', (height + h_border).toString());
-      svgRef.current.style.backgroundColor = 'rgb(255, 255, 255)';
-
-    }
-  }, [])
-  return svgRef
+  React.useEffect(() => { 
+    const legends = drawLegend(svgLegend, cluster_color, unique_topic_index)
+  })
+  
+  return ([<div id="legend">
+    <svg ref={svgLegend} />
+  </div>])
 }
 
+///////////////////////
+///////////////////////
+/////////////////////
+
+interface NodeInfoProps {
+  nodeData: any;
+}
+
+const NodeInfo: React.FC<NodeInfoProps> = ({ nodeData }) => {
+  React.useEffect(() => {
+    // This code will run every time nodeData changes
+    // You can perform any side effects or additional logic here
+    console.log('nodeData has changed:', nodeData);
+  }, [nodeData]); // Specify the dependency as nodeData to trigger the effect whenever it changes
+
+  if (!nodeData) {
+    return null; // Render nothing if nodeData is null or empty
+  }
+
+  return (
+    <div>
+      <h3>{nodeData.id}</h3>
+      <p>{nodeData.info}</p>
+      <p>{nodeData.topic_index}</p>
+    </div>
+  );
+};
+
+
+
+///////////////////////
+///////////////////////
+/////////////////////
+
 interface ClusterProps {
+  selectedNode: any;
+  onSelectedNodeChange: (d: any) => void;
   collideValue: number;
   limitValue: number;
   attractionValue: number;
@@ -85,34 +115,36 @@ interface ClusterProps {
 
 //COMPONENT THAT CALLS CANVA AND DRAW
 const ClusterGraph: React.FC<ClusterProps> = ({
+  selectedNode: selectedNode,
+  onSelectedNodeChange: onSelectedNodeChange,
   collideValue: collide_force,
   limitValue: limit,
   attractionValue: attraction_force,
   centerForceValue: center_force }) => {
 
-  var svgRef = createCanva(height, width);
+  var svgChart = createCanva(height, width, w_border, h_border);
+
   const all_nodes = node_data.map(d => Object.create(d)).map(({ id, info, x, y, topic_index }) => {
     const scaledX = xScale(x) + w_border / 2;
     const scaledY = yScale(y) + h_border / 2;
     return { id: id, info: info, x: scaledX, y: scaledY, topic_index: topic_index };
   })
 
-
-
-
   // NODE LIMIT
   React.useEffect(() => {
     const nodes = all_nodes.slice(0, limit);
-    const svg = d3.select(svgRef.current);
+    const svg = d3.select(svgChart.current);
     svg.selectAll("*").remove();
     return () => {
     };
   }, [limit]);
 
+
   //FORCE
   React.useEffect(() => {
     const nodes = all_nodes.slice(0, limit);
-    const svg = d3.select(svgRef.current);
+
+    const svg = d3.select(svgChart.current);
     var simulation = d3.forceSimulation(nodes)
       .force('x', d3.forceX(width / 2).strength(center_force / 10000))
       .force('y', d3.forceY(height / 2).strength(center_force / 10000))
@@ -121,7 +153,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({
       .on('tick', ticked)
       .stop()
 
-    const circles = drawChart(svgRef, height, width, nodes, arrows, radius);
+    const circles = drawChart(svgChart, height, width, nodes, arrows, radius, cluster_color, onSelectedNodeChange);
 
     function ticked() {
       svg.selectAll('circle')
@@ -145,7 +177,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({
 
 
   React.useEffect(() => {
-    const svg = d3.select(svgRef.current);
+    const svg = d3.select(svgChart.current);
     const zoom = d3.zoom().scaleExtent([1, 3]).on('zoom', zoomed);
     svg.call(zoom);
 
@@ -160,14 +192,16 @@ const ClusterGraph: React.FC<ClusterProps> = ({
       svg.on('.zoom', null);
     };
   }, []);
-  ``
+
+  //selected Node
+  // const circles = svg.selectAll("circle")
 
 
 
-  return (
-    <div id="chart">
-      <svg ref={svgRef} />
-    </div>
+  return ([<div id="chart">
+    <svg ref={svgChart} />
+  </div>]
+
   );
 };
 //
@@ -193,8 +227,8 @@ const CollideForceScrubber: React.FC<ScrubberProps> = ({
       <div>Collide force Value: {scrubberValue}</div>
       <input
         type="range"
-        min="-10"
-        max="10"
+        min="-1"
+        max="1"
         value={scrubberValue}
         onChange={handleScrubberChange}
       />
@@ -216,8 +250,8 @@ const CenterForceScrubber: React.FC<ScrubberProps> = ({
       <div>Center force Value: {scrubberValue}</div>
       <input
         type="range"
-        min="-100"
-        max="100"
+        min="-5"
+        max="5"
         value={scrubberValue}
         onChange={handleScrubberChange}
       />
@@ -238,8 +272,8 @@ const AttractionForceScrubber: React.FC<ScrubberProps> = ({
       <div>Attraction force Value: {scrubberValue}</div>
       <input
         type="range"
-        min="-100"
-        max="100"
+        min="-5"
+        max="5"
         value={scrubberValue}
         onChange={handleScrubberChange}
       />
@@ -275,6 +309,12 @@ const LimitScruber: React.FC<ScrubberProps> = ({
 
 const defaultTheme = createTheme();
 
+///////////////
+//////////////
+////////////////
+///////////////
+///////////
+
 //MAIN PAGE
 const Page: React.FC = () => {
   //COLIDE
@@ -298,75 +338,10 @@ const Page: React.FC = () => {
     setCenterForceValue(value);
   };
 
-
-  // return (
-  //   <ThemeProvider theme={defaultTheme}>
-  //     <div>
-  //       <Header title="Cluster View" />
-  // <LimitScruber scrubberValue={limitValue}
-  //   onScrubberChange={handleLimitScrubberChange}></LimitScruber>
-
-  // <CollideForceScrubber
-  //   scrubberValue={collideValue}
-  //   onScrubberChange={handleScrubberChange}></CollideForceScrubber>
-
-  // <AttractionForceScrubber scrubberValue={attractionValue}
-  //   onScrubberChange={handleAttractionChange}></AttractionForceScrubber>
-
-  // <CenterForceScrubber scrubberValue={centerForceValue}
-  //   onScrubberChange={handleCenterForceChange}></CenterForceScrubber>
-
-  //       <Box
-  // component="main"
-  // sx={{
-  //   backgroundColor: (theme) =>
-  //     theme.palette.mode === 'light'
-  //       ? theme.palette.grey[100]
-  //       : theme.palette.grey[900],
-  //           flexGrow: 1,
-  //           height: '100vh',
-  //           overflow: 'hidden',
-  //         }}
-  //       >
-  //         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-  //           <Paper
-  //             sx={{
-  //               p: 2,
-  //               display: 'flex',
-  //               flexDirection: 'column',
-  //               overflow: 'hidden',
-  //             }}
-  //           >
-  //             <Box
-  //               sx={{
-  //                 width: '100%',
-  //                 height: '100%',
-  //                 display: 'flex',
-  //                 justifyContent: 'center',
-  //                 alignItems: 'center',
-  //               }}
-  //             >
-  //               <ClusterGraph
-  //                 collideValue={collideValue}
-  //                 limitValue={limitValue}
-  //                 attractionValue={attractionValue}
-  //                 centerForceValue={centerForceValue}
-  //               />
-  //             </Box>
-  //           </Paper>
-  //         </Container>
-  //       </Box>
-
-
-  //       <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
-  //         <Button variant="contained" className="">
-  //           <Link href="/">Change View</Link>
-  //         </Button>
-  //       </div>
-  //     </div>
-  //   </ThemeProvider>
-  // )
-
+  const [selectedNodeData, setSelectedNodeData] = React.useState<any>(null);
+  const handleSelectedNodeChange = (value: any) => {
+    setSelectedNodeData(value);
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -419,6 +394,8 @@ const Page: React.FC = () => {
               }}
             >
               <ClusterGraph
+                selectedNode={selectedNodeData}
+                onSelectedNodeChange={handleSelectedNodeChange}
                 collideValue={collideValue}
                 limitValue={limitValue}
                 attractionValue={attractionValue}
@@ -430,13 +407,17 @@ const Page: React.FC = () => {
         <Grid item xs={3}>
           {/* Right column to display additional information */}
           <Paper>
-            <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
-              <Button variant="contained" className="">
-                <Link href="/">Change View</Link>
-              </Button>
-            </div>
+            Legend
+            <Legend></Legend>
+            Node Data
+            <NodeInfo nodeData={selectedNodeData} />
           </Paper>
         </Grid>
+        <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
+          <Button variant="contained" className="">
+            <Link href="/">Change View</Link>
+          </Button>
+        </div>
       </Grid>
 
 
