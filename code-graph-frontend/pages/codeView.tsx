@@ -89,16 +89,6 @@ export default function CodeView() {
             <Header title="Code View"/>
             <CategoryModal open={open} handleClose={handleClose} />
             <div className="flex max-w-[20%] float-left ml-3">
-                {/**
-                 <DataGrid
-                 rows={exampleRows}
-                 columns={[{ field: 'col1', headerName: 'Codes', width: 300 }]}
-                 rowSelectionModel={selectedItems}
-                 onCellClick={(params, event, details) =>
-                        handleItemClick(exampleRows[params.id as number - 1].col1)
-                }
-                 />
-                 **/}
                 <CodeList categories={data} selectedItems={selectedItems} handleItemClick={handleItemClick} />
             </div>
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
