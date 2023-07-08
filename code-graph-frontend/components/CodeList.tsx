@@ -9,14 +9,6 @@ interface Code {
     };
 }
 
-interface Category {
-    id: number;
-    name: string;
-    subcategories: {
-        [key: string]: Category;
-    };
-}
-
 interface DataPoint {
     id: number;
     col1: string;
@@ -30,7 +22,7 @@ interface CodeListProps {
     selectedItems: string[];
 }
 
-export function getCodePoints(categories: { [key: string]: Category }): DataPoint[] {
+export function getCodePoints(categories: { [key: string]: Code }): DataPoint[] {
     const dataPoints: DataPoint[] = [];
 
     for (const category of Object.values(categories)) {

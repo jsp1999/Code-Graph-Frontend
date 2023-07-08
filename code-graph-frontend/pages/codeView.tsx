@@ -18,6 +18,7 @@ export default function CodeView() {
     const contextMenuRef = useRef<HTMLDivElement>(null);
     const [rightClickedItem, setRightClickedItem] = useState("")
     const [open, setOpen] = React.useState(false);
+    const [jsonData, setJsonData] = useState(data);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const handleContextMenu = (e: React.MouseEvent) => {
@@ -86,9 +87,9 @@ export default function CodeView() {
     return (
         <div>
             <Header title="Code View"/>
-            <CategoryModal open={open} handleClose={handleClose} categories={data} />
+            <CategoryModal open={open} handleClose={handleClose} categories={jsonData} />
             <div className="flex max-w-[20%] float-left ml-3">
-                <CodeList categories={data} selectedItems={selectedItems} handleItemClick={handleItemClick} />
+                <CodeList categories={jsonData} selectedItems={selectedItems} handleItemClick={handleItemClick} />
             </div>
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
             {selectedItems.length <= 8 && (
@@ -109,7 +110,7 @@ export default function CodeView() {
             )}
             </div>
             <div className="flex max-w-[15%] float-right mr-3">
-                <CategoryList categories={data} />
+                <CategoryList categories={jsonData} />
             </div>
             <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
                 <Button variant="contained" className="">

@@ -9,20 +9,6 @@ interface Category {
     };
 }
 
-interface CategoryListProps {
-    categories: {
-        [key: string]: Category;
-    };
-}
-
-interface Category {
-    id: number;
-    name: string;
-    subcategories: {
-        [key: string]: Category;
-    };
-}
-
 interface DataPoint {
     id: number;
     col1: string;
