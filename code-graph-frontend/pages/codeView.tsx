@@ -6,8 +6,8 @@ import {Button} from "@mui/material";
 import { getCodes } from "@/src/api";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
-import CodeList from "@/components/CodeList";
-import CategoryList from "@/components/CategoryList";
+import CodeList, {Code, DataPoint} from "@/components/CodeList";
+import CategoryList, {getCategoryPoints} from "@/components/CategoryList";
 import CategoryModal from "@/components/CategoryModal";
 
 export default function CodeView() {
@@ -19,6 +19,7 @@ export default function CodeView() {
     const [rightClickedItem, setRightClickedItem] = useState("")
     const [open, setOpen] = React.useState(false);
     const [jsonData, setJsonData] = useState(data);
+    const [categoryList, setCategoryList] = useState<Array<DataPoint>>(getCategoryPoints(jsonData))
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const handleContextMenu = (e: React.MouseEvent) => {
@@ -84,10 +85,14 @@ export default function CodeView() {
         }
     };
 
+    function addCategory(newCategory: DataPoint) {
+        setCategoryList([...categoryList, newCategory]);
+    }
+
     return (
         <div>
             <Header title="Code View"/>
-            <CategoryModal open={open} handleClose={handleClose} categories={jsonData} />
+            <CategoryModal open={open} handleClose={handleClose} categories={jsonData} selectedCode={rightClickedItem} addCategory={addCategory}/>
             <div className="flex max-w-[20%] float-left ml-3">
                 <CodeList categories={jsonData} selectedItems={selectedItems} handleItemClick={handleItemClick} />
             </div>
@@ -110,7 +115,7 @@ export default function CodeView() {
             )}
             </div>
             <div className="flex max-w-[15%] float-right mr-3">
-                <CategoryList categories={jsonData} />
+                <CategoryList dataPoints={categoryList} />
             </div>
             <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
                 <Button variant="contained" className="">

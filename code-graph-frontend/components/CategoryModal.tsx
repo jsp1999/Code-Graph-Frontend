@@ -1,14 +1,7 @@
 import {Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField} from "@mui/material";
 import React from "react";
 import {getCategoryPoints} from "@/components/CategoryList";
-
-interface Code {
-    id: number;
-    name: string;
-    subcategories: {
-        [key: string]: Code;
-    };
-}
+import {Code, DataPoint} from "@/components/CodeList";
 
 interface CategoryModalProps {
     open: boolean,
@@ -16,6 +9,8 @@ interface CategoryModalProps {
     categories: {
         [key: string]: Code;
     },
+    selectedCode: string,
+    addCategory: (data: DataPoint) => void
 }
 
 export default function CategoryModal(props: CategoryModalProps) {
@@ -35,6 +30,17 @@ export default function CategoryModal(props: CategoryModalProps) {
         setDisabled(true);
         setChecked("");
         setInputValue("");
+    }
+
+    function pressAddButton() {
+        const randomInt = Math.floor(Math.random() * (10000 - 100 + 1)) + 100;
+        setClosed();
+        const item = Object.values(props.categories).find(item => item.name === props.selectedCode);
+            const newCategory: DataPoint = {
+                id: randomInt,
+                col1: inputValue,
+            };
+            props.addCategory(newCategory);
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +86,7 @@ export default function CategoryModal(props: CategoryModalProps) {
                         <Button className="mx-2" variant="outlined" onClick={setClosed}>
                             Cancel
                         </Button>
-                        <Button disabled={disabled} className="mx-2 bg-blue-900" variant="contained" onClick={setClosed}>
+                        <Button disabled={disabled} className="mx-2 bg-blue-900" variant="contained" onClick={pressAddButton}>
                             Add
                         </Button>
                     </div>
