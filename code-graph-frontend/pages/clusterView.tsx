@@ -9,6 +9,8 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
+import { drawChart } from "./cluster_chart";
+import { Grid } from "@mui/material";
 
 //DATA
 
@@ -33,8 +35,8 @@ var arrows = Object.entries(data).map(([id, entry]) => ({
 const unique_topic_index = Array.from(new Set(arrows.map(d => d.topic_index)))
 
 //HYPER PARAMETER
-const height = 500
-const width = 500
+const height = 800
+const width = 800
 const radius = 3
 const w_border = width * 0.1;
 const h_border = height * 0.1
@@ -72,48 +74,6 @@ function createCanva(height: number, width: number) {
     }
   }, [])
   return svgRef
-}
-
-//DRAW ON CANVA
-function drawChart(svgRef: React.RefObject<SVGSVGElement>, height: number, width: number, nodes: any, arrows: any) {
-  const svg = d3.select(svgRef.current);
-
-  const circles = svg.selectAll("circle")
-    .data(nodes)
-    .enter()
-    .append("circle")
-    .classed("node", true)
-    .attr("cx", (d: any) => d.x)
-    .attr("cy", (d: any) => d.y)
-    .attr("r", radius)
-    .attr("fill", (d: any) => cluster_color(d.topic_index))
-    .on("mouseover", mouseover)
-    .on("mouseout", mouseout);
-
-  function mouseover(this: any, mouse_event: any, data: any) {
-    // this.parentElement.appendChild(this)
-    d3.select(this).attr("r", radius * 5);
-
-
-    d3.select(this.parentNode)
-      .append("text")
-      .attr("class", "node-label")
-      .attr("x", data.x * 1)
-      .attr("y", data.y - height * 0.04)
-      .text(data.info)
-      .style("font-size", (radius + 10).toString())
-      .style("text-anchor", "middle")
-      .style("dominant-baseline", "middle")
-      .style("pointer-events", "none");
-  }
-
-  function mouseout(this: any) {
-    svg.selectAll(".node-label").remove();
-    d3.select(this).attr("r", radius)
-  };
-
-
-  return circles;;
 }
 
 interface ClusterProps {
@@ -161,7 +121,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({
       .on('tick', ticked)
       .stop()
 
-    const circles = drawChart(svgRef, height, width, nodes, arrows);
+    const circles = drawChart(svgRef, height, width, nodes, arrows, radius);
 
     function ticked() {
       svg.selectAll('circle')
@@ -188,58 +148,21 @@ const ClusterGraph: React.FC<ClusterProps> = ({
     const svg = d3.select(svgRef.current);
     const zoom = d3.zoom().scaleExtent([1, 3]).on('zoom', zoomed);
     svg.call(zoom);
-  
+
     function zoomed(event) {
       const { transform } = event;
       svg.attr('transform', transform)
-      .append('g');
+        .append('g');
       // svg.attr('style', `clip-path: inset(0px ${-transform.x}px ${-transform.y}px 0px)`);
     }
-  
+
     return () => {
       svg.on('.zoom', null);
     };
   }, []);
   ``
-  
 
 
-  // DRAG QUEEN, DOES NOT WORK
-  // React.useEffect(() => {
-  //   // Get the DOM element associated with the ref
-  //   const svg = d3.select(svgRef.current);
-
-  //   // Drag event handlers
-  //   function dragStarted(this: any, event: any, d: any) {
-  //     d3.select(this).raise().classed('active', true);
-  //   }
-
-  //   function dragged(this: any, event: any, d: any) {
-  //     d3.select(this)
-  //       .attr('cx', (event.x + 10).toString())
-  //       .attr('cy', (event.y + 10).toString());
-  //   }
-
-
-  //   function dragEnded(this: any, event: any, d: any) {
-  //     d3.select(this).classed('active', false);
-  //   }
-
-  //   // Define the drag behavior
-  //   const dragHandler = d3.drag()
-  //     .on('start', dragStarted)
-  //     .on('drag', dragged)
-  //     .on('end', dragEnded);
-
-  //   // Create and render the nodes
-  //   svg.call(dragHandler);
-
-  //   // Cleanup function
-  //   return () => {
-  //     // Remove the drag behavior
-  //     svg.on('.drag', null);
-  //   };
-  // }, []);
 
   return (
     <div id="chart">
@@ -376,72 +299,148 @@ const Page: React.FC = () => {
   };
 
 
+  // return (
+  //   <ThemeProvider theme={defaultTheme}>
+  //     <div>
+  //       <Header title="Cluster View" />
+  // <LimitScruber scrubberValue={limitValue}
+  //   onScrubberChange={handleLimitScrubberChange}></LimitScruber>
+
+  // <CollideForceScrubber
+  //   scrubberValue={collideValue}
+  //   onScrubberChange={handleScrubberChange}></CollideForceScrubber>
+
+  // <AttractionForceScrubber scrubberValue={attractionValue}
+  //   onScrubberChange={handleAttractionChange}></AttractionForceScrubber>
+
+  // <CenterForceScrubber scrubberValue={centerForceValue}
+  //   onScrubberChange={handleCenterForceChange}></CenterForceScrubber>
+
+  //       <Box
+  // component="main"
+  // sx={{
+  //   backgroundColor: (theme) =>
+  //     theme.palette.mode === 'light'
+  //       ? theme.palette.grey[100]
+  //       : theme.palette.grey[900],
+  //           flexGrow: 1,
+  //           height: '100vh',
+  //           overflow: 'hidden',
+  //         }}
+  //       >
+  //         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+  //           <Paper
+  //             sx={{
+  //               p: 2,
+  //               display: 'flex',
+  //               flexDirection: 'column',
+  //               overflow: 'hidden',
+  //             }}
+  //           >
+  //             <Box
+  //               sx={{
+  //                 width: '100%',
+  //                 height: '100%',
+  //                 display: 'flex',
+  //                 justifyContent: 'center',
+  //                 alignItems: 'center',
+  //               }}
+  //             >
+  //               <ClusterGraph
+  //                 collideValue={collideValue}
+  //                 limitValue={limitValue}
+  //                 attractionValue={attractionValue}
+  //                 centerForceValue={centerForceValue}
+  //               />
+  //             </Box>
+  //           </Paper>
+  //         </Container>
+  //       </Box>
+
+
+  //       <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
+  //         <Button variant="contained" className="">
+  //           <Link href="/">Change View</Link>
+  //         </Button>
+  //       </div>
+  //     </div>
+  //   </ThemeProvider>
+  // )
+
+
   return (
     <ThemeProvider theme={defaultTheme}>
-      <div>
-        <Header title="Cluster View" />
-        <LimitScruber scrubberValue={limitValue}
-          onScrubberChange={handleLimitScrubberChange}></LimitScruber>
+      <Grid container spacing={2}
+        sx={{
+          backgroundColor: (theme) =>
+            theme.palette.mode === 'light'
+              ? theme.palette.grey[100]
+              : theme.palette.grey[900],
+        }}>
+        <Grid item xs={12}>
+          <Header title="Cluster View" />
+        </Grid>
+        <Grid item xs={3}>
+          {/* Left column with adjustment buttons */}
+          <Paper>Adjustment Buttons</Paper>
+          <LimitScruber scrubberValue={limitValue}
+            onScrubberChange={handleLimitScrubberChange}></LimitScruber>
 
-        <CollideForceScrubber
-          scrubberValue={collideValue}
-          onScrubberChange={handleScrubberChange}></CollideForceScrubber>
+          <CollideForceScrubber
+            scrubberValue={collideValue}
+            onScrubberChange={handleScrubberChange}></CollideForceScrubber>
 
-        <AttractionForceScrubber scrubberValue={attractionValue}
-          onScrubberChange={handleAttractionChange}></AttractionForceScrubber>
+          <AttractionForceScrubber scrubberValue={attractionValue}
+            onScrubberChange={handleAttractionChange}></AttractionForceScrubber>
 
-        <CenterForceScrubber scrubberValue={centerForceValue}
-          onScrubberChange={handleCenterForceChange}></CenterForceScrubber>
-        <Box
+          <CenterForceScrubber scrubberValue={centerForceValue}
+            onScrubberChange={handleCenterForceChange}></CenterForceScrubber>
+        </Grid>
+        <Grid item xs={6}
           component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'hidden',
-          }}
         >
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Paper
+          {/* Main box to display the graph */}
+          <Paper
+            sx={{
+              p: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              height: 600
+
+            }}>
+            <Box
               sx={{
-                p: 2,
+                width: '100%',
+                height: '100%',
                 display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
-              <Box
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <ClusterGraph
-                  collideValue={collideValue}
-                  limitValue={limitValue}
-                  attractionValue={attractionValue}
-                  centerForceValue={centerForceValue}
-                />
-              </Box>
-            </Paper>
-          </Container>
-        </Box>
+              <ClusterGraph
+                collideValue={collideValue}
+                limitValue={limitValue}
+                attractionValue={attractionValue}
+                centerForceValue={centerForceValue}
+              />
+            </Box>
+          </Paper>
+        </Grid>
+        <Grid item xs={3}>
+          {/* Right column to display additional information */}
+          <Paper>
+            <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
+              <Button variant="contained" className="">
+                <Link href="/">Change View</Link>
+              </Button>
+            </div>
+          </Paper>
+        </Grid>
+      </Grid>
 
 
-        <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
-          <Button variant="contained" className="">
-            <Link href="/">Change View</Link>
-          </Button>
-        </div>
-      </div>
-    </ThemeProvider>
-  )
+    </ThemeProvider>)
 };
 
 export default Page;
