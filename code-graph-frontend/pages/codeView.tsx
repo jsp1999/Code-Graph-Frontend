@@ -72,7 +72,7 @@ export default function CodeView() {
 
     // Handle item click event
     const handleItemClick = (daten: string) => {
-        if (itemCount <= 8){
+        if (itemCount < 8){
             if(!selectedItems.includes(daten)) {
                 selectedItems.push(daten);
                 setItemCount(itemCount + 1);
