@@ -2,7 +2,6 @@ import Link from "next/link";
 import data from "../src/annotationsWithId.json";
 import React, {useEffect, useRef, useState} from "react";
 import Header from "@/components/Header";
-import {FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup} from "@mui/material";
 import {Button} from "@mui/material";
 import { getCodes } from "@/src/api";
 import CodeItem from "@/components/CodeItem";
@@ -70,21 +69,6 @@ export default function CodeView() {
             document.removeEventListener('click', handleOutsideClick);
         };
     }, []);
-
-    const exampleRows = [
-        { id: 1, col1: 'Hello' },
-        { id: 2, col1: 'DataGridPro' },
-        { id: 3, col1: 'MUI' },
-    ];
-
-    // it is a little spaghetti but it works
-    const jsonString = JSON.stringify(data, null, 2);
-    const jsonData = JSON.parse(jsonString);
-
-    // Map over the JSON object and access "daten" property
-    const datenList = Object.keys(jsonData)
-        .slice(0, 200) // Slice the first ten elements
-        .map(key => jsonData[key].daten);
 
     // Handle item click event
     const handleItemClick = (daten: string) => {
