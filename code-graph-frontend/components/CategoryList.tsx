@@ -34,23 +34,24 @@ interface CategoryListProps {
     };
 }
 
+export function getCategoryPoints (categories: { [key: string]: Category }): DataPoint[] {
+    const dataPoints: DataPoint[] = [];
+
+    for (const category of Object.values(categories)) {
+        if (Object.keys(category.subcategories).length !== 0) {
+            dataPoints.push({ id: category.id, col1: category.name });
+        } else {
+            dataPoints.push(...getCategoryPoints(category.subcategories));
+        }
+    }
+
+    return dataPoints;
+}
+
 
 const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
-    const getDataPoints = (categories: { [key: string]: Category }): DataPoint[] => {
-        const dataPoints: DataPoint[] = [];
 
-        for (const category of Object.values(categories)) {
-            if (Object.keys(category.subcategories).length !== 0) {
-                dataPoints.push({ id: category.id, col1: category.name });
-            } else {
-                dataPoints.push(...getDataPoints(category.subcategories));
-            }
-        }
-
-        return dataPoints;
-    };
-
-    const dataPoints = getDataPoints(categories);
+    const dataPoints = getCategoryPoints(categories);
 
     return <>
         <DataGrid

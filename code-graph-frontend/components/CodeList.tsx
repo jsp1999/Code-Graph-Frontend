@@ -9,7 +9,6 @@ interface Code {
     };
 }
 
-
 interface Category {
     id: number;
     name: string;
@@ -23,12 +22,6 @@ interface DataPoint {
     col1: string;
 }
 
-interface CategoryListProps {
-    categories: {
-        [key: string]: Category;
-    };
-}
-
 interface CodeListProps {
     categories: {
         [key: string]: Code;
@@ -37,22 +30,22 @@ interface CodeListProps {
     selectedItems: string[];
 }
 
-const CodeList: React.FC<CodeListProps> = (props: CodeListProps) => {
-    const getDataPoints = (categories: { [key: string]: Category }): DataPoint[] => {
-        const dataPoints: DataPoint[] = [];
+export function getCodePoints(categories: { [key: string]: Category }): DataPoint[] {
+    const dataPoints: DataPoint[] = [];
 
-        for (const category of Object.values(categories)) {
-            if (Object.keys(category.subcategories).length === 0) {
-                dataPoints.push({ id: category.id, col1: category.name });
-            } else {
-                dataPoints.push(...getDataPoints(category.subcategories));
-            }
+    for (const category of Object.values(categories)) {
+        if (Object.keys(category.subcategories).length === 0) {
+            dataPoints.push({ id: category.id, col1: category.name });
+        } else {
+            dataPoints.push(...getCodePoints(category.subcategories));
         }
+    }
 
-        return dataPoints;
-    };
+    return dataPoints;
+}
 
-    const dataPoints = getDataPoints(props.categories);
+const CodeList: React.FC<CodeListProps> = (props: CodeListProps) => {
+    const dataPoints = getCodePoints(props.categories);
     const getItemById = (id: number): string => {
         return dataPoints.find((dataPoint) => dataPoint.id === id)?.col1!;
     };

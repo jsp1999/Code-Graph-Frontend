@@ -83,11 +83,10 @@ export default function CodeView() {
         }
     };
 
-
     return (
         <div>
             <Header title="Code View"/>
-            <CategoryModal open={open} handleClose={handleClose} />
+            <CategoryModal open={open} handleClose={handleClose} categories={data} />
             <div className="flex max-w-[20%] float-left ml-3">
                 <CodeList categories={data} selectedItems={selectedItems} handleItemClick={handleItemClick} />
             </div>
