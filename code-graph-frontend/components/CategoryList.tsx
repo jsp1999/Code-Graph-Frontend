@@ -1,26 +1,12 @@
 import React from 'react';
 import {DataGrid} from "@mui/x-data-grid";
-
-interface Category {
-    id: number;
-    name: string;
-    subcategories: {
-        [key: string]: Category;
-    };
-}
-
-interface DataPoint {
-    id: number;
-    col1: string;
-}
+import {Code, DataPoint} from "@/components/CodeList";
 
 interface CategoryListProps {
-    categories: {
-        [key: string]: Category;
-    };
+    dataPoints: DataPoint[]
 }
 
-export function getCategoryPoints (categories: { [key: string]: Category }): DataPoint[] {
+export function getCategoryPoints (categories: { [key: string]: Code }): DataPoint[] {
     const dataPoints: DataPoint[] = [];
 
     for (const category of Object.values(categories)) {
@@ -35,13 +21,11 @@ export function getCategoryPoints (categories: { [key: string]: Category }): Dat
 }
 
 
-const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
-
-    const dataPoints = getCategoryPoints(categories);
+const CategoryList: React.FC<CategoryListProps> = (props: CategoryListProps) => {
 
     return <>
         <DataGrid
-            rows={dataPoints}
+            rows={props.dataPoints}
             columns={[{ field: 'col1', headerName: 'Categories', width: 200}]}
             initialState={{
                 pagination: { paginationModel: { pageSize: 10 } },

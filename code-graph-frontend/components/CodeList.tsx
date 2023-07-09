@@ -1,7 +1,7 @@
 import React from 'react';
 import {DataGrid} from "@mui/x-data-grid";
 
-interface Code {
+export interface Code {
     id: number;
     name: string;
     subcategories: {
@@ -9,7 +9,7 @@ interface Code {
     };
 }
 
-interface DataPoint {
+export interface DataPoint {
     id: number;
     col1: string;
 }
