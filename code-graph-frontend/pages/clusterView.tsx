@@ -1,35 +1,61 @@
 import * as d3 from "d3";
 import * as React from "react";
 import data from "../src/data.json";
-import { AnyNode } from "postcss";
+import new_data from "../src/plot_data.json";
 import Header from "@/components/Header";
-import {NodeInfo} from "@/components/clusterview/NodeInfo"
-import { Button } from "@mui/material";
 import Link from "next/link";
-import Box from '@mui/material/Box';
+
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
-import { Legend } from "@/components/clusterview/Legend";
-import { Grid } from "@mui/material";
+import { Grid, Button, Box, Paper } from "@mui/material";
+
+
+//Defimed components
 import {CollideForceScrubber, CenterForceScrubber, AttractionForceScrubber, LimitScruber} from "@/components/clusterview/Scrubber"
 import { ClusterGraph } from "@/components/clusterview/ClusterGraph";
+import {NodeInfo} from "@/components/clusterview/NodeInfo"
+import { Legend } from "@/components/clusterview/Legend";
+
+
 
 
 //DATA
 
+
 const nodes_limit = 10000;
 
-var node_data = Object.entries(data).map(([id, entry]) => ({
-  id: parseInt(id),
-  info: entry.daten,
-  x: parseFloat(entry.position[0]),
-  y: parseFloat(entry.position[1]),
-  topic_index: entry.topic_index
+
+var node_data = Object.entries(new_data.plot).map(([id, entry]) => ({
+  id: id,
+  segment: entry.segment,
+  sentence: entry.sentence,
+  x: entry.embedding[0],
+  y: entry.embedding[1],
+  annotation: entry.annotation,
+  cluster: entry.cluster
 }))
-  .slice(0, nodes_limit)
+
+console.log(node_data)
+
+// .map( data => ({
+//     id: data.segment,
+//     info: data.sentence,
+//     x: parseFloat(data.embedding[0]),
+//     y: parseFloat(data.embedding[1]),
+//     topic_index: data.annotation
+//   }))
+//     .slice(0, nodes_limit)
+
+// var old_node_data = Object.entries(data).map(([id, entry]) => ({
+//   id: parseInt(id),
+//   info: entry.daten,
+//   x: parseFloat(entry.position[0]),
+//   y: parseFloat(entry.position[1]),
+//   topic_index: entry.topic_index
+// }))
+//   .slice(0, nodes_limit)
 
 
-const unique_topic_index = Array.from(new Set(node_data.map((d: { topic_index: any; }) => d.topic_index)));
+const unique_topic_index = Array.from(new Set(node_data.map((d: { annotation: any; }) => d.annotation)));
 const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10);
 
 //HYPER PARAMETER

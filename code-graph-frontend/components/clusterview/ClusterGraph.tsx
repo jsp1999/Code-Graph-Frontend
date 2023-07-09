@@ -28,7 +28,7 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
 
     const arrows = Object.entries(node_data).map(([id, entry]) => ({
         id: parseInt(id),
-        topic_index: entry.topic_index
+        annotation: entry.annotation
     }))
         .slice(0, limit)
 
@@ -53,10 +53,10 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
         .domain([min_y_position, max_y_position]) // Assuming x coordinates are non-negative
         .range([0, height]);
 
-    const all_nodes = node_data.map(d => Object.create(d)).map(({ id, info, x, y, topic_index }) => {
+    const all_nodes = node_data.map(d => Object.create(d)).map(({ id, segment, sentence,  x, y, annotation, cluster }) => {
         const scaledX = xScale(x) + w_border / 2;
         const scaledY = yScale(y) + h_border / 2;
-        return { id: id, info: info, x: scaledX, y: scaledY, topic_index: topic_index };
+        return { id: id, segment: segment, sentence: sentence, x: scaledX, y: scaledY, annotation: annotation, cluster: cluster };
     })
 
     // NODE LIMIT
@@ -95,7 +95,7 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
             simulation.stop();
         };
         // Set the duration in milliseconds
-        const duration = 2000; // 1 seconds
+        const duration = 10000; // 1 seconds
         // Start the simulation
         simulation.restart();
         // Set a timeout to stop the simulation after the specified duration

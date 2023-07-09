@@ -1,13 +1,14 @@
 import { FormControl, InputLabel, NativeSelect, ListItemButton, ListItemText, ListItem, List } from '@mui/material';
 import Box from '@mui/material/Box';
 import * as React from "react";
+import annotation_id_map from "../../src/anonotations_id_map.json";
 
 interface NodeInfoProps {
     nodeData: any;
 }
 
 export const NodeInfo: React.FC<NodeInfoProps> = ({ nodeData }) => {
-    const option_list = ['Category 1', 'Category 2', 'Category 3'];
+    const option_list = Object.keys(annotation_id_map);
     React.useEffect(() => {
         // This code will run every time nodeData changes
         // You can perform any side effects or additional logic here
@@ -29,10 +30,16 @@ export const NodeInfo: React.FC<NodeInfoProps> = ({ nodeData }) => {
                     <ListItemText primary={`ID: ${nodeData.id}`} />
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemText primary={`Info: ${nodeData.info}`} />
+                    <ListItemText primary={`Segment: ${nodeData.segment}`} />
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemText primary={`Topic Index: ${nodeData.topic_index}`} />
+                    <ListItemText primary={`Sentece: ${nodeData.sentence}`} />
+                </ListItem>
+                <ListItem disablePadding>
+                    <ListItemText primary={`Annotation: ${nodeData.annotation}`} />
+                </ListItem>
+                <ListItem disablePadding>
+                    <ListItemText primary={`Cluster: ${nodeData.cluster}`} />
                 </ListItem>
             </List>
             <FormControl fullWidth>

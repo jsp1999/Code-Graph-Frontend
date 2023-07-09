@@ -38,7 +38,7 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
       .attr("cx", (d: any) => d.x)
       .attr("cy", (d: any) => d.y)
       .attr("r", radius)
-      .attr("fill", (d: any) => cluster_color(d.topic_index))
+      .attr("fill", (d: any) => cluster_color(d.annotation))
       .on("mouseover", mouseover)
       .on("mouseout", mouseout)
       .on("click", mouseclick)
@@ -53,7 +53,7 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
         .attr("class", "node-label")
         .attr("x", data.x * 1)
         .attr("y", data.y - height * 0.04)
-        .text(data.info)
+        .text(data.segment)
         .style("font-size", (radius + 10).toString())
         .style("text-anchor", "middle")
         .style("dominant-baseline", "middle")
@@ -66,7 +66,7 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
     };
 
     function mouseclick(this: any, mouse_event: any, data: any) {
-      console.log(data)
+      // console.log(data)
       onSelectedNodeChange(data)
     }
 
