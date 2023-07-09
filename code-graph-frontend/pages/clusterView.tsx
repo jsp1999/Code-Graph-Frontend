@@ -11,10 +11,11 @@ import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import { drawChart, createCanva, drawLegend } from "./cluster_chart";
 import { Grid } from "@mui/material";
+import { FormControl, InputLabel, NativeSelect, ListItemButton, ListItemText, ListItem, List } from '@mui/material';
 
 //DATA
 
-const nodes_limit = 3000;
+const nodes_limit = 10000;
 
 var node_data = Object.entries(data).map(([id, entry]) => ({
   id: parseInt(id),
@@ -39,8 +40,8 @@ const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10);
 const height = 800
 const width = 800
 const radius = 3
-const w_border = width * 0.1;
-const h_border = height * 0.1
+const w_border = width * 0.4;
+const h_border = height * 0.4;
 
 const min_x_position = d3.min(node_data, d => d.x) as number;
 const max_x_position = d3.max(node_data, d => d.x) as number;
@@ -79,7 +80,8 @@ interface NodeInfoProps {
 }
 
 const NodeInfo: React.FC<NodeInfoProps> = ({ nodeData }) => {
-  React.useEffect(() => {
+  const option_list = ['Category 1', 'Category 2', 'Category 3'];
+  React.useEffect(() => {    
     // This code will run every time nodeData changes
     // You can perform any side effects or additional logic here
     console.log('nodeData has changed:', nodeData);
@@ -90,11 +92,35 @@ const NodeInfo: React.FC<NodeInfoProps> = ({ nodeData }) => {
   }
 
   return (
-    <div>
-      <h3>{nodeData.id}</h3>
-      <p>{nodeData.info}</p>
-      <p>{nodeData.topic_index}</p>
-    </div>
+    <Box
+              sx={{
+                width: '100%',
+                height: '100%',
+              }}>
+      <List>
+      <ListItem disablePadding>
+        <ListItemText primary={`ID: ${nodeData.id}`} />
+        </ListItem>
+        <ListItem disablePadding>  
+        <ListItemText primary={`Info: ${nodeData.info}`} />
+        </ListItem>
+        <ListItem disablePadding>
+        <ListItemText primary={`Topic Index: ${nodeData.topic_index}`} />
+        </ListItem>
+      </List>
+      <FormControl fullWidth>
+      <InputLabel variant="standard" htmlFor="uncontrolled-native">
+      Pick category
+      </InputLabel>
+      <NativeSelect defaultValue={30} inputProps={{ name: 'Category', id: 'uncontrolled-native' }}>
+        {option_list.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </NativeSelect>
+    </FormControl>
+    </Box>
   );
 };
 
@@ -178,7 +204,7 @@ const ClusterGraph: React.FC<ClusterProps> = ({
 
   React.useEffect(() => {
     const svg = d3.select(svgChart.current);
-    const zoom = d3.zoom().scaleExtent([1, 3]).on('zoom', zoomed);
+    const zoom = d3.zoom().scaleExtent([0.5, 3]).on('zoom', zoomed);
     svg.call(zoom);
 
     function zoomed(event) {
@@ -228,7 +254,7 @@ const CollideForceScrubber: React.FC<ScrubberProps> = ({
       <input
         type="range"
         min="-1"
-        max="1"
+        max="2"
         value={scrubberValue}
         onChange={handleScrubberChange}
       />
@@ -298,7 +324,7 @@ const LimitScruber: React.FC<ScrubberProps> = ({
       <input
         type="range"
         min="0"
-        max="5000"
+        max="10000"
         value={scrubberValue}
         onChange={handleScrubberChange}
       />
@@ -409,7 +435,6 @@ const Page: React.FC = () => {
           <Paper>
             Legend
             <Legend></Legend>
-            Node Data
             <NodeInfo nodeData={selectedNodeData} />
           </Paper>
         </Grid>
