@@ -35,12 +35,14 @@ export default function CategoryModal(props: CategoryModalProps) {
     function pressAddButton() {
         const randomInt = Math.floor(Math.random() * (10000 - 100 + 1)) + 100;
         setClosed();
-        const item = Object.values(props.categories).find(item => item.name === props.selectedCode);
+        if (inputValue !== ""){
             const newCategory: DataPoint = {
                 id: randomInt,
                 col1: inputValue,
             };
             props.addCategory(newCategory);
+        }
+
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
