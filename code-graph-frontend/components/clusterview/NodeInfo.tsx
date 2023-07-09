@@ -1,7 +1,14 @@
 import { FormControl, InputLabel, NativeSelect, ListItemButton, ListItemText, ListItem, List } from '@mui/material';
-import Box from '@mui/material/Box';
+import {Box, Paper} from '@mui/material';
 import * as React from "react";
 import annotation_id_map from "../../src/anonotations_id_map.json";
+import annotation_hierachy_mapping from "../../src/annotations_hierachy.json";
+
+
+const CategoryNameDict: { [key: string]: string } = Object.entries(annotation_hierachy_mapping).reduce((dict, [key, value]) => {
+  dict[key] = value.categoryName;
+  return dict;
+}, {});
 
 interface NodeInfoProps {
     nodeData: any;
@@ -25,6 +32,7 @@ export const NodeInfo: React.FC<NodeInfoProps> = ({ nodeData }) => {
                 width: '100%',
                 height: '100%',
             }}>
+            <Paper>NODE INFO</Paper>
             <List>
                 <ListItem disablePadding>
                     <ListItemText primary={`ID: ${nodeData.id}`} />
@@ -36,7 +44,7 @@ export const NodeInfo: React.FC<NodeInfoProps> = ({ nodeData }) => {
                     <ListItemText primary={`Sentece: ${nodeData.sentence}`} />
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemText primary={`Annotation: ${nodeData.annotation}`} />
+                    <ListItemText primary={`Annotation: ${CategoryNameDict[nodeData.annotation]}`} />
                 </ListItem>
                 <ListItem disablePadding>
                     <ListItemText primary={`Cluster: ${nodeData.cluster}`} />
@@ -44,7 +52,7 @@ export const NodeInfo: React.FC<NodeInfoProps> = ({ nodeData }) => {
             </List>
             <FormControl fullWidth>
                 <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                    Pick category
+                    Pick annotation
                 </InputLabel>
                 <NativeSelect defaultValue={30} inputProps={{ name: 'Category', id: 'uncontrolled-native' }}>
                     {option_list.map((option) => (

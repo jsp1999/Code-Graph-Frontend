@@ -2,6 +2,16 @@
 import * as d3 from "d3";
 import React from "react";
 
+import annotation_hierachy_mapping from "../../src/annotations_hierachy.json";
+
+
+const higherCategoryNameDict: { [key: string]: string } = Object.entries(annotation_hierachy_mapping).reduce((dict, [key, value]) => {
+  dict[key] = value.higherCategoryName;
+  return dict;
+}, {});
+
+
+
 //CREATE CANVA
 export function createCanva(height: number, width: number, w_border: number, h_border: number) {
     const svgRef = React.useRef<SVGSVGElement>(null);
@@ -38,7 +48,7 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
       .attr("cx", (d: any) => d.x)
       .attr("cy", (d: any) => d.y)
       .attr("r", radius)
-      .attr("fill", (d: any) => cluster_color(d.annotation))
+      .attr("fill", (d: any) => cluster_color(higherCategoryNameDict[d.annotation]))
       .on("mouseover", mouseover)
       .on("mouseout", mouseout)
       .on("click", mouseclick)

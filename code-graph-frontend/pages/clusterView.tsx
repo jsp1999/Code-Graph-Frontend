@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import * as React from "react";
 import data from "../src/data.json";
 import new_data from "../src/plot_data.json";
+import annotation_hierachy_mapping from "../src/annotations_hierachy.json";
 import Header from "@/components/Header";
 import Link from "next/link";
 
@@ -34,7 +35,6 @@ var node_data = Object.entries(new_data.plot).map(([id, entry]) => ({
   cluster: entry.cluster
 }))
 
-console.log(node_data)
 
 // .map( data => ({
 //     id: data.segment,
@@ -53,9 +53,13 @@ console.log(node_data)
 //   topic_index: entry.topic_index
 // }))
 //   .slice(0, nodes_limit)
+const higherCategoryNameDict: { [key: string]: string } = Object.entries(annotation_hierachy_mapping).reduce((dict, [key, value]) => {
+  dict[key] = value.higherCategoryName;
+  return dict;
+}, {});
 
-
-const unique_topic_index = Array.from(new Set(node_data.map((d: { annotation: any; }) => d.annotation)));
+console.log(higherCategoryNameDict)
+const unique_topic_index = Array.from(new Set(node_data.map((d: { annotation: any; }) => higherCategoryNameDict[d.annotation])));
 const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10);
 
 //HYPER PARAMETER
@@ -161,7 +165,6 @@ const Page: React.FC = () => {
         <Grid item xs={3}>
           {/* Right column to display additional information */}
           <Paper>
-            Legend
             <Legend cluster_color={cluster_color} ></Legend>
             <NodeInfo nodeData={selectedNodeData} />
           </Paper>

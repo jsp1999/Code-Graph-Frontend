@@ -2,6 +2,7 @@ import { createCanva, drawChart } from "./cluster_chart";
 import * as d3 from "d3";
 import * as React from "react";
 
+
 interface ClusterProps {
     node_data: Array<any>,
     size_info: any,
@@ -33,8 +34,8 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
         .slice(0, limit)
 
     const [height, width, radius] = size_info
-    const w_border = width * 0.4;
-    const h_border = height * 0.4;
+    const w_border = width * 1;
+    const h_border = height * 1;
 
     const min_x_position = d3.min(node_data, d => d.x) as number;
     const max_x_position = d3.max(node_data, d => d.x) as number;
@@ -107,7 +108,10 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
 
     React.useEffect(() => {
         const svg = d3.select(svgChart.current);
-        const zoom = d3.zoom().scaleExtent([0.5, 3]).on('zoom', zoomed);
+        const zoom = d3.zoom()
+                .scaleExtent([0.9, 2])
+                // .translateExtent([[0, 0], [width, height]])
+                .on('zoom', zoomed);
         svg.call(zoom);
 
         function zoomed(event) {
