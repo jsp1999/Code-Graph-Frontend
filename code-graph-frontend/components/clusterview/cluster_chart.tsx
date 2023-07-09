@@ -25,7 +25,7 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
      arrows: any,
      radius: number,
      cluster_color: any,
-     onSelectedNodeChange: () => void
+     onSelectedNodeChange: (data: any) => void
      ) {
 
     
