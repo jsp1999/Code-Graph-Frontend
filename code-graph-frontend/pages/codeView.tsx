@@ -1,5 +1,5 @@
 import Link from "next/link";
-import data from "../src/annotationsWithId.json";
+import data from "../src/NER_Tags.json";
 import React, {useEffect, useRef, useState} from "react";
 import Header from "@/components/Header";
 import {Button} from "@mui/material";
