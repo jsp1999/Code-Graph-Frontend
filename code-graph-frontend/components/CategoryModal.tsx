@@ -6,16 +6,13 @@ import {Code, DataPoint} from "@/components/CodeList";
 interface CategoryModalProps {
     open: boolean,
     handleClose: () => void,
-    categories: {
-        [key: string]: Code;
-    },
+    categoryList: DataPoint[],
     selectedCode: string,
     addCategory: (data: DataPoint) => void
 }
 
 export default function CategoryModal(props: CategoryModalProps) {
     const [checked, setChecked] = React.useState("");
-    const categoryList = getCategoryPoints(props.categories);
     const [disabled, setDisabled] = React.useState(true);
     const [inputValue, setInputValue] = React.useState("");
 
@@ -71,7 +68,7 @@ export default function CategoryModal(props: CategoryModalProps) {
                         <FormControl component="fieldset" >
                             <FormLabel component="legend">Add to Category</FormLabel>
                             <RadioGroup aria-label="Add to Category" name="add" value={"Add to Category"} >
-                                {categoryList.map((value,index) =>
+                                {props.categoryList.map((value,index) =>
                                     <FormControlLabel
                                         value={value.col1}
                                         control={<Radio />}
