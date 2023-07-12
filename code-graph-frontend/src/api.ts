@@ -6,5 +6,5 @@ const baseURL = 'http://localhost:8000';
 // Define your API service methods
 export const getCodes = (datasetName : string): Promise<any> => {
     console.log(`${baseURL}/annotations/${datasetName}`)
-    return axios.get<any>(`${baseURL}/annotations/${datasetName}`);
+    return axios.get<any>(`${baseURL}/data/${datasetName}/annotations-keys`);
 }
