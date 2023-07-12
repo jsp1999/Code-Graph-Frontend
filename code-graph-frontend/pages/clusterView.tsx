@@ -25,14 +25,15 @@ import { Legend } from "@/components/clusterview/Legend";
 const nodes_limit = 10000;
 
 
-var node_data = Object.entries(new_data.plot).map(([id, entry]) => ({
+var node_data = Object.entries(new_data).map(([id, entry]) => (
+  {
   id: id,
-  segment: entry.segment,
-  sentence: entry.sentence,
-  x: entry.embedding[0],
-  y: entry.embedding[1],
-  annotation: entry.annotation,
-  cluster: entry.cluster
+  segment: entry?.segment,
+  sentence: entry?.sentence,
+  x: entry?.embedding?.[0],
+  y: entry?.embedding?.[1],
+  annotation: entry?.annotation,
+  cluster: entry?.cluster
 }))
 
 
