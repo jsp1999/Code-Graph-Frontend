@@ -1,5 +1,5 @@
 import Link from "next/link";
-import data from "../src/annotationsWithId.json";
+import data from "../src/NER_Tags.json";
 import React, {useEffect, useRef, useState} from "react";
 import Header from "@/components/Header";
 import {Button} from "@mui/material";
@@ -92,7 +92,7 @@ export default function CodeView() {
     return (
         <div>
             <Header title="Code View"/>
-            <CategoryModal open={open} handleClose={handleClose} categories={jsonData} selectedCode={rightClickedItem} addCategory={addCategory}/>
+            <CategoryModal open={open} handleClose={handleClose} categoryList={categoryList} selectedCode={rightClickedItem} addCategory={addCategory}/>
             <div className="flex max-w-[20%] float-left ml-3">
                 <CodeList categories={jsonData} selectedItems={selectedItems} handleItemClick={handleItemClick} />
             </div>
