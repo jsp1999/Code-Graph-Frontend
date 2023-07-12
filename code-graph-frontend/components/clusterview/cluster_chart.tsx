@@ -1,8 +1,19 @@
 
 import * as d3 from "d3";
+import React from "react";
+
+import annotation_hierachy_mapping from "../../src/annotations_hierachy.json";
+
+
+const higherCategoryNameDict: { [key: string]: string } = Object.entries(annotation_hierachy_mapping).reduce((dict, [key, value]) => {
+  dict[key] = value.higherCategoryName;
+  return dict;
+}, {});
+
+
 
 //CREATE CANVA
-function createCanva(height: number, width: number, w_border: number, h_border: number) {
+export function createCanva(height: number, width: number, w_border: number, h_border: number) {
     const svgRef = React.useRef<SVGSVGElement>(null);
     React.useEffect(() => {
       if (svgRef.current) {
@@ -22,12 +33,12 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
      width: number, 
      nodes: any, 
      arrows: any,
-     radius: number
+     radius: number,
+     cluster_color: any,
+     onSelectedNodeChange: (data: any) => void
      ) {
 
-      
-    const unique_topic_index = Array.from(new Set(arrows.map((d: { topic_index: any; }) => d.topic_index)))
-    const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10)
+    
     const svg = d3.select(svgRef.current);
     const circles = svg.selectAll("circle")
       .data(nodes)
@@ -37,9 +48,10 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
       .attr("cx", (d: any) => d.x)
       .attr("cy", (d: any) => d.y)
       .attr("r", radius)
-      .attr("fill", (d: any) => cluster_color(d.topic_index))
+      .attr("fill", (d: any) => cluster_color(higherCategoryNameDict[d.annotation]))
       .on("mouseover", mouseover)
-      .on("mouseout", mouseout);
+      .on("mouseout", mouseout)
+      .on("click", mouseclick)
   
     function mouseover(this: any, mouse_event: any, data: any) {
       // this.parentElement.appendChild(this)
@@ -51,7 +63,7 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
         .attr("class", "node-label")
         .attr("x", data.x * 1)
         .attr("y", data.y - height * 0.04)
-        .text(data.info)
+        .text(data.segment)
         .style("font-size", (radius + 10).toString())
         .style("text-anchor", "middle")
         .style("dominant-baseline", "middle")
@@ -62,7 +74,43 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
       svg.selectAll(".node-label").remove();
       d3.select(this).attr("r", radius)
     };
-  
-  
+
+    function mouseclick(this: any, mouse_event: any, data: any) {
+      // console.log(data)
+      onSelectedNodeChange(data)
+    }
+
     return circles;;
   }
+
+
+  export function drawLegend(svgRef: React.RefObject<SVGSVGElement>,
+    cluster_color: any
+    ) {
+      const svg = d3.select(svgRef.current);
+      const legend = svg.selectAll('.legend')
+      .data(cluster_color.domain().sort())
+      .enter()
+      .append('g')
+      .attr('class', 'legend')
+      .attr('transform', (d, i) => `translate(0, ${i * 20})`);
+
+      legend.append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', 18)
+      .attr('height', 18)
+      .style('fill', cluster_color);
+
+      legend.append('text')
+      .attr('x', 24)
+      .attr('y', 9)
+      .attr('dy', '0.35em')
+      .text((d:any) => d);
+
+      legend.style('font-size', '12px')
+     .style('font-family', 'Arial');
+
+    return svg
+    }
+
