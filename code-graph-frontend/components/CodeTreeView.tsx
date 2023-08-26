@@ -1,6 +1,5 @@
 import React from 'react';
 import { TreeView, TreeItem } from '@mui/lab';
-import { makeStyles } from '@mui/styles';
 import { ExpandMore, ChevronRight } from '@mui/icons-material';
 
 interface Category {
@@ -9,12 +8,6 @@ interface Category {
     subcategories: Record<string, Category>;
 }
 
-const useStyles = makeStyles({
-    root: {
-        flexGrow: 1,
-        maxWidth: 400,
-    },
-});
 
 const renderTree = (node: Category): React.ReactNode => (
     <TreeItem key={node.id} nodeId={node.id.toString()} label={node.name}>
@@ -29,11 +22,10 @@ interface TaxonomyTreeViewProps {
 }
 
 const CodeTreeView: React.FC<TaxonomyTreeViewProps> = ({ taxonomyData }) => {
-    const classes = useStyles();
 
     return (
         <TreeView
-            className={classes.root}
+
             defaultCollapseIcon={<ExpandMore />}
             defaultExpandIcon={<ChevronRight />}
         >
@@ -44,4 +36,4 @@ const CodeTreeView: React.FC<TaxonomyTreeViewProps> = ({ taxonomyData }) => {
     );
 };
 
-export default CodeTreeView;<
+export default CodeTreeView;

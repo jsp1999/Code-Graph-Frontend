@@ -94,9 +94,16 @@ export default function CodeView() {
         <div>
             <Header title="Code View"/>
             <CategoryModal open={open} handleClose={handleClose} categoryList={categoryList} selectedCode={rightClickedItem} addCategory={addCategory}/>
-            <div className="flex max-w-[20%] float-left ml-3">
+            {/** 
+             *             <div className="flex max-w-[20%] float-left ml-3">
                 <CodeList categories={jsonData} selectedItems={selectedItems} handleItemClick={handleItemClick} />
             </div>
+
+                        <div className="flex max-w-[15%] float-right mr-3">
+                <CategoryList dataPoints={categoryList} />
+            </div>
+             */}
+            
             <CodeTreeView taxonomyData={jsonData} />
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
             {selectedItems.length <= 8 && (
@@ -115,9 +122,6 @@ export default function CodeView() {
                 </div>
                 )
             )}
-            </div>
-            <div className="flex max-w-[15%] float-right mr-3">
-                <CategoryList dataPoints={categoryList} />
             </div>
             <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
                 <Button variant="contained" className="">
