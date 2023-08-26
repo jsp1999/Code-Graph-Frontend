@@ -9,6 +9,7 @@ import ContextMenu from "@/components/ContextMenu";
 import CodeList, {Code, DataPoint} from "@/components/CodeList";
 import CategoryList, {getCategoryPoints} from "@/components/CategoryList";
 import CategoryModal from "@/components/CategoryModal";
+import CodeTreeView from "@/components/CodeTreeView";
 
 export default function CodeView() {
     const [selectedItems, setSelectedItems] = useState<Array<string>>([]);
@@ -96,6 +97,7 @@ export default function CodeView() {
             <div className="flex max-w-[20%] float-left ml-3">
                 <CodeList categories={jsonData} selectedItems={selectedItems} handleItemClick={handleItemClick} />
             </div>
+            <CodeTreeView taxonomyData={jsonData} />
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
             {selectedItems.length <= 8 && (
                 selectedItems.map((value, index) =>
