@@ -48,10 +48,7 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
      filterCriteria: number[] 
 
      ) {
-    console.log(filterCriteria);
-    console.log(nodes[2])
     const filteredNodes = filterNodes(nodes, filterCriteria);
-    console.log("filteredNodes:", filteredNodes)
     const svg = d3.select(svgRef.current);
     const circles = svg.selectAll("circle")
       .data(filteredNodes)

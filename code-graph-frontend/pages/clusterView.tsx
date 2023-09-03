@@ -10,11 +10,10 @@ import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { Grid, Button, Box, Paper, TextField } from "@mui/material";
 
 //Defimed components
-import {CollideForceScrubber, CenterForceScrubber, AttractionForceScrubber, LimitScruber} from "@/components/clusterview/Scrubber"
+import { CollideForceScrubber, CenterForceScrubber, AttractionForceScrubber, LimitScruber, RadiusScruber } from "@/components/clusterview/Scrubber"
 import { ClusterGraph } from "@/components/clusterview/ClusterGraph";
-import {NodeInfo} from "@/components/clusterview/NodeInfo"
+import { NodeInfo } from "@/components/clusterview/NodeInfo"
 import { Legend } from "@/components/clusterview/Legend";
-import { AnyCnameRecord } from "dns";
 
 //DATA
 
@@ -24,14 +23,14 @@ const nodes_limit = 10000;
 
 var node_data = Object.entries(new_data).map(([id, entry]) => (
   {
-  id: id,
-  segment: entry?.segment,
-  sentence: entry?.sentence,
-  x: entry?.embedding?.[0],
-  y: entry?.embedding?.[1],
-  annotation: entry?.annotation,
-  cluster: entry?.cluster
-}))
+    id: id,
+    segment: entry?.segment,
+    sentence: entry?.sentence,
+    x: entry?.embedding?.[0],
+    y: entry?.embedding?.[1],
+    annotation: entry?.annotation,
+    cluster: entry?.cluster
+  }))
 
 // .map( data => ({lễ cưới việt nam
 //     y: parseFloat(data.embedding[1]),
@@ -61,9 +60,7 @@ const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10);
 //HYPER PARAMETER
 const height = 800
 const width = 800
-const radius = 3
-const size_info = [height, width, radius]
-
+const size_info = [height, width];
 const defaultTheme = createTheme();
 
 //MAIN PAGE
@@ -89,6 +86,16 @@ const Page: React.FC = () => {
     setCenterForceValue(value);
   };
 
+  //Radius
+  const [radiusValue, setRadiusValue] = React.useState<number>(3);
+  const handleRadiusChange = (value: number) => {
+    setRadiusValue(value);
+  }
+
+
+
+
+  //Filter
   const [selectedNodeData, setSelectedNodeData] = React.useState<any>(null);
   const handleSelectedNodeChange = (value: any) => {
     setSelectedNodeData(value);
@@ -100,7 +107,7 @@ const Page: React.FC = () => {
   const handleInputChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
     setInputValue(event.target.value);
   };
-  
+
   const handleEnterPress = (event: any) => {
     if (event.key === 'Enter') {
       const ids = inputValue.split(',').map((id: any) => parseInt(id.trim(), 10));
@@ -108,8 +115,6 @@ const Page: React.FC = () => {
       setInputValue('');
     }
   };
-  
-
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -125,23 +130,23 @@ const Page: React.FC = () => {
         </Grid>
         <Grid item xs={3}>
 
-        <div>
-      <TextField
-        id="outlined-basic"
-        label="Enter IDs (comma-separated)"
-        variant="outlined"
-        value={inputValue}
-        onChange={handleInputChange}
-        onKeyDown={handleEnterPress}
-      />
-      <div>
-        <strong>ID Array:</strong> {JSON.stringify(idArray)}
-      </div>
-    </div>
+          <div>
+            <TextField
+              id="outlined-basic"
+              label="Enter IDs (comma-separated)"
+              variant="outlined"
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleEnterPress}
+            />
+            <div>
+              <strong>ID Array:</strong> {JSON.stringify(idArray)}
+            </div>
+          </div>
 
           {/* Left column with adjustment buttons */}
           <Paper>Adjustment Buttons</Paper>
-          
+
           <LimitScruber scrubberValue={limitValue}
             onScrubberChange={handleLimitScrubberChange}></LimitScruber>
 
@@ -154,8 +159,11 @@ const Page: React.FC = () => {
 
           <CenterForceScrubber scrubberValue={centerForceValue}
             onScrubberChange={handleCenterForceChange}></CenterForceScrubber>
+
+          <RadiusScruber scrubberValue={radiusValue}
+            onScrubberChange={handleRadiusChange}></RadiusScruber>
         </Grid>
-        <Grid item xs={6} 
+        <Grid item xs={6}
           component="main"
         >
           {/* Main box to display the graph */}
@@ -178,16 +186,17 @@ const Page: React.FC = () => {
               }}
             >
               <ClusterGraph
-                node_data = {node_data}
-                size_info = {size_info}
-                cluster_color = {cluster_color}
+                node_data={node_data}
+                size_info={size_info}
+                radius = {radiusValue}
+                cluster_color={cluster_color}
                 selectedNode={selectedNodeData}
                 handleSelectedNodeChange={handleSelectedNodeChange}
                 collideValue={collideValue}
                 limitValue={limitValue}
                 attractionValue={attractionValue}
                 centerForceValue={centerForceValue}
-                filterCriteria = {idArray}
+                filterCriteria={idArray}
               />
             </Box>
           </Paper>
