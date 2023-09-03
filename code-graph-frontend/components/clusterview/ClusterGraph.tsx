@@ -13,6 +13,7 @@ interface ClusterProps {
     limitValue: number;
     attractionValue: number;
     centerForceValue: number;
+    filterCriteria: number[]
 }
 
 //COMPONENT THAT CALLS CANVA AND DRAW
@@ -25,7 +26,8 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
     collideValue: collide_force,
     limitValue: limit,
     attractionValue: attraction_force,
-    centerForceValue: center_force }) => {
+    centerForceValue: center_force,
+    filterCriteria: filterCriteria}) => {
 
     const arrows = Object.entries(node_data).map(([id, entry]) => ({
         id: parseInt(id),
@@ -83,7 +85,7 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
             .on('tick', ticked)
             .stop()
 
-        drawChart(svgChart, height, width, nodes, arrows, radius, cluster_color, HandleSelectedNodeChange);
+        drawChart(svgChart, height, width, nodes, arrows, radius, cluster_color, HandleSelectedNodeChange, filterCriteria);
 
         function ticked() {
             svg.selectAll('circle')
@@ -103,7 +105,7 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
         const timeout = setTimeout(stopSimulation, duration);
         // Clean up the timeout when the component unmounts or the duration changes
         return () => clearTimeout(timeout);
-    }, [center_force, collide_force, attraction_force, limit]);
+    }, [center_force, collide_force, attraction_force, limit, filterCriteria]);
 
 
     React.useEffect(() => {
