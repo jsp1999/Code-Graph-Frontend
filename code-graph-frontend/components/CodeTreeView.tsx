@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { TreeView, TreeItem } from '@mui/lab';
 import { ExpandMore, ChevronRight } from '@mui/icons-material';
 
@@ -9,30 +9,45 @@ interface Category {
 }
 
 
-const renderTree = (node: Category): React.ReactNode => (
-    <TreeItem key={node.id} nodeId={node.id.toString()} label={node.name}>
-        {Object.keys(node.subcategories).map((subcategoryKey) =>
-            renderTree(node.subcategories[subcategoryKey])
-        )}
-    </TreeItem>
-);
 
 interface TaxonomyTreeViewProps {
     taxonomyData: Record<string, Category>;
+    handleRightClick : (e: React.MouseEvent, value: string) => void;
+    contextMenuRef: React.RefObject<HTMLDivElement>;
 }
 
-const CodeTreeView: React.FC<TaxonomyTreeViewProps> = ({ taxonomyData }) => {
+const CodeTreeView: React.FC<TaxonomyTreeViewProps> = ({ taxonomyData, handleRightClick, contextMenuRef }) => {
+    const [selectedNode, setSelectedNode] = useState<string | null>(null);
+
+    const renderTree = (node: Category): React.ReactNode => (
+            <TreeItem key={node.id} nodeId={node.id.toString()} label={node.name}>
+                {Object.keys(node.subcategories).map((subcategoryKey) =>
+                    renderTree(node.subcategories[subcategoryKey])
+                )}
+            </TreeItem>
+    );
+
+
+    const handleNodeSelect = (event: React.ChangeEvent<{}>, node: string) => {
+        // Update the selectedNode state when a node is selected
+        setSelectedNode(node);
+        console.log(selectedNode);
+    };
 
     return (
+        <div className="w-fit m-12 border p-5">
+            <h1 className="text-2xl underline mb-5">Codes</h1>
         <TreeView
-
             defaultCollapseIcon={<ExpandMore />}
             defaultExpandIcon={<ChevronRight />}
+            onNodeSelect={handleNodeSelect}
         >
             {Object.keys(taxonomyData).map((topLevelKey) =>
                 renderTree(taxonomyData[topLevelKey])
             )}
         </TreeView>
+            <p>Selected Node Label: {selectedNode}</p>
+        </div>
     );
 };
 

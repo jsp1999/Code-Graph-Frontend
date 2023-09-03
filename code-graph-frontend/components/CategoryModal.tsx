@@ -1,6 +1,5 @@
 import {Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField} from "@mui/material";
 import React from "react";
-import {getCategoryPoints} from "@/components/CategoryList";
 import {Code, DataPoint} from "@/components/CodeList";
 
 interface CategoryModalProps {
@@ -12,20 +11,24 @@ interface CategoryModalProps {
 }
 
 export default function CategoryModal(props: CategoryModalProps) {
-    const [checked, setChecked] = React.useState("");
+    const [checked, setChecked] = React.useState(0);
     const [disabled, setDisabled] = React.useState(true);
     const [inputValue, setInputValue] = React.useState("");
+    const noneIndex = 10000;
 
-    function handleCheckboxChange(selectedLabel: string) {
-        setChecked(selectedLabel);
+    function handleCheckboxChange(selectedLabel: number) {
+        if(checked === selectedLabel) {
+            setChecked(noneIndex);
+        } else {
+            setChecked(selectedLabel);
+        }
         setDisabled(false);
-        setInputValue("");
     }
 
     function setClosed() {
         props.handleClose();
         setDisabled(true);
-        setChecked("");
+        setChecked(noneIndex);
         setInputValue("");
     }
 
@@ -45,7 +48,6 @@ export default function CategoryModal(props: CategoryModalProps) {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
         setDisabled(false);
-        setChecked("");
     };
 
     return (
@@ -59,26 +61,36 @@ export default function CategoryModal(props: CategoryModalProps) {
                         <TextField
                             className="w-[25rem]"
                             id="standard-basic"
-                            label="New Category"
+                            label="New Code"
                             value={inputValue}
                             onChange={handleInputChange}
                         />
                     </div>
-                    <div className="overflow-auto mt-8">
+                    <div className="mt-5">
                         <FormControl component="fieldset" >
-                            <FormLabel component="legend">Add to Category</FormLabel>
-                            <RadioGroup aria-label="Add to Category" name="add" value={"Add to Category"} >
+                            <FormLabel component="legend">Add to Code</FormLabel>
+                            <div className="overflow-auto h-[25vw] w-[15vw]">
+                            <RadioGroup aria-label="Add to Code" name="add" value={"Add to Category"} >
+                                <FormControlLabel
+                                    value={noneIndex}
+                                    control={<Radio />}
+                                    label={"none"}
+                                    key={noneIndex}
+                                    checked={checked === noneIndex}
+                                    onChange={() => handleCheckboxChange(noneIndex)}
+                                />
                                 {props.categoryList.map((value,index) =>
                                     <FormControlLabel
-                                        value={value.col1}
+                                        value={value.id}
                                         control={<Radio />}
                                         label={value.col1}
                                         key={index}
-                                        checked={checked === value.col1 && !disabled}
-                                        onChange={() => handleCheckboxChange(value.col1)}
+                                        checked={checked === value.id}
+                                        onChange={() => handleCheckboxChange(value.id)}
                                     />
                                 )}
                             </RadioGroup>
+                            </div>
                         </FormControl>
                     </div>
                     <div className="absolute bottom-2 right-2" >

@@ -3,11 +3,10 @@ import data from "../src/NER_Tags.json";
 import React, {useEffect, useRef, useState} from "react";
 import Header from "@/components/Header";
 import {Button} from "@mui/material";
-import { getCodes } from "@/src/api";
+import { getCodes } from "@/pages/api/api";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
-import CodeList, {Code, DataPoint} from "@/components/CodeList";
-import CategoryList, {getCategoryPoints} from "@/components/CategoryList";
+import {DataPoint, getCodePoints} from "@/components/CodeList";
 import CategoryModal from "@/components/CategoryModal";
 import CodeTreeView from "@/components/CodeTreeView";
 
@@ -20,7 +19,7 @@ export default function CodeView() {
     const [rightClickedItem, setRightClickedItem] = useState("")
     const [open, setOpen] = React.useState(false);
     const [jsonData, setJsonData] = useState(data);
-    const [categoryList, setCategoryList] = useState<Array<DataPoint>>(getCategoryPoints(jsonData))
+    const [categoryList, setCategoryList] = useState<Array<DataPoint>>(getCodePoints(jsonData))
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const handleContextMenu = (e: React.MouseEvent) => {
@@ -56,6 +55,11 @@ export default function CodeView() {
         }
         setShowContextMenu(false);
     };
+
+    const handleRightClick = (e: React.MouseEvent, value: string) => {
+        handleContextMenu(e);
+        setRightClickedItem(value);
+    }
 
     useEffect(() => {
         const handleOutsideClick = (event: MouseEvent) => {
@@ -104,7 +108,8 @@ export default function CodeView() {
             </div>
              */}
             
-            <CodeTreeView taxonomyData={jsonData} />
+            <CodeTreeView taxonomyData={jsonData} handleRightClick={handleRightClick} contextMenuRef={contextMenuRef}/>
+
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
             {selectedItems.length <= 8 && (
                 selectedItems.map((value, index) =>
@@ -123,8 +128,12 @@ export default function CodeView() {
                 )
             )}
             </div>
-            <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
-                <Button variant="contained" className="">
+
+            <div className="absolute right-5 bottom-5 ">
+                <Button variant="outlined" className="mr-10" onClick={handleOpen}>
+                    Add new Code
+                </Button>
+                <Button variant="contained" className="bg-blue-900 rounded">
                     <Link href="/clusterView">Change View</Link>
                 </Button>
             </div>

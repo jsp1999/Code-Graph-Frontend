@@ -26,9 +26,9 @@ export function getCodePoints(categories: { [key: string]: Code }): DataPoint[] 
     const dataPoints: DataPoint[] = [];
 
     for (const category of Object.values(categories)) {
-        if (Object.keys(category.subcategories).length === 0) {
-            dataPoints.push({ id: category.id, col1: category.name });
-        } else {
+        dataPoints.push({ id: category.id, col1: category.name });
+
+        if (Object.keys(category.subcategories).length !== 0) {
             dataPoints.push(...getCodePoints(category.subcategories));
         }
     }
