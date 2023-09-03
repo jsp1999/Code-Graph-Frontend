@@ -3,7 +3,6 @@ import data from "../src/NER_Tags.json";
 import React, {useEffect, useRef, useState} from "react";
 import Header from "@/components/Header";
 import {Button} from "@mui/material";
-import { getCodes } from "@/pages/api/api";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
 import {DataPoint, getCodePoints} from "@/components/CodeList";
@@ -29,7 +28,9 @@ export default function CodeView() {
         setShowContextMenu(true);
     };
 
-    const fetchCode = async (datasetName: string) => {
+    {/**
+
+     const fetchCode = async (datasetName: string) => {
         try {
             return await getCodes(datasetName);
         } catch (error) {
@@ -37,13 +38,16 @@ export default function CodeView() {
         }
     };
 
-    const fetchData = async () => {
+     const fetchData = async () => {
         const result = await fetchCode("few_nerd");
         console.log("codes", result);
     };
 
-    console.log("codes")
-    console.log(fetchData())
+     console.log("codes")
+     console.log(fetchData())
+     */
+
+    }
 
     const handleContextMenuAction = (action: string) => {
         if(action === "unselect") {
