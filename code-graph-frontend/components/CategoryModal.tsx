@@ -11,10 +11,10 @@ interface CategoryModalProps {
 }
 
 export default function CategoryModal(props: CategoryModalProps) {
-    const [checked, setChecked] = React.useState(0);
+    const noneIndex = 10000;
+    const [checked, setChecked] = React.useState(noneIndex);
     const [disabled, setDisabled] = React.useState(true);
     const [inputValue, setInputValue] = React.useState("");
-    const noneIndex = 10000;
 
     function handleCheckboxChange(selectedLabel: number) {
         if(checked === selectedLabel) {
