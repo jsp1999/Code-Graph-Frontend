@@ -11,7 +11,7 @@ interface CategoryModalProps {
 }
 
 export default function CategoryModal(props: CategoryModalProps) {
-    const noneIndex = 10000;
+    const noneIndex = -1;
     const [checked, setChecked] = React.useState(noneIndex);
     const [disabled, setDisabled] = React.useState(true);
     const [inputValue, setInputValue] = React.useState("");
