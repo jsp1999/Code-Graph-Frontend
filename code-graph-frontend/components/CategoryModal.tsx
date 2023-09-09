@@ -1,6 +1,7 @@
 import {Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField} from "@mui/material";
 import React from "react";
 import {Code, DataPoint} from "@/components/CodeList";
+import {insertCodeRoute} from "@/pages/api/api";
 
 interface CategoryModalProps {
     open: boolean,
@@ -33,16 +34,10 @@ export default function CategoryModal(props: CategoryModalProps) {
     }
 
     function pressAddButton() {
-        const randomInt = Math.floor(Math.random() * (10000 - 100 + 1)) + 100;
-        setClosed();
-        if (inputValue !== ""){
-            const newCategory: DataPoint = {
-                id: randomInt,
-                col1: inputValue,
-            };
-            props.addCategory(newCategory);
+        if (checked == noneIndex){
+            insertCodeRoute(inputValue);
         }
-
+        setClosed();
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -50,10 +50,10 @@ export const deleteCodeRoute = (id: number): Promise<any> => {
     return axios.delete<any>(`${baseURL}/data/${datasetName}/codes/${id}`);
 }
 
-export const insertCodeRoute = (codeName: string, topLevelCodeId: number): Promise<any> => {
+export const insertCodeRoute = (codeName: string, topLevelCodeId?: number): Promise<any> => {
     const body = {
         code: codeName,
-        top_level_code_id: topLevelCodeId
+        top_level_code_id: topLevelCodeId ?? null
     };
 
     console.log(`${baseURL}/data/${datasetName}/codes/ \n` + body)
