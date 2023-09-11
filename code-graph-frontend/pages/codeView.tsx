@@ -7,7 +7,7 @@ import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
 import CategoryModal from "@/components/CategoryModal";
 import CodeTreeView from "@/components/CodeTreeView";
-import {getCodeTree} from "@/pages/api/api";
+import {extractCodes, getCodeTree} from "@/pages/api/api";
 
 export default function CodeView() {
     const [selectedItems, setSelectedItems] = useState<Array<string>>([]);
@@ -16,8 +16,10 @@ export default function CodeView() {
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const contextMenuRef = useRef<HTMLDivElement>(null);
     const [rightClickedItem, setRightClickedItem] = useState("")
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const [jsonData, setJsonData] = useState(data);
+    const [extractedCodes, setExtractedCodes] = useState(false);
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const handleContextMenu = (e: React.MouseEvent) => {
@@ -42,6 +44,18 @@ export default function CodeView() {
         handleContextMenu(e);
         setRightClickedItem(value);
     }
+
+    useEffect(() => {
+        if (!extractedCodes)
+        extractCodes()
+            .then(() => {
+                    setExtractedCodes(true);
+                }
+            )
+            .catch((error) => {
+                console.error('Error extracting data:', error);
+            });
+    }, []);
 
     useEffect(() => {
         getCodeTree()
