@@ -8,15 +8,13 @@ interface Category {
     subcategories: Record<string, Category>;
 }
 
-
-
-interface TaxonomyTreeViewProps {
+interface CodeTreeViewProps {
     taxonomyData: Record<string, Category>;
     handleRightClick : (e: React.MouseEvent, value: string) => void;
     contextMenuRef: React.RefObject<HTMLDivElement>;
 }
 
-const CodeTreeView: React.FC<TaxonomyTreeViewProps> = ({ taxonomyData, handleRightClick, contextMenuRef }) => {
+const CodeTreeView: React.FC<CodeTreeViewProps> = ({ taxonomyData, handleRightClick, contextMenuRef }) => {
     const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
     const renderTree = (node: Category): React.ReactNode => (
