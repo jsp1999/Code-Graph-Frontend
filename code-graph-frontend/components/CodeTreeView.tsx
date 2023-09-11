@@ -20,7 +20,7 @@ const CodeTreeView: React.FC<TaxonomyTreeViewProps> = ({ taxonomyData, handleRig
     const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
     const renderTree = (node: Category): React.ReactNode => (
-            <TreeItem key={node.id} nodeId={node.id.toString()} label={node.name}>
+            <TreeItem key={node.id} nodeId={node.id?.toString()} label={node.name}>
                 {Object.keys(node.subcategories).map((subcategoryKey) =>
                     renderTree(node.subcategories[subcategoryKey])
                 )}

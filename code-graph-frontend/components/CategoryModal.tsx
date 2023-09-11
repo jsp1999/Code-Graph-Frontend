@@ -1,14 +1,11 @@
 import {Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField} from "@mui/material";
 import React from "react";
-import {Code, DataPoint} from "@/components/CodeList";
-import {insertCodeRoute} from "@/pages/api/api";
+import {deleteCodeRoute, extractCodes, getCodeLeaves, getCodeRoute, insertCodeRoute} from "@/pages/api/api";
 
 interface CategoryModalProps {
     open: boolean,
     handleClose: () => void,
-    categoryList: DataPoint[],
     selectedCode: string,
-    addCategory: (data: DataPoint) => void
 }
 
 export default function CategoryModal(props: CategoryModalProps) {
@@ -35,7 +32,11 @@ export default function CategoryModal(props: CategoryModalProps) {
 
     function pressAddButton() {
         if (checked == noneIndex){
-            insertCodeRoute(inputValue);
+            try {
+                insertCodeRoute(inputValue);
+            } catch (e) {
+                console.error('Error adding code:', e);
+            }
         }
         setClosed();
     }
@@ -74,7 +75,7 @@ export default function CategoryModal(props: CategoryModalProps) {
                                     checked={checked === noneIndex}
                                     onChange={() => handleCheckboxChange(noneIndex)}
                                 />
-                                {props.categoryList.map((value,index) =>
+{/*                                {props.categoryList.map((value,index) =>
                                     <FormControlLabel
                                         value={value.id}
                                         control={<Radio />}
@@ -83,7 +84,7 @@ export default function CategoryModal(props: CategoryModalProps) {
                                         checked={checked === value.id}
                                         onChange={() => handleCheckboxChange(value.id)}
                                     />
-                                )}
+                                )}*/}
                             </RadioGroup>
                             </div>
                         </FormControl>

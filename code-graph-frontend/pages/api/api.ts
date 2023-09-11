@@ -47,7 +47,7 @@ export const updateCodeRoute = (id: number, codeName: string, topLevelCodeId: nu
 
 export const deleteCodeRoute = (id: number): Promise<any> => {
     console.log(`${baseURL}/data/${datasetName}/codes/${id}`)
-    return axios.delete<any>(`${baseURL}/data/${datasetName}/codes/${id}`);
+    return axios.delete(`${baseURL}/data/${datasetName}/codes/${id}`);
 }
 
 export const insertCodeRoute = (codeName: string, topLevelCodeId?: number): Promise<any> => {
@@ -57,5 +57,5 @@ export const insertCodeRoute = (codeName: string, topLevelCodeId?: number): Prom
     };
 
     console.log(`${baseURL}/data/${datasetName}/codes/ \n` + body)
-    return axios.post<any>(`${baseURL}/data/${datasetName}/codes/`, body);
+    return axios.post(`${baseURL}/data/${datasetName}/codes/`, body);
 }

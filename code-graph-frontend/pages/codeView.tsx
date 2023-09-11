@@ -5,9 +5,9 @@ import Header from "@/components/Header";
 import {Button} from "@mui/material";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
-import {DataPoint, getCodePoints} from "@/components/CodeList";
 import CategoryModal from "@/components/CategoryModal";
 import CodeTreeView from "@/components/CodeTreeView";
+import {getCodeTree} from "@/pages/api/api";
 
 export default function CodeView() {
     const [selectedItems, setSelectedItems] = useState<Array<string>>([]);
@@ -18,7 +18,6 @@ export default function CodeView() {
     const [rightClickedItem, setRightClickedItem] = useState("")
     const [open, setOpen] = React.useState(false);
     const [jsonData, setJsonData] = useState(data);
-    const [categoryList, setCategoryList] = useState<Array<DataPoint>>(getCodePoints(jsonData))
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const handleContextMenu = (e: React.MouseEvent) => {
@@ -27,27 +26,6 @@ export default function CodeView() {
         setContextMenuPosition({ x: clientX, y: clientY });
         setShowContextMenu(true);
     };
-
-    {/**
-
-     const fetchCode = async (datasetName: string) => {
-        try {
-            return await getCodes(datasetName);
-        } catch (error) {
-            console.error('Error fetching codes:', error);
-        }
-    };
-
-     const fetchData = async () => {
-        const result = await fetchCode("few_nerd");
-        console.log("codes", result);
-    };
-
-     console.log("codes")
-     console.log(fetchData())
-     */
-
-    }
 
     const handleContextMenuAction = (action: string) => {
         if(action === "unselect") {
@@ -64,6 +42,16 @@ export default function CodeView() {
         handleContextMenu(e);
         setRightClickedItem(value);
     }
+
+    useEffect(() => {
+        getCodeTree()
+            .then(response => {
+                setJsonData(response.data.codes);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    }, []);
 
     useEffect(() => {
         const handleOutsideClick = (event: MouseEvent) => {
@@ -94,24 +82,11 @@ export default function CodeView() {
         }
     };
 
-    function addCategory(newCategory: DataPoint) {
-        setCategoryList([...categoryList, newCategory]);
-    }
-
     return (
         <div>
             <Header title="Code View"/>
-            <CategoryModal open={open} handleClose={handleClose} categoryList={categoryList} selectedCode={rightClickedItem} addCategory={addCategory}/>
-            {/** 
-             *             <div className="flex max-w-[20%] float-left ml-3">
-                <CodeList categories={jsonData} selectedItems={selectedItems} handleItemClick={handleItemClick} />
-            </div>
+            <CategoryModal open={open} handleClose={handleClose} selectedCode={rightClickedItem} />
 
-                        <div className="flex max-w-[15%] float-right mr-3">
-                <CategoryList dataPoints={categoryList} />
-            </div>
-             */}
-            
             <CodeTreeView taxonomyData={jsonData} handleRightClick={handleRightClick} contextMenuRef={contextMenuRef}/>
 
             <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
