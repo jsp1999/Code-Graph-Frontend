@@ -55,7 +55,7 @@ export default function CodeView() {
             .catch((error) => {
                 console.error('Error extracting data:', error);
             });
-    }, []);
+    });
 
     useEffect(() => {
         getCodeTree()
@@ -84,13 +84,13 @@ export default function CodeView() {
     }, []);
 
     // Handle item click event
-    const handleItemClick = (daten: string) => {
+    const handleItemClick = (data: string) => {
         if (itemCount < 8){
-            if(!selectedItems.includes(daten)) {
-                selectedItems.push(daten);
+            if(!selectedItems.includes(data)) {
+                selectedItems.push(data);
                 setItemCount(itemCount + 1);
             } else {
-                selectedItems.splice(selectedItems.indexOf(daten), 1);
+                selectedItems.splice(selectedItems.indexOf(data), 1);
                 setItemCount(itemCount - 1);
             }
         }
