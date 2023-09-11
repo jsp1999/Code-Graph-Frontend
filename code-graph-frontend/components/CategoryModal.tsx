@@ -1,6 +1,6 @@
 import {Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField} from "@mui/material";
-import React from "react";
-import {deleteCodeRoute, extractCodes, getCodeLeaves, getCodeRoute, insertCodeRoute} from "@/pages/api/api";
+import React, {useEffect} from "react";
+import {getCodesRoutes, insertCodeRoute} from "@/pages/api/api";
 
 interface CategoryModalProps {
     open: boolean,
@@ -13,6 +13,17 @@ export default function CategoryModal(props: CategoryModalProps) {
     const [checked, setChecked] = React.useState(noneIndex);
     const [disabled, setDisabled] = React.useState(true);
     const [inputValue, setInputValue] = React.useState("");
+    const [codeList, setCodeList] = React.useState<any[]>([]);
+
+    useEffect(() => {
+        getCodesRoutes()
+            .then(response => {
+                setCodeList(response.data.codes);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    }, []);
 
     function handleCheckboxChange(selectedLabel: number) {
         if(checked === selectedLabel) {
@@ -75,16 +86,16 @@ export default function CategoryModal(props: CategoryModalProps) {
                                     checked={checked === noneIndex}
                                     onChange={() => handleCheckboxChange(noneIndex)}
                                 />
-{/*                                {props.categoryList.map((value,index) =>
+                            {codeList.map((code) =>
                                     <FormControlLabel
-                                        value={value.id}
+                                        value={code.id}
                                         control={<Radio />}
-                                        label={value.col1}
-                                        key={index}
-                                        checked={checked === value.id}
-                                        onChange={() => handleCheckboxChange(value.id)}
+                                        label={code.code}
+                                        key={code.id}
+                                        checked={checked === code.id}
+                                        onChange={() => handleCheckboxChange(code.id)}
                                     />
-                                )}*/}
+                                )}
                             </RadioGroup>
                             </div>
                         </FormControl>
