@@ -66,8 +66,8 @@ export default function CategoryModal(props: CategoryModalProps) {
                 open={props.open}
                 onClose={setClosed}
             >
-                <div className="relative w-[30%] bg-white p-5 rounded-lg shadow mx-auto mt-[10rem]">
-                    <div >
+                <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10rem]">
+                    <div>
                         <TextField
                             className="w-[25rem]"
                             id="standard-basic"
@@ -76,10 +76,10 @@ export default function CategoryModal(props: CategoryModalProps) {
                             onChange={handleInputChange}
                         />
                     </div>
-                    <div className="mt-5">
+                    <div className="mt-5 w-fit mx-auto">
                         <FormControl component="fieldset" >
                             <FormLabel component="legend">Add to Code</FormLabel>
-                            <div className="overflow-auto h-[25vw] w-[15vw]">
+                            <div className="overflow-auto h-[25vw]">
                             <RadioGroup aria-label="Add to Code" name="add" value={"Add to Category"} >
                                 <FormControlLabel
                                     value={noneIndex}
@@ -103,6 +103,7 @@ export default function CategoryModal(props: CategoryModalProps) {
                             </div>
                         </FormControl>
                     </div>
+                    <div className="block h-20" />
                     <div className="absolute bottom-2 right-2" >
                         <Button className="mx-2" variant="outlined" onClick={setClosed}>
                             Cancel
