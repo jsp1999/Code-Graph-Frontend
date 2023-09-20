@@ -15,6 +15,8 @@ import {CollideForceScrubber, CenterForceScrubber, AttractionForceScrubber, Limi
 import { ClusterGraph } from "@/components/clusterview/ClusterGraph";
 import {NodeInfo} from "@/components/clusterview/NodeInfo"
 import { Legend } from "@/components/clusterview/Legend";
+import {useRouter} from "next/router";
+import {useState} from "react";
 
 
 
@@ -99,6 +101,11 @@ const Page: React.FC = () => {
     setSelectedNodeData(value);
   };
 
+  const router = useRouter();
+  const {project_id} = router.query;
+  const [projectId, setProjectId] = useState(typeof project_id === 'string' ? parseInt(project_id, 10) : 1);
+
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid container spacing={2}
@@ -171,8 +178,8 @@ const Page: React.FC = () => {
           </Paper>
         </Grid>
         <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
-          <Button variant="contained" className="">
-            <Link href="/">Change View</Link>
+          <Button variant="contained" className="" onClick={() => router.push(`/codeView?project_id=${projectId}`)}>
+            Change View
           </Button>
         </div>
       </Grid>

@@ -146,8 +146,8 @@ export default function CodeView() {
                 <Button variant="outlined" className="mr-10" onClick={handleOpen}>
                     Add new Code
                 </Button>
-                <Button variant="contained" className="bg-blue-900 rounded">
-                    <Link href="/clusterView">Change View</Link>
+                <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/clusterView?project_id=${projectId}`)}>
+                    Change View
                 </Button>
             </div>
         </div>
