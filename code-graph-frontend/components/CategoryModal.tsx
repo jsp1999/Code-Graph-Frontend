@@ -1,24 +1,25 @@
 import {Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField} from "@mui/material";
 import React, {useEffect} from "react";
-import {getCodesRoutes, insertCodeRoute} from "@/pages/api/api";
+import {getCodesRoutes, insertCodeRoute, insertCodeRouteWithParent} from "@/pages/api/api";
 
 interface CategoryModalProps {
     open: boolean,
     handleClose: () => void,
     selectedCode: string,
+    projectId: number,
 }
 
 export default function CategoryModal(props: CategoryModalProps) {
     const noneIndex = -1;
-    const [checked, setChecked] = React.useState(noneIndex);
+    const [checkedId, setCheckedId] = React.useState(noneIndex);
     const [disabled, setDisabled] = React.useState(true);
     const [inputValue, setInputValue] = React.useState("");
     const [codeList, setCodeList] = React.useState<any[]>([]);
 
     useEffect(() => {
-        getCodesRoutes()
+        getCodesRoutes(props.projectId)
             .then(response => {
-                setCodeList(response.data.codes);
+                setCodeList(response.data.data);
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
@@ -26,10 +27,10 @@ export default function CategoryModal(props: CategoryModalProps) {
     }, []);
 
     function handleCheckboxChange(selectedLabel: number) {
-        if(checked === selectedLabel) {
-            setChecked(noneIndex);
+        if(checkedId === selectedLabel) {
+            setCheckedId(noneIndex);
         } else {
-            setChecked(selectedLabel);
+            setCheckedId(selectedLabel);
         }
         setDisabled(false);
     }
@@ -37,17 +38,19 @@ export default function CategoryModal(props: CategoryModalProps) {
     function setClosed() {
         props.handleClose();
         setDisabled(true);
-        setChecked(noneIndex);
+        setCheckedId(noneIndex);
         setInputValue("");
     }
 
     function pressAddButton() {
-        if (checked == noneIndex){
+        if (checkedId == noneIndex){
             try {
-                insertCodeRoute(inputValue);
+                insertCodeRoute(inputValue, props.projectId);
             } catch (e) {
                 console.error('Error adding code:', e);
             }
+        } else {
+            insertCodeRouteWithParent(inputValue, props.projectId, checkedId);
         }
         setClosed();
     }
@@ -63,7 +66,7 @@ export default function CategoryModal(props: CategoryModalProps) {
                 open={props.open}
                 onClose={setClosed}
             >
-                <div className="relative w-[30%] bg-white p-5 rounded-lg shadow mx-auto mt-[10rem] ">
+                <div className="relative w-[30%] bg-white p-5 rounded-lg shadow mx-auto mt-[10rem]">
                     <div >
                         <TextField
                             className="w-[25rem]"
@@ -83,17 +86,17 @@ export default function CategoryModal(props: CategoryModalProps) {
                                     control={<Radio />}
                                     label={"none"}
                                     key={noneIndex}
-                                    checked={checked === noneIndex}
+                                    checked={checkedId === noneIndex}
                                     onChange={() => handleCheckboxChange(noneIndex)}
                                 />
-                            {codeList.map((code) =>
+                            {codeList != null && codeList.map((code) =>
                                     <FormControlLabel
-                                        value={code.id}
+                                        value={code.code_id}
                                         control={<Radio />}
-                                        label={code.code}
-                                        key={code.id}
-                                        checked={checked === code.id}
-                                        onChange={() => handleCheckboxChange(code.id)}
+                                        label={code.text}
+                                        key={code.code_id}
+                                        checked={checkedId === code.code_id}
+                                        onChange={() => handleCheckboxChange(code.code_id)}
                                     />
                                 )}
                             </RadioGroup>

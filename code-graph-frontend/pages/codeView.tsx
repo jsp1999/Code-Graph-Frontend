@@ -3,13 +3,15 @@ import data from "../src/NER_Tags.json";
 import React, {useEffect, useRef, useState} from "react";
 import Header from "@/components/Header";
 import {Button} from "@mui/material";
-import CodeItem from "@/components/CodeItem";
-import ContextMenu from "@/components/ContextMenu";
 import CategoryModal from "@/components/CategoryModal";
 import CodeTreeView from "@/components/CodeTreeView";
 import {extractCodes, getCodeTree} from "@/pages/api/api";
+import {useRouter} from "next/router";
 
 export default function CodeView() {
+    const router = useRouter();
+    const {project_id} = router.query;
+
     const [selectedItems, setSelectedItems] = useState<Array<string>>([]);
     const [itemCount, setItemCount] = useState(0);
     const [showContextMenu, setShowContextMenu] = useState(false);
@@ -19,9 +21,19 @@ export default function CodeView() {
     const [open, setOpen] = useState(false);
     const [jsonData, setJsonData] = useState(data);
     const [extractedCodes, setExtractedCodes] = useState(false);
+    const [projectId, setProjectId] = useState(typeof project_id === 'string' ? parseInt(project_id, 10) : 1);
 
     const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleAddModalClose = () => {
+        getCodeTree(projectId)
+            .then(response => {
+                setJsonData(response.data.codes);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+        setOpen(false);
+    }
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         const { clientX, clientY } = e;
@@ -46,8 +58,7 @@ export default function CodeView() {
     }
 
     useEffect(() => {
-        if (!extractedCodes)
-        extractCodes()
+        extractCodes(projectId)
             .then(() => {
                     setExtractedCodes(true);
                 }
@@ -55,10 +66,10 @@ export default function CodeView() {
             .catch((error) => {
                 console.error('Error extracting data:', error);
             });
-    });
+    }, []);
 
     useEffect(() => {
-        getCodeTree()
+        getCodeTree(projectId)
             .then(response => {
                 setJsonData(response.data.codes);
             })
@@ -99,18 +110,18 @@ export default function CodeView() {
     return (
         <div>
             <Header title="Code View"/>
-            <CategoryModal open={open} handleClose={handleClose} selectedCode={rightClickedItem} />
+            <CategoryModal open={open} handleClose={handleAddModalClose} selectedCode={rightClickedItem} projectId={projectId} />
 
             <CodeTreeView taxonomyData={jsonData} handleRightClick={handleRightClick} contextMenuRef={contextMenuRef}/>
 
-            <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
-            {selectedItems.length <= 8 && (
+            <div className="grid grid-cols-4 gap-10 float-left ml-6">
+{/*            {selectedItems.length <= 8 && (
                 selectedItems.map((value, index) =>
                 <div className="w-24" key={index} onContextMenu={(e: React.MouseEvent) => {
                     handleContextMenu(e);
                     setRightClickedItem(value);
                 }} ref={contextMenuRef}>
-                    <CodeItem value={value} />
+                    <CodeItem value={value} id={index}/>
                     {showContextMenu && (
                         <ContextMenu
                             contextMenuPosition={contextMenuPosition}
@@ -119,7 +130,7 @@ export default function CodeView() {
                     )}
                 </div>
                 )
-            )}
+            )}*/}
             </div>
 
             <div className="absolute right-5 bottom-5 ">

@@ -4,58 +4,97 @@ import axios from 'axios';
 const baseURL = 'http://localhost:8000';
 const datasetName = "few_nerd";
 
-// Define your API service methods
-export const extractCodes = (): Promise<any> => {
-    console.log(`${baseURL}/data/${datasetName}/codes/extract`)
-    return axios.get<any>(`${baseURL}/data/${datasetName}/codes/extract`);
+// Projects
+
+export const getProjects = (): Promise<any> => {
+    console.log(`${baseURL}/data/${datasetName}/projects/`)
+    return axios.get<any>(`${baseURL}/projects/`);
 }
 
-export const getCodesRoutes = (): Promise<any> => {
-    console.log(`${baseURL}/data/${datasetName}/codes/`)
-    return axios.get<any>(`${baseURL}/data/${datasetName}/codes/`);
+export const postProject = (projectName: string): Promise<any> => {
+
+    console.log(`${baseURL}/projects/?project_name=${projectName}` )
+    return axios.post(`${baseURL}/projects/?project_name=${projectName}`);
 }
 
-export const getCodeRoots = (): Promise<any> => {
+
+// Datasets
+
+export const uploadTestDataset = (): Promise<any> => {
     console.log(`${baseURL}/data/${datasetName}/codes/roots`)
-    return axios.get<any>(`${baseURL}/data/${datasetName}/codes/roots`);
+    return axios.get<any>(`${baseURL}/projects/1/plots/test/`);
 }
 
-export const getCodeLeaves = (): Promise<any> => {
-    console.log(`${baseURL}/data/${datasetName}/codes/leaves`)
-    return axios.get<any>(`${baseURL}/data/${datasetName}/codes/leaves`);
+
+export const uploadDataset = (projectId: number, datasetName: string, file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return axios.post(`${baseURL}/projects/${projectId}/datasets/upload?dataset_name=${datasetName}&split=%5Ct&sentence_split=%5Cn%5Cn&word_idx=0&label_idx=1&label_split=None&type=plain`,
+        formData,
+        {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },});
 }
 
-export const getCodeTree = (): Promise<any> => {
-    console.log(`${baseURL}/data/${datasetName}/codes/tree`)
-    return axios.get<any>(`${baseURL}/data/${datasetName}/codes/tree`);
+
+// Codes
+
+
+export const extractCodes = (project_id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/codes/extract`)
+    return axios.get<any>(`${baseURL}/projects/${project_id}/codes/extract`);
 }
 
-export const getCodeRoute = (id: number): Promise<any> => {
-    console.log(`${baseURL}/data/${datasetName}/codes/${id}`)
-    return axios.get<any>(`${baseURL}/data/${datasetName}/codes/${id}`);
+export const getCodesRoutes = (project_id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/codes/`)
+    return axios.get<any>(`${baseURL}/projects/${project_id}/codes/`);
 }
 
-export const updateCodeRoute = (id: number, codeName: string, topLevelCodeId: number): Promise<any> => {
+export const getCodeRoots = (project_id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/codes/roots`)
+    return axios.get<any>(`${baseURL}/projects/${project_id}/codes/roots`);
+}
+
+export const getCodeLeaves = (project_id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/codes/leaves`)
+    return axios.get<any>(`${baseURL}/projects/${project_id}/codes/leaves`);
+}
+
+export const getCodeTree = (project_id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/codes/tree`)
+    return axios.get<any>(`${baseURL}/projects/${project_id}/codes/tree`);
+}
+
+export const getCodeRoute = (id: number, project_id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/codes/${id}`)
+    return axios.get<any>(`${baseURL}/projects/${project_id}/codes/${id}`);
+}
+
+export const updateCodeRoute = (id: number, codeName: string, topLevelCodeId: number, project_id: number): Promise<any> => {
     const body = {
         code: codeName,
         top_level_code_id: topLevelCodeId
     };
 
-    console.log(`${baseURL}/data/${datasetName}/codes/${id} \n` + body)
-    return axios.put<any>(`${baseURL}/data/${datasetName}/codes/${id}`, body);
+    console.log(`${baseURL}/projects/${project_id}/codes/${id}`, body)
+    return axios.put<any>(`${baseURL}/projects/${project_id}/codes/${id}`, body);
 }
 
-export const deleteCodeRoute = (id: number): Promise<any> => {
-    console.log(`${baseURL}/data/${datasetName}/codes/${id}`)
-    return axios.delete(`${baseURL}/data/${datasetName}/codes/${id}`);
+export const deleteCodeRoute = (id: number, project_id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/codes/${id}`)
+    return axios.delete(`${baseURL}/projects/${project_id}/codes/${id}`);
 }
 
-export const insertCodeRoute = (codeName: string, topLevelCodeId?: number): Promise<any> => {
-    const body = {
-        code: codeName,
-        top_level_code_id: topLevelCodeId ?? null
-    };
+export const insertCodeRoute = (codeName: string, project_id: number): Promise<any> => {
 
-    console.log(`${baseURL}/data/${datasetName}/codes/ \n` + body)
-    return axios.post(`${baseURL}/data/${datasetName}/codes/`, body);
+    console.log(`${baseURL}/projects/${project_id}/codes/?code_name=${codeName}`)
+    return axios.post(`${baseURL}/projects/${project_id}/codes/?code_name=${codeName}`);
+}
+
+export const insertCodeRouteWithParent = (codeName: string, project_id: number, topLevelCodeId: number): Promise<any> => {
+
+    console.log(`${baseURL}/projects/${project_id}/codes/?code_name=${codeName}&parent_id=${topLevelCodeId}`)
+    return axios.post(`${baseURL}/projects/${project_id}/codes/?code_name=${codeName}&parent_id=${topLevelCodeId}`);
 }

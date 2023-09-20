@@ -1,9 +1,9 @@
-import CodeView from './codeView'
+import WelcomePage from './welcomePage'
 
 export default function Home() {
   return (
     <>
-      <CodeView />
+      <WelcomePage />
     </>
   )
 }
