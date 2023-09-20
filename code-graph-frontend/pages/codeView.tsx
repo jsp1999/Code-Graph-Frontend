@@ -3,47 +3,43 @@ import data from "../src/NER_Tags.json";
 import React, {useEffect, useRef, useState} from "react";
 import Header from "@/components/Header";
 import {Button} from "@mui/material";
-import { getCodes } from "@/src/api";
-import CodeItem from "@/components/CodeItem";
-import ContextMenu from "@/components/ContextMenu";
-import CodeList, {Code, DataPoint} from "@/components/CodeList";
-import CategoryList, {getCategoryPoints} from "@/components/CategoryList";
 import CategoryModal from "@/components/CategoryModal";
+import CodeTreeView from "@/components/CodeTreeView";
+import {extractCodes, getCodeTree} from "@/pages/api/api";
+import {useRouter} from "next/router";
 
 export default function CodeView() {
+    const router = useRouter();
+    const {project_id} = router.query;
+
     const [selectedItems, setSelectedItems] = useState<Array<string>>([]);
     const [itemCount, setItemCount] = useState(0);
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const contextMenuRef = useRef<HTMLDivElement>(null);
     const [rightClickedItem, setRightClickedItem] = useState("")
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const [jsonData, setJsonData] = useState(data);
-    const [categoryList, setCategoryList] = useState<Array<DataPoint>>(getCategoryPoints(jsonData))
+    const [extractedCodes, setExtractedCodes] = useState(false);
+    const [projectId, setProjectId] = useState(typeof project_id === 'string' ? parseInt(project_id, 10) : 1);
+
     const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleAddModalClose = () => {
+        getCodeTree(projectId)
+            .then(response => {
+                setJsonData(response.data.codes);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+        setOpen(false);
+    }
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         const { clientX, clientY } = e;
         setContextMenuPosition({ x: clientX, y: clientY });
         setShowContextMenu(true);
     };
-
-    const fetchCode = async (datasetName: string) => {
-        try {
-            return await getCodes(datasetName);
-        } catch (error) {
-            console.error('Error fetching codes:', error);
-        }
-    };
-
-    const fetchData = async () => {
-        const result = await fetchCode("few_nerd");
-        console.log("codes", result);
-    };
-
-    console.log("codes")
-    console.log(fetchData())
 
     const handleContextMenuAction = (action: string) => {
         if(action === "unselect") {
@@ -55,6 +51,32 @@ export default function CodeView() {
         }
         setShowContextMenu(false);
     };
+
+    const handleRightClick = (e: React.MouseEvent, value: string) => {
+        handleContextMenu(e);
+        setRightClickedItem(value);
+    }
+
+    useEffect(() => {
+        extractCodes(projectId)
+            .then(() => {
+                    setExtractedCodes(true);
+                }
+            )
+            .catch((error) => {
+                console.error('Error extracting data:', error);
+            });
+    }, []);
+
+    useEffect(() => {
+        getCodeTree(projectId)
+            .then(response => {
+                setJsonData(response.data.codes);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    }, []);
 
     useEffect(() => {
         const handleOutsideClick = (event: MouseEvent) => {
@@ -73,37 +95,33 @@ export default function CodeView() {
     }, []);
 
     // Handle item click event
-    const handleItemClick = (daten: string) => {
+    const handleItemClick = (data: string) => {
         if (itemCount < 8){
-            if(!selectedItems.includes(daten)) {
-                selectedItems.push(daten);
+            if(!selectedItems.includes(data)) {
+                selectedItems.push(data);
                 setItemCount(itemCount + 1);
             } else {
-                selectedItems.splice(selectedItems.indexOf(daten), 1);
+                selectedItems.splice(selectedItems.indexOf(data), 1);
                 setItemCount(itemCount - 1);
             }
         }
     };
 
-    function addCategory(newCategory: DataPoint) {
-        setCategoryList([...categoryList, newCategory]);
-    }
-
     return (
         <div>
             <Header title="Code View"/>
-            <CategoryModal open={open} handleClose={handleClose} categoryList={categoryList} selectedCode={rightClickedItem} addCategory={addCategory}/>
-            <div className="flex max-w-[20%] float-left ml-3">
-                <CodeList categories={jsonData} selectedItems={selectedItems} handleItemClick={handleItemClick} />
-            </div>
-            <div className="grid grid-cols-4 gap-10 w-fit float-left ml-6">
-            {selectedItems.length <= 8 && (
+            <CategoryModal open={open} handleClose={handleAddModalClose} selectedCode={rightClickedItem} projectId={projectId} />
+
+            <CodeTreeView taxonomyData={jsonData} handleRightClick={handleRightClick} contextMenuRef={contextMenuRef}/>
+
+            <div className="grid grid-cols-4 gap-10 float-left ml-6">
+{/*            {selectedItems.length <= 8 && (
                 selectedItems.map((value, index) =>
                 <div className="w-24" key={index} onContextMenu={(e: React.MouseEvent) => {
                     handleContextMenu(e);
                     setRightClickedItem(value);
                 }} ref={contextMenuRef}>
-                    <CodeItem value={value} />
+                    <CodeItem value={value} id={index}/>
                     {showContextMenu && (
                         <ContextMenu
                             contextMenuPosition={contextMenuPosition}
@@ -112,13 +130,14 @@ export default function CodeView() {
                     )}
                 </div>
                 )
-            )}
+            )}*/}
             </div>
-            <div className="flex max-w-[15%] float-right mr-3">
-                <CategoryList dataPoints={categoryList} />
-            </div>
-            <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
-                <Button variant="contained" className="">
+
+            <div className="absolute right-5 bottom-5 ">
+                <Button variant="outlined" className="mr-10" onClick={handleOpen}>
+                    Add new Code
+                </Button>
+                <Button variant="contained" className="bg-blue-900 rounded">
                     <Link href="/clusterView">Change View</Link>
                 </Button>
             </div>

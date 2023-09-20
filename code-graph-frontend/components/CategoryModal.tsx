@@ -1,51 +1,63 @@
 import {Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField} from "@mui/material";
-import React from "react";
-import {getCategoryPoints} from "@/components/CategoryList";
-import {Code, DataPoint} from "@/components/CodeList";
+import React, {useEffect} from "react";
+import {getCodesRoutes, insertCodeRoute, insertCodeRouteWithParent} from "@/pages/api/api";
 
 interface CategoryModalProps {
     open: boolean,
     handleClose: () => void,
-    categoryList: DataPoint[],
     selectedCode: string,
-    addCategory: (data: DataPoint) => void
+    projectId: number,
 }
 
 export default function CategoryModal(props: CategoryModalProps) {
-    const [checked, setChecked] = React.useState("");
+    const noneIndex = -1;
+    const [checkedId, setCheckedId] = React.useState(noneIndex);
     const [disabled, setDisabled] = React.useState(true);
     const [inputValue, setInputValue] = React.useState("");
+    const [codeList, setCodeList] = React.useState<any[]>([]);
 
-    function handleCheckboxChange(selectedLabel: string) {
-        setChecked(selectedLabel);
+    useEffect(() => {
+        getCodesRoutes(props.projectId)
+            .then(response => {
+                setCodeList(response.data.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    }, []);
+
+    function handleCheckboxChange(selectedLabel: number) {
+        if(checkedId === selectedLabel) {
+            setCheckedId(noneIndex);
+        } else {
+            setCheckedId(selectedLabel);
+        }
         setDisabled(false);
-        setInputValue("");
     }
 
     function setClosed() {
         props.handleClose();
         setDisabled(true);
-        setChecked("");
+        setCheckedId(noneIndex);
         setInputValue("");
     }
 
     function pressAddButton() {
-        const randomInt = Math.floor(Math.random() * (10000 - 100 + 1)) + 100;
-        setClosed();
-        if (inputValue !== ""){
-            const newCategory: DataPoint = {
-                id: randomInt,
-                col1: inputValue,
-            };
-            props.addCategory(newCategory);
+        if (checkedId == noneIndex){
+            try {
+                insertCodeRoute(inputValue, props.projectId);
+            } catch (e) {
+                console.error('Error adding code:', e);
+            }
+        } else {
+            insertCodeRouteWithParent(inputValue, props.projectId, checkedId);
         }
-
+        setClosed();
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
         setDisabled(false);
-        setChecked("");
     };
 
     return (
@@ -54,31 +66,41 @@ export default function CategoryModal(props: CategoryModalProps) {
                 open={props.open}
                 onClose={setClosed}
             >
-                <div className="relative w-[30%] bg-white p-5 rounded-lg shadow mx-auto mt-[10rem] ">
+                <div className="relative w-[30%] bg-white p-5 rounded-lg shadow mx-auto mt-[10rem]">
                     <div >
                         <TextField
                             className="w-[25rem]"
                             id="standard-basic"
-                            label="New Category"
+                            label="New Code"
                             value={inputValue}
                             onChange={handleInputChange}
                         />
                     </div>
-                    <div className="overflow-auto mt-8">
+                    <div className="mt-5">
                         <FormControl component="fieldset" >
-                            <FormLabel component="legend">Add to Category</FormLabel>
-                            <RadioGroup aria-label="Add to Category" name="add" value={"Add to Category"} >
-                                {props.categoryList.map((value,index) =>
+                            <FormLabel component="legend">Add to Code</FormLabel>
+                            <div className="overflow-auto h-[25vw] w-[15vw]">
+                            <RadioGroup aria-label="Add to Code" name="add" value={"Add to Category"} >
+                                <FormControlLabel
+                                    value={noneIndex}
+                                    control={<Radio />}
+                                    label={"none"}
+                                    key={noneIndex}
+                                    checked={checkedId === noneIndex}
+                                    onChange={() => handleCheckboxChange(noneIndex)}
+                                />
+                            {codeList != null && codeList.map((code) =>
                                     <FormControlLabel
-                                        value={value.col1}
+                                        value={code.code_id}
                                         control={<Radio />}
-                                        label={value.col1}
-                                        key={index}
-                                        checked={checked === value.col1 && !disabled}
-                                        onChange={() => handleCheckboxChange(value.col1)}
+                                        label={code.text}
+                                        key={code.code_id}
+                                        checked={checkedId === code.code_id}
+                                        onChange={() => handleCheckboxChange(code.code_id)}
                                     />
                                 )}
                             </RadioGroup>
+                            </div>
                         </FormControl>
                     </div>
                     <div className="absolute bottom-2 right-2" >
