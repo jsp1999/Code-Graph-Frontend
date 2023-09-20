@@ -6,6 +6,7 @@ import {useRouter} from "next/router";
 interface CategoryModalProps {
     open: boolean,
     handleClose: () => void,
+    setLoading: () => void,
 }
 
 export default function UploadModal(props: CategoryModalProps) {
@@ -37,13 +38,17 @@ export default function UploadModal(props: CategoryModalProps) {
     };
 
     const handleFinish = () => {
+        props.handleClose();
+        props.setLoading();
         postProject(inputValue)
             .then(() =>
                 getProjects().then((response) => {
                         if(response.data.length > 0) {
                             const project = response.data.find((project: any) => project.project_name === inputValue);
-                            uploadDataset(project.project_id, inputValue, selectedFile!).then((response) =>
-                                router.push(`/codeView?project_id=${project.project_id}`)
+                            uploadDataset(project.project_id, inputValue, selectedFile!).then((response) => {
+                                    props.setLoading();
+                                    router.push(`/codeView?project_id=${project.project_id}`);
+                                }
                             )
                         }
                 })

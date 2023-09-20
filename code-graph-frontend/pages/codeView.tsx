@@ -7,6 +7,7 @@ import CategoryModal from "@/components/CategoryModal";
 import CodeTreeView from "@/components/CodeTreeView";
 import {extractCodes, getCodeTree} from "@/pages/api/api";
 import {useRouter} from "next/router";
+import LoadingModal from "@/components/LoadingModal";
 
 export default function CodeView() {
     const router = useRouter();
@@ -21,18 +22,21 @@ export default function CodeView() {
     const [open, setOpen] = useState(false);
     const [jsonData, setJsonData] = useState(data);
     const [extractedCodes, setExtractedCodes] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [projectId, setProjectId] = useState(typeof project_id === 'string' ? parseInt(project_id, 10) : 1);
 
     const handleOpen = () => setOpen(true);
     const handleAddModalClose = () => {
+        setOpen(false);
+        setLoading(true);
         getCodeTree(projectId)
             .then(response => {
                 setJsonData(response.data.codes);
+                setLoading(false);
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
             });
-        setOpen(false);
     }
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -58,9 +62,11 @@ export default function CodeView() {
     }
 
     useEffect(() => {
+        setLoading(true);
         extractCodes(projectId)
             .then(() => {
                     setExtractedCodes(true);
+                    setLoading(false);
                 }
             )
             .catch((error) => {
@@ -69,9 +75,11 @@ export default function CodeView() {
     }, []);
 
     useEffect(() => {
+        setLoading(true);
         getCodeTree(projectId)
             .then(response => {
                 setJsonData(response.data.codes);
+                setLoading(false);
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
@@ -111,6 +119,7 @@ export default function CodeView() {
         <div>
             <Header title="Code View"/>
             <CategoryModal open={open} handleClose={handleAddModalClose} selectedCode={rightClickedItem} projectId={projectId} />
+            <LoadingModal open={loading} />
 
             <CodeTreeView taxonomyData={jsonData} handleRightClick={handleRightClick} contextMenuRef={contextMenuRef}/>
 
@@ -137,8 +146,8 @@ export default function CodeView() {
                 <Button variant="outlined" className="mr-10" onClick={handleOpen}>
                     Add new Code
                 </Button>
-                <Button variant="contained" className="bg-blue-900 rounded">
-                    <Link href="/clusterView">Change View</Link>
+                <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/clusterView?project_id=${projectId}`)}>
+                    Change View
                 </Button>
             </div>
         </div>
