@@ -15,10 +15,10 @@ export default function WelcomePage() {
                 <Button variant="contained" className="my-5" component="label" onClick={() => setOpen(true)}>
                     Upload
                 </Button>
-                <p>or</p>
+{/*                <p>or</p>
                 <Button variant="contained" component="label" className="my-5" onClick={() => uploadTestDataset()}>
                     Try it out
-                </Button>
+                </Button>*/}
             </div>
         </div>
     )
