@@ -1,4 +1,3 @@
-import Link from "next/link";
 import data from "../src/NER_Tags.json";
 import React, {useEffect, useRef, useState} from "react";
 import Header from "@/components/Header";
@@ -8,17 +7,18 @@ import CodeTreeView from "@/components/CodeTreeView";
 import {extractCodes, getCodeTree} from "@/pages/api/api";
 import {useRouter} from "next/router";
 import LoadingModal from "@/components/LoadingModal";
+import CodeItem from "@/components/CodeItem";
+import ContextMenu from "@/components/ContextMenu";
 
 export default function CodeView() {
     const router = useRouter();
     const {project_id} = router.query;
 
-    const [selectedItems, setSelectedItems] = useState<Array<string>>([]);
-    const [itemCount, setItemCount] = useState(0);
+    const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
     const [showContextMenu, setShowContextMenu] = useState(false);
-    const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+    const [contextMenuPosition, setContextMenuPosition] = useState({x: 0, y: 0});
     const contextMenuRef = useRef<HTMLDivElement>(null);
-    const [rightClickedItem, setRightClickedItem] = useState("")
+    const [rightClickedItem, setRightClickedItem] = useState(0)
     const [open, setOpen] = useState(false);
     const [jsonData, setJsonData] = useState(data);
     const [extractedCodes, setExtractedCodes] = useState(false);
@@ -40,23 +40,22 @@ export default function CodeView() {
     }
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
-        const { clientX, clientY } = e;
-        setContextMenuPosition({ x: clientX, y: clientY });
+        const {clientX, clientY} = e;
+        setContextMenuPosition({x: clientX, y: clientY});
         setShowContextMenu(true);
     };
 
     const handleContextMenuAction = (action: string) => {
-        if(action === "unselect") {
-            selectedItems.splice(selectedItems.indexOf(rightClickedItem), 1);
-            setItemCount(itemCount - 1);
+        if (action === "unselect") {
+            selectedNodes.splice(selectedNodes.indexOf(rightClickedItem), 1);
         }
-        if(action === "add to category") {
+        if (action === "add to category") {
             handleOpen()
         }
         setShowContextMenu(false);
     };
 
-    const handleRightClick = (e: React.MouseEvent, value: string) => {
+    const handleRightClick = (e: React.MouseEvent, value: number) => {
         handleContextMenu(e);
         setRightClickedItem(value);
     }
@@ -102,51 +101,46 @@ export default function CodeView() {
         };
     }, []);
 
-    // Handle item click event
-    const handleItemClick = (data: string) => {
-        if (itemCount < 8){
-            if(!selectedItems.includes(data)) {
-                selectedItems.push(data);
-                setItemCount(itemCount + 1);
-            } else {
-                selectedItems.splice(selectedItems.indexOf(data), 1);
-                setItemCount(itemCount - 1);
-            }
-        }
+    const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
+        setSelectedNodes(newSelectedNodes);
     };
 
     return (
         <div>
             <Header title="Code View"/>
-            <CategoryModal open={open} handleClose={handleAddModalClose} selectedCode={rightClickedItem} projectId={projectId} />
-            <LoadingModal open={loading} />
+            <CategoryModal open={open} handleClose={handleAddModalClose} projectId={projectId}/>
+            <LoadingModal open={loading}/>
 
-            <CodeTreeView taxonomyData={jsonData} handleRightClick={handleRightClick} contextMenuRef={contextMenuRef}/>
+            <div className="float-left">
+                <CodeTreeView taxonomyData={jsonData} contextMenuRef={contextMenuRef} selectedNodes={selectedNodes}
+                              updateSelectedNodes={handleUpdateSelectedNodes}/>
+            </div>
 
-            <div className="grid grid-cols-4 gap-10 float-left ml-6">
-{/*            {selectedItems.length <= 8 && (
-                selectedItems.map((value, index) =>
-                <div className="w-24" key={index} onContextMenu={(e: React.MouseEvent) => {
-                    handleContextMenu(e);
-                    setRightClickedItem(value);
-                }} ref={contextMenuRef}>
-                    <CodeItem value={value} id={index}/>
-                    {showContextMenu && (
-                        <ContextMenu
-                            contextMenuPosition={contextMenuPosition}
-                            handleContextMenuAction={handleContextMenuAction}
-                            contextMenuItems={["unselect", "add to category"]} />
-                    )}
-                </div>
-                )
-            )}*/}
+            <div className="grid grid-cols-5 gap-10 w-[50vw] h-[50vh] float-right mt-40 mr-40">
+                {selectedNodes.length > 0 && (
+                    selectedNodes.map((value, index) =>
+                        <div className="w-24" key={index} onContextMenu={(e: React.MouseEvent) => {
+                            handleContextMenu(e);
+                            setRightClickedItem(value);
+                        }} ref={contextMenuRef}>
+                            <CodeItem id={value} projectId={projectId}/>
+                            {showContextMenu && (
+                                <ContextMenu
+                                    contextMenuPosition={contextMenuPosition}
+                                    handleContextMenuAction={handleContextMenuAction}
+                                    contextMenuItems={["unselect", "add to category"]}/>
+                            )}
+                        </div>
+                    )
+                )}
             </div>
 
             <div className="absolute right-5 bottom-5 ">
                 <Button variant="outlined" className="mr-10" onClick={handleOpen}>
                     Add new Code
                 </Button>
-                <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/clusterView?project_id=${projectId}`)}>
+                <Button variant="contained" className="bg-blue-900 rounded"
+                        onClick={() => router.push(`/clusterView?project_id=${projectId}`)}>
                     Change View
                 </Button>
             </div>

@@ -5,7 +5,6 @@ import {getCodesRoutes, insertCodeRoute, insertCodeRouteWithParent} from "@/page
 interface CategoryModalProps {
     open: boolean,
     handleClose: () => void,
-    selectedCode: string,
     projectId: number,
 }
 
