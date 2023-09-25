@@ -38,6 +38,18 @@ export const uploadDataset = (projectId: number, datasetName: string, file: File
         },});
 }
 
+export const uploadAdvancedDataset = (projectId: number, datasetName: string, file: File, split: string, sentence_split: string, word_idx: number, label_idx: number, label_split: string, type: string): Promise<any> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return axios.post(`${baseURL}/projects/${projectId}/datasets/upload?dataset_name=${datasetName}&split=${split}&sentence_split${sentence_split}&word_idx=${word_idx}&label_idx=${label_idx}&label_split=${label_split}&type=${type}`,
+        formData,
+        {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },});
+}
+
 
 // Codes
 

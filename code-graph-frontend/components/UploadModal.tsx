@@ -1,6 +1,6 @@
-import {Button, Modal, TextField} from "@mui/material";
+import {Button, FormControlLabel, FormGroup, Modal, Switch, TextField} from "@mui/material";
 import React, {useState} from "react";
-import {getProjects, postProject, uploadDataset, uploadTestDataset} from "@/pages/api/api";
+import {getProjects, postProject, uploadAdvancedDataset, uploadDataset, uploadTestDataset} from "@/pages/api/api";
 import {useRouter} from "next/router";
 
 interface CategoryModalProps {
@@ -10,15 +10,20 @@ interface CategoryModalProps {
 }
 
 export default function UploadModal(props: CategoryModalProps) {
-    const [disabled, setDisabled] = React.useState(true);
-    const [inputValue, setInputValue] = React.useState("");
+    const [projectName, setProjectName] = useState("");
+    const [split, setSplit] = useState("\\t");
+    const [sentenceSplit, setSentenceSplit] = useState("\\n\\n");
+    const [wordIdx, setWordIdx] = useState(0);
+    const [labelIdx, setLabelIdx] = useState(1);
+    const [labelSplit, setLabelSplit] = useState("None");
+    const [type, setType] = useState("plain");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [advancedSettingsSelected, setAdvancedSettingsSelected] = useState(false);
 
     const router = useRouter();
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(event.target.value);
-        setDisabled(false);
+        setProjectName(event.target.value);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,33 +33,38 @@ export default function UploadModal(props: CategoryModalProps) {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (selectedFile) {
-            // Here, you can store the selectedFile in your project or send it to an API.
-            console.log('Selected File:', selectedFile);
-            // You can use fetch or an API library to send the file to your backend API.
-        }
-    };
-
     const handleFinish = () => {
         props.handleClose();
         props.setLoading();
-        postProject(inputValue)
+        postProject(projectName)
             .then((response) =>{
                 const projectId = response.data.data.project_id;
-                uploadDataset(projectId, inputValue, selectedFile!).then(() => {
+                if(!advancedSettingsSelected){
+                uploadDataset(projectId, projectName, selectedFile!).then(() => {
                     props.setLoading();
                     router.push(`/codeView?project_id=${projectId}`);
                 })
+            } else {
+                uploadAdvancedDataset(projectId, projectName, selectedFile!, encodeURIComponent(split), encodeURIComponent(sentenceSplit), wordIdx, labelIdx, encodeURIComponent(labelSplit), encodeURIComponent(type))
+                    .then(() => {
+                        props.setLoading();
+                        router.push(`/codeView?project_id=${projectId}`);
+                    })
+            }
                 }
             );
     }
 
     function setClosed() {
         props.handleClose();
-        setDisabled(true);
-        setInputValue("");
+        setProjectName("");
+        setAdvancedSettingsSelected(false);
+        setSplit("\\t");
+        setSentenceSplit("\\n\\n");
+        setWordIdx(0);
+        setLabelIdx(1);
+        setLabelSplit("None");
+        setType("plain");
     }
 
     return (
@@ -63,18 +73,18 @@ export default function UploadModal(props: CategoryModalProps) {
                 open={props.open}
                 onClose={setClosed}
             >
-                <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[20vh] grid-cols-1 text-center">
+                <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10vh] grid-cols-1 text-center">
                     <div className="my-5">
                         <TextField
                         className="w-[25rem]"
                         id="standard-basic"
                         label="Project Name"
-                        value={inputValue}
+                        value={projectName}
                         onChange={handleInputChange}
                     />
                     </div>
-                    <div className="mt-10 mb-20 w-fit mx-auto">
-                        <form onSubmit={handleSubmit}>
+                    <div className="mt-10 w-fit mx-auto">
+                        <form>
                             <Button variant="contained" component="label">
                                 Upload
                                 <input hidden accept=".txt" type="file" onChange={handleFileChange}/>
@@ -82,11 +92,77 @@ export default function UploadModal(props: CategoryModalProps) {
                         </form>
                         {selectedFile && <p>Selected File: {selectedFile.name}</p>}
                     </div>
+                    <div className="w-fit mx-auto">
+                        <FormGroup>
+                            <FormControlLabel control={<Switch checked={advancedSettingsSelected} onChange={() => setAdvancedSettingsSelected(!advancedSettingsSelected)} />} label="Advanced Settings" />
+                        </FormGroup>
+                    </div>
+                    {advancedSettingsSelected && 
+                    <div className="my-5 overflow-auto h-72 grid-cols-2">
+                        <div className="my-2">
+                        <TextField
+                            className="w-[25rem]"
+                            id="standard-basic"
+                            label="split"
+                            value={split}
+                            onChange={((e) => setSplit(e.target.value))}
+                        />
+                        </div>
+                        <div className="my-2">
+                        <TextField
+                            className="w-[25rem]"
+                            id="standard-basic"
+                            label="sentence_split"
+                            value={sentenceSplit}
+                            onChange={(e) => setSentenceSplit(e.target.value)}
+                        />
+                        </div>
+                        <div className="my-2">
+                        <TextField
+                            className="w-[25rem]"
+                            id="standard-basic"
+                            label="word_idx"
+                            type="number"
+                            value={wordIdx}
+                            onChange={(e) => setWordIdx(parseInt(e.target.value, 10))}
+                        />
+                        </div>
+                        <div className="my-2">
+                        <TextField
+                            className="w-[25rem]"
+                            id="standard-basic"
+                            label="label_idx"
+                            type="number"
+                            value={labelIdx}
+                            onChange={(e) => setLabelIdx(parseInt(e.target.value, 10))}
+                        />
+                        </div>
+                        <div className="my-2">
+                        <TextField
+                            className="w-[25rem]"
+                            id="standard-basic"
+                            label="label_split"
+                            value={labelSplit}
+                            onChange={(e) => setLabelSplit(e.target.value)}
+                        />
+                        </div>
+                        <div className="my-2">
+                        <TextField
+                            className="w-[25rem]"
+                            id="standard-basic"
+                            label="type"
+                            value={type}
+                            onChange={(e) => setType(e.target.value)}
+                        />
+                        </div>
+                    </div>
+                    }
+                    <div className="block h-12" />
                     <div className="absolute bottom-3 right-3 w-fit mx-auto">
                         <Button className="mx-2" variant="outlined" onClick={setClosed}>
                             Cancel
                         </Button>
-                        <Button className="mx-2" variant="contained" component="label" onClick={handleFinish} disabled={!(inputValue != "" && selectedFile != null)}>
+                        <Button className="mx-2" variant="contained" component="label" onClick={handleFinish} disabled={!(projectName != "" && selectedFile != null)}>
                             Submit
                         </Button>
                     </div>
