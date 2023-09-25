@@ -2,7 +2,7 @@ import data from "../src/NER_Tags.json";
 import React, {useEffect, useRef, useState} from "react";
 import Header from "@/components/Header";
 import {Button} from "@mui/material";
-import CategoryModal from "@/components/CategoryModal";
+import AddToCodeModal from "@/components/AddToCodeModal";
 import CodeTreeView from "@/components/CodeTreeView";
 import {extractCodes, getCodeTree} from "@/pages/api/api";
 import {useRouter} from "next/router";
@@ -108,7 +108,7 @@ export default function CodeView() {
     return (
         <div>
             <Header title="Code View"/>
-            <CategoryModal open={open} handleClose={handleAddModalClose} projectId={projectId}/>
+            <AddToCodeModal open={open} handleClose={handleAddModalClose} projectId={projectId}/>
             <LoadingModal open={loading}/>
 
             <div className="float-left">

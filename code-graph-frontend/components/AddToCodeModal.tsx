@@ -2,13 +2,13 @@ import {Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGro
 import React, {useEffect} from "react";
 import {getCodesRoutes, insertCodeRoute, insertCodeRouteWithParent} from "@/pages/api/api";
 
-interface CategoryModalProps {
+interface AddToCodeModalProps {
     open: boolean,
     handleClose: () => void,
     projectId: number,
 }
 
-export default function CategoryModal(props: CategoryModalProps) {
+export default function AddToCodeModal(props: AddToCodeModalProps) {
     const noneIndex = -1;
     const [checkedId, setCheckedId] = React.useState(noneIndex);
     const [disabled, setDisabled] = React.useState(true);
