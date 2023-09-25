@@ -41,18 +41,14 @@ export default function UploadModal(props: CategoryModalProps) {
         props.handleClose();
         props.setLoading();
         postProject(inputValue)
-            .then(() =>
-                getProjects().then((response) => {
-                        if(response.data.length > 0) {
-                            const project = response.data.find((project: any) => project.project_name === inputValue);
-                            uploadDataset(project.project_id, inputValue, selectedFile!).then((response) => {
-                                    props.setLoading();
-                                    router.push(`/codeView?project_id=${project.project_id}`);
-                                }
-                            )
-                        }
+            .then((response) =>{
+                const projectId = response.data.data.project_id;
+                uploadDataset(projectId, inputValue, selectedFile!).then(() => {
+                    props.setLoading();
+                    router.push(`/codeView?project_id=${projectId}`);
                 })
-            )
+                }
+            );
     }
 
     function setClosed() {
