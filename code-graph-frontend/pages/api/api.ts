@@ -11,6 +11,25 @@ export const getProjects = (): Promise<any> => {
     return axios.get<any>(`${baseURL}/projects/`);
 }
 
+export const getProject = (project_id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/`)
+    return axios.get<any>(`${baseURL}/projects/${project_id}/`);
+}
+
+export const deleteProject = (project_id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/`)
+    return axios.delete(`${baseURL}/projects/${project_id}/`);
+}
+
+export const updateProject = (project_id: number, projectName: string): Promise<any> => {
+    const body = {
+        project_name: projectName
+    };
+
+    console.log(`${baseURL}/projects/${project_id}/`, body)
+    return axios.put<any>(`${baseURL}/projects/${project_id}/`, body);
+}
+
 export const postProject = (projectName: string): Promise<any> => {
 
     console.log(`${baseURL}/projects/?project_name=${projectName}` )
