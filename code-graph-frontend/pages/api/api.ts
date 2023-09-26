@@ -30,7 +30,7 @@ export const uploadDataset = (projectId: number, datasetName: string, file: File
     const formData = new FormData();
     formData.append('file', file);
 
-    return axios.post(`${baseURL}/projects/${projectId}/datasets/upload?dataset_name=${datasetName}&split=%5Ct&sentence_split=%5Cn%5Cn&word_idx=0&label_idx=1&label_split=None&type=plain`,
+    return axios.post(`${baseURL}/projects/${projectId}/datasets/upload?dataset_name=${datasetName}&split=%5Ct&sentence_split=%5Cn%5Cn&word_idx=0&label_idx=1&label_split=-&type=plain`,
         formData,
         {
         headers: {

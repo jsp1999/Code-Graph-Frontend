@@ -62,19 +62,6 @@ export default function CodeView() {
 
     useEffect(() => {
         setLoading(true);
-        extractCodes(projectId)
-            .then(() => {
-                    setExtractedCodes(true);
-                    setLoading(false);
-                }
-            )
-            .catch((error) => {
-                console.error('Error extracting data:', error);
-            });
-    }, []);
-
-    useEffect(() => {
-        setLoading(true);
         getCodeTree(projectId)
             .then(response => {
                 setJsonData(response.data.codes);

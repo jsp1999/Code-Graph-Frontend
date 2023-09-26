@@ -52,6 +52,7 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
             insertCodeRouteWithParent(inputValue, props.projectId, checkedId);
         }
         setClosed();
+        props.handleClose();
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

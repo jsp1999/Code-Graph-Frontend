@@ -15,7 +15,7 @@ export default function UploadModal(props: CategoryModalProps) {
     const [sentenceSplit, setSentenceSplit] = useState("\\n\\n");
     const [wordIdx, setWordIdx] = useState(0);
     const [labelIdx, setLabelIdx] = useState(1);
-    const [labelSplit, setLabelSplit] = useState("None");
+    const [labelSplit, setLabelSplit] = useState("-");
     const [type, setType] = useState("plain");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [advancedSettingsSelected, setAdvancedSettingsSelected] = useState(false);
