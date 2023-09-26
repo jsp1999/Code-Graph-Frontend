@@ -22,7 +22,7 @@ export const postProject = (projectName: string): Promise<any> => {
 
 export const uploadTestDataset = (): Promise<any> => {
     console.log(`${baseURL}/data/${datasetName}/codes/roots`)
-    return axios.get<any>(`${baseURL}/projects/1/plots/test/`);
+    return axios.get<any>(`${baseURL}/projects/%7Bproject_id%7D/plots/test/`);
 }
 
 
