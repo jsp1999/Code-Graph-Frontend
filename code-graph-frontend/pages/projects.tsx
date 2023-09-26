@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getProjects } from "@/pages/api/api";
+import { getProjects, deleteProject, updateProject } from "@/pages/api/api";
 import Header from "@/components/Header";
 import {Button,ButtonGroup} from "@mui/material";
 import {
@@ -51,6 +51,8 @@ const columns: ColumnDef<Project>[] = [
 
 ]
 
+
+
 export default function WelcomePage() {
 
   const [projects, setProjects] = useState<Project[]>([]);
@@ -61,6 +63,8 @@ export default function WelcomePage() {
   })
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [projectId, setProjectId] = useState(0);
+
 
 
   useEffect(() => {
@@ -79,8 +83,8 @@ export default function WelcomePage() {
 
   return (
     <header>
-    <ConfirmModal open={confirmModalOpen} handleClose={()=> setConfirmModalOpen(false)} />
     <EditModal open={editModalOpen} handleClose={() => setEditModalOpen(false)} />
+    <ConfirmModal open={confirmModalOpen} handleClose={() => setConfirmModalOpen(false)} onDelete={deleteProject} projectId={projectId} />
 
     <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
       <Header title="Code View" />
@@ -105,9 +109,14 @@ export default function WelcomePage() {
                   <button onClick={() => setEditModalOpen(true)}>
                       <Edit />
                   </button>
-                  <button onClick={() => setConfirmModalOpen(true)}>
-                      <Delete />
-                  </button>
+                  <button
+                  onClick={() => {
+                    setConfirmModalOpen(true);
+                    setProjectId(project.project_id);
+                  }}
+                >
+                  <Delete />
+                </button>
               </div>
               </td>
             </tr>
