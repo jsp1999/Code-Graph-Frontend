@@ -63,8 +63,8 @@ export default function Header(props: HeaderProps) {
                             <p>haha</p>
                         </AccordionSummary>
                     {/* Styling noch anpassen und eigene sachen drüber mappen */}
-                        {projects.map((value) => (
-                            <div className="flex items-center space-between">
+                        {projects.map((value, index) => (
+                            <div key={index} className="flex items-center space-between">
                                 <p>{value}</p>
                                 <div>
                                     <button onClick={() => setEditModalOpen(true)}>
