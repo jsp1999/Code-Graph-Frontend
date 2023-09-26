@@ -82,7 +82,7 @@ export default function Header(props: HeaderProps) {
                 <div className="content-center">
                     <div className="center">
                         <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group" style={{ display: "flex", flexDirection: "column" }}>
-                        <Button variant="outlined" component="label" onClick={() => router.push(`/list`)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Button variant="outlined" component="label" onClick={() => router.push(`/projects`)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span>Projects</span>
                             <PiSuitcaseSimpleLight />
                         </Button>
