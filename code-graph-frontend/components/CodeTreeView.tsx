@@ -68,7 +68,6 @@ const CodeTreeView: React.FC<CodeTreeViewProps> = ({
                     )}
                 </TreeView>
             </div>
-            <p>Selected Node Label: {selectedNodes.join(", ")}</p>
         </div>
     );
 };
