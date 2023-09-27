@@ -32,16 +32,12 @@ export default function EditModal(props: EditModalProps) {
         project_id: 0,
         config_id: 0,
       });
-
-      // Handle successful deletion
     } catch (error) {
       // Handle error
     }
   };
 
   function setClosed() {
-    // clean form data
-
     setFormData({
       project_name: "",
       project_id: 0,
@@ -52,7 +48,6 @@ export default function EditModal(props: EditModalProps) {
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("handleInputChange");
     const { name, value } = event.target;
     setFormData({ ...props.project, [name]: value });
   };

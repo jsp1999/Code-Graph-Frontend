@@ -53,7 +53,7 @@ export default function WelcomePage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [projectId, setProjectId] = useState(0);
-  const [editData, setEditData] = useState<any>({}); // State to store edited data
+  const [editData, setEditData] = useState<any>({});
 
   // Function to fetch and update project data
   const fetchAndUpdateProjects = async () => {
@@ -87,7 +87,6 @@ export default function WelcomePage() {
 
   // Function to handle opening the EditModal and passing data
   const handleEditClick = (project: Project) => {
-    console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", project);
     setEditData({ project_name: project.project_name, config_id: project.config_id, project_id: project.project_id });
     setEditModalOpen(true);
   };
@@ -95,7 +94,6 @@ export default function WelcomePage() {
   // Function to handle project editing
   const handleEditProject = async (project: Project) => {
     try {
-      console.log("newProjectData", project);
       // Call your updateProject function here
       await updateProjectName(project.project_id, project.project_name);
       //await updateProjectConfig(project.project_id, project.config_id);
