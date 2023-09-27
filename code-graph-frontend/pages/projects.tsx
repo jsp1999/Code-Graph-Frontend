@@ -54,19 +54,35 @@ export default function WelcomePage() {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [projectId, setProjectId] = useState(0);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const result = await getProjects();
-        let projectData: Project[] = result.data.data;
-        setProjects(projectData);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
+  // Function to fetch and update project data
+  const fetchAndUpdateProjects = async () => {
+    try {
+      const result = await getProjects();
+      let projectData: Project[] = result.data.data;
+      setProjects(projectData);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
     }
+  };
 
-    fetchData();
+  useEffect(() => {
+    // Fetch project data when the component mounts
+    fetchAndUpdateProjects();
   }, []);
+
+  // Function to handle project deletion
+  const handleDeleteProject = async (projectIdToDelete: number) => {
+    try {
+      // Call your deleteProject function here
+      await deleteProject(projectIdToDelete);
+      // Fetch and update the project data after successful deletion
+      fetchAndUpdateProjects();
+      // Close the confirm modal
+      setConfirmModalOpen(false);
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
+  };
 
   return (
     <header>
@@ -74,7 +90,7 @@ export default function WelcomePage() {
       <ConfirmModal
         open={confirmModalOpen}
         handleClose={() => setConfirmModalOpen(false)}
-        onDelete={deleteProject}
+        onDelete={handleDeleteProject}
         projectId={projectId}
       />
 
