@@ -11,7 +11,7 @@ import { Button, ButtonGroup } from "@mui/material";
 import { PiSuitcaseSimpleLight } from "react-icons/pi";
 import { FcScatterPlot } from "react-icons/fc";
 import { HiOutlineAnnotation } from "react-icons/hi";
-
+import { BsFillDatabaseFill } from "react-icons/bs";
 interface HeaderProps {
   title: string;
 }
@@ -114,7 +114,7 @@ export default function Header(props: HeaderProps) {
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Databases</span>
-                <HiOutlineAnnotation />
+                <BsFillDatabaseFill />
               </Button>
             </ButtonGroup>
           </div>
