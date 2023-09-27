@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { getProjects, deleteProject, updateProjectName, updateProjectConfig, postProject } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
-import EditModal from "@/components/EditModal";
-import CreateModal from "@/components/CreateModal";
+import EditModal from "@/components/project/EditProjectModal";
+import CreateModal from "@/components/project/CreateProjectModal";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
-import ConfirmModal from "@/components/ConfirmModal";
+import ConfirmModal from "@/components/project/DeleteProjectModal";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Button } from "@mui/material";
 
