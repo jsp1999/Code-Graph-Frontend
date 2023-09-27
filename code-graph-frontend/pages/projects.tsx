@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getProjects, deleteProject, updateProjectName, updateProjectConfig, postProject } from "@/pages/api/api";
 import Header from "@/components/Header";
-import { Button, ButtonGroup } from "@mui/material";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
 import EditModal from "@/components/EditModal";
 import CreateModal from "@/components/CreateModal";
@@ -9,48 +8,15 @@ import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import ConfirmModal from "@/components/ConfirmModal";
 import { AiOutlinePlus } from "react-icons/ai";
+
 type Project = {
   project_name: string;
   project_id: number;
   config_id: number;
 };
 
-const columns: ColumnDef<Project>[] = [
-  {
-    header: "Name",
-    footer: (props) => props.column.id,
-    columns: [
-      {
-        accessorFn: (row) => row.project_id,
-        id: "project_id",
-        cell: (info) => info.getValue(),
-        header: () => <span>Project ID</span>,
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "project_name",
-        cell: (info) => info.getValue(),
-        footer: (props) => props.column.id,
-      },
-
-      {
-        accessorFn: (row) => row.config_id,
-        id: "config_id",
-        cell: (info) => info.getValue(),
-        header: () => <span>Config ID</span>,
-        footer: (props) => props.column.id,
-      },
-    ],
-  },
-];
-
 export default function WelcomePage() {
   const [projects, setProjects] = useState<Project[]>([]);
-  const table = useReactTable({
-    columns,
-    data: projects,
-    getCoreRowModel: getCoreRowModel(),
-  });
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -58,6 +24,79 @@ export default function WelcomePage() {
   const [projectName, setProjectName] = useState("");
   const [editData, setEditData] = useState<any>({});
 
+  const columns: ColumnDef<Project>[] = [
+    {
+      header: "Projects",
+      footer: (props) => props.column.id,
+      columns: [
+        {
+          accessorFn: (row) => row.project_id,
+          id: "project_id",
+          cell: (info) => info.getValue(),
+          header: () => <span>Project ID</span>,
+          footer: (props) => props.column.id,
+        },
+        {
+          accessorKey: "project_name",
+          cell: (info) => info.getValue(),
+          footer: (props) => props.column.id,
+        },
+
+        {
+          accessorFn: (row) => row.config_id,
+          id: "config_id",
+          cell: (info) => info.getValue(),
+          header: () => <span>Config ID</span>,
+          footer: (props) => props.column.id,
+        },
+      ],
+    },
+    {
+      header: "Actions",
+      footer: (props) => props.column.id,
+      columns: [
+        {
+          id: "edit",
+          header: () => <span>Edit</span>,
+          cell: (info) => (
+            <div className="flex justify-center">
+              <Edit
+                className="cursor-pointer"
+                onClick={() => {
+                  handleEditClick(info.row.original);
+                }}
+              />
+            </div>
+          ),
+          footer: (props) => props.column.id,
+        },
+        {
+          id: "delete",
+          header: () => <span>Delete</span>,
+          cell: (info) => (
+            <div className="flex justify-center">
+              <Delete
+                className="cursor-pointer"
+                onClick={() => {
+                  setConfirmModalOpen(true);
+                  setProjectId(info.row.original.project_id);
+                }}
+              />
+            </div>
+          ),
+          footer: (props) => props.column.id,
+        },
+      ],
+    },
+  ];
+
+  const table = useReactTable({
+    columns,
+    data: projects,
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
+    getCoreRowModel: getCoreRowModel(),
+  });
   // Function to fetch and update project data
   const fetchAndUpdateProjects = async () => {
     try {
@@ -70,18 +109,13 @@ export default function WelcomePage() {
   };
 
   useEffect(() => {
-    // Fetch project data when the component mounts
     fetchAndUpdateProjects();
   }, []);
 
-  // Function to handle project deletion
   const handleDeleteProject = async (projectIdToDelete: number) => {
     try {
-      // Call your deleteProject function here
       await deleteProject(projectIdToDelete);
-      // Fetch and update the project data after successful deletion
       fetchAndUpdateProjects();
-      // Close the confirm modal
       setConfirmModalOpen(false);
     } catch (error) {
       console.error("Error deleting project:", error);
@@ -134,50 +168,57 @@ export default function WelcomePage() {
         project_name={projectName}
       />
 
+      <Header title="Code View" />
+      <div className="flex justify-center">
+        <button
+          className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => setCreateModalOpen(true)}
+        >
+          <AiOutlinePlus className="mr-2" />
+          Create Project
+        </button>
+      </div>
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
-        <Header title="Code View" />
         <div className="h-2" />
         <table className="w-full ">
           <thead>
-            <tr>
-              <th className="text-left">Project Name</th>
-              <th className="text-left">Project ID</th>
-              <th className="text-left">Config ID</th>
-              <th className="text-left">
-                <p>Actions</p>{" "}
-                <button onClick={() => setCreateModalOpen(true)}>
-                  <AiOutlinePlus />
-                </button>{" "}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((project) => (
-              <tr key={project.project_id}>
-                <td className="text-left">{project.project_name}</td>
-                <td className="text-left">{project.project_id}</td>
-                <td className="text-left">{project.config_id}</td>
-                <td className="text-left">
-                  <div>
-                    <button
-                      onClick={() => {
-                        handleEditClick(project);
-                      }}
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      style={{ position: "relative", width: header.getSize() }}
                     >
-                      <Edit />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setConfirmModalOpen(true);
-                        setProjectId(project.project_id);
-                      }}
-                    >
-                      <Delete />
-                    </button>
-                  </div>
-                </td>
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.column.getCanResize() && (
+                        <div
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          className={`resizer ${header.column.getIsResizing() ? "isResizing" : ""}`}
+                        ></div>
+                      )}
+                    </th>
+                  );
+                })}
               </tr>
             ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => {
+              return (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <td key={cell.id} style={{ width: cell.column.getSize() }}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
