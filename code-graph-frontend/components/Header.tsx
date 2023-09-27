@@ -47,7 +47,7 @@ export default function Header(props: HeaderProps) {
         <h1 className="font-bold text-3xl">{props.title}</h1>
       </div>
       <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer}>
-        <div className="p-4">
+        <div className="p-4 w-64">
           <h1 className="text-2xl text-black">Menu</h1>
           <div className="mt-5">
             {/* Für jeden bereich bsp. Projects ein eigenes accordion */}
