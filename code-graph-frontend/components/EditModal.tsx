@@ -10,22 +10,23 @@ type Project = {
 interface EditModalProps {
   open: boolean;
   handleClose: () => void;
-  projectId: number;
-  projectName: string;
-  configId: number;
+  project: Project;
   onEdit: (project: Project) => Promise<any>;
 }
 
 export default function EditModal(props: EditModalProps) {
-  const [formData, setFormData] = useState({
-    project_name: props.projectName || "",
-    project_id: props.projectId || "",
-    config_id: props.configId || "",
-  });
+  const initialFormData: Project = {
+    project_name: props?.project?.project_name,
+    project_id: props?.project?.project_id,
+    config_id: props?.project?.config_id,
+  };
+
+  const [formData, setFormData] = useState<Project>(initialFormData);
 
   const handleFinish = async () => {
     try {
-      await props.onEdit(formData as Project);
+      await props.onEdit(formData);
+
       // Handle successful deletion
     } catch (error) {
       // Handle error
@@ -33,27 +34,32 @@ export default function EditModal(props: EditModalProps) {
   };
 
   function setClosed() {
+    // clean form data
+
+    setFormData({
+      project_name: "",
+      project_id: 0,
+      config_id: 0,
+    });
+
     props.handleClose();
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...props.project, [name]: value });
   };
 
   return (
     <Modal open={props.open} onClose={setClosed}>
       <div className="w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10vh] grid-cols-1 text-center">
         <p>Edit Project Data</p>
-        <p>Project ID: {props.projectId}</p>
+        <p>Project ID: {props?.project?.project_id}</p>
         <div className="w-fit mx-auto">
           <TextField
             name="project_name"
             label="Project Name"
-            value={formData.project_name || props.projectName}
+            value={formData?.project_name || props?.project?.project_name}
             onChange={handleInputChange}
             variant="outlined"
             className="mb-2"
@@ -62,7 +68,7 @@ export default function EditModal(props: EditModalProps) {
           <TextField
             name="project_id"
             label="Project ID"
-            value={formData.project_id || props.projectId}
+            value={props?.project?.project_id}
             variant="outlined"
             className="mb-2"
             fullWidth
@@ -70,7 +76,7 @@ export default function EditModal(props: EditModalProps) {
           <TextField
             name="config_id"
             label="Config ID"
-            value={formData.config_id || props.configId}
+            value={props?.project?.config_id}
             variant="outlined"
             className="mb-2"
             fullWidth

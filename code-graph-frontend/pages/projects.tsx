@@ -114,9 +114,7 @@ export default function WelcomePage() {
         open={editModalOpen}
         handleClose={() => setEditModalOpen(false)}
         onEdit={handleEditProject}
-        projectId={editData.project_id}
-        projectName={editData.project_name}
-        configId={editData.config_id}
+        project={editData}
       />
       <ConfirmModal
         open={confirmModalOpen}
