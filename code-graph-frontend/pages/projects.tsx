@@ -15,7 +15,7 @@ type Project = {
   config_id: number;
 };
 
-export default function WelcomePage() {
+export default function ProjectPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
