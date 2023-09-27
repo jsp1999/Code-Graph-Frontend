@@ -83,10 +83,10 @@ export default function EditModal(props: EditModalProps) {
             className="mb-2"
             fullWidth
           />
-          <Button className="mx-2" variant="outlined" onClick={setClosed}>
+          <Button className="mx-2" variant="outlined" component="label" onClick={setClosed}>
             Cancel
           </Button>
-          <Button className="mx-2" variant="contained" onClick={handleFinish}>
+          <Button className="mx-2" variant="contained" component="label" onClick={handleFinish}>
             Submit
           </Button>
         </div>

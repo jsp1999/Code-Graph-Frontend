@@ -8,6 +8,7 @@ import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import ConfirmModal from "@/components/ConfirmModal";
 import { AiOutlinePlus } from "react-icons/ai";
+import { Button } from "@mui/material";
 
 type Project = {
   project_name: string;
@@ -172,13 +173,15 @@ export default function ProjectPage() {
 
       <Header title="Code View" />
       <div className="flex justify-center">
-        <button
+        <Button
+          variant="outlined"
+          component="label"
           className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => setCreateModalOpen(true)}
         >
           <AiOutlinePlus className="mr-2" />
           Create Project
-        </button>
+        </Button>
       </div>
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
         <div className="h-2" />
