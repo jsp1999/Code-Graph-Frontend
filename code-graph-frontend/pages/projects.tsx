@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getProjects, deleteProject, updateProject } from "@/pages/api/api";
+import { getProjects, deleteProject, updateProjectName, updateProjectConfig } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { Button, ButtonGroup } from "@mui/material";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
@@ -87,17 +87,18 @@ export default function WelcomePage() {
 
   // Function to handle opening the EditModal and passing data
   const handleEditClick = (project: Project) => {
+    console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", project);
     setEditData({ project_name: project.project_name, config_id: project.config_id, project_id: project.project_id });
-    setProjectId(project.project_id);
     setEditModalOpen(true);
   };
 
   // Function to handle project editing
-  const handleEditProject = async (project_id: number, project_name: string) => {
+  const handleEditProject = async (project: Project) => {
     try {
-      console.log("newProjectData", project_id, project_name);
+      console.log("newProjectData", project);
       // Call your updateProject function here
-      await updateProject(project_id, project_name);
+      await updateProjectName(project.project_id, project.project_name);
+      //await updateProjectConfig(project.project_id, project.config_id);
       // Fetch and update the project data after successful edit
       fetchAndUpdateProjects();
       // Close the edit modal
@@ -113,7 +114,7 @@ export default function WelcomePage() {
         open={editModalOpen}
         handleClose={() => setEditModalOpen(false)}
         onEdit={handleEditProject}
-        projectId={projectId}
+        projectId={editData.project_id}
         projectName={editData.project_name}
         configId={editData.config_id}
       />
@@ -146,7 +147,6 @@ export default function WelcomePage() {
                   <div>
                     <button
                       onClick={() => {
-                        setProjectId(project.project_id);
                         handleEditClick(project);
                       }}
                     >

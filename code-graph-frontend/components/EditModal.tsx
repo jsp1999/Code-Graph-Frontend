@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import { Button, Modal, TextField } from "@mui/material";
 
+type Project = {
+  project_name: string;
+  project_id: number;
+  config_id: number;
+};
+
 interface EditModalProps {
   open: boolean;
   handleClose: () => void;
   projectId: number;
   projectName: string;
   configId: number;
-  onEdit: (project_id: number, project_name: string) => Promise<any>;
+  onEdit: (project: Project) => Promise<any>;
 }
 
 export default function EditModal(props: EditModalProps) {
@@ -19,7 +25,7 @@ export default function EditModal(props: EditModalProps) {
 
   const handleFinish = async () => {
     try {
-      await props.onEdit(props.projectId, formData.project_name);
+      await props.onEdit(formData as Project);
       // Handle successful deletion
     } catch (error) {
       // Handle error
@@ -57,7 +63,6 @@ export default function EditModal(props: EditModalProps) {
             name="project_id"
             label="Project ID"
             value={formData.project_id || props.projectId}
-            onChange={handleInputChange}
             variant="outlined"
             className="mb-2"
             fullWidth
@@ -66,7 +71,6 @@ export default function EditModal(props: EditModalProps) {
             name="config_id"
             label="Config ID"
             value={formData.config_id || props.configId}
-            onChange={handleInputChange}
             variant="outlined"
             className="mb-2"
             fullWidth
