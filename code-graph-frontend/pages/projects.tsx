@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { getProjects, deleteProject, updateProjectName, updateProjectConfig } from "@/pages/api/api";
+import { getProjects, deleteProject, updateProjectName, updateProjectConfig, postProject } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { Button, ButtonGroup } from "@mui/material";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
 import EditModal from "@/components/EditModal";
+import CreateModal from "@/components/CreateModal";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import ConfirmModal from "@/components/ConfirmModal";
-
+import { AiOutlinePlus } from "react-icons/ai";
 type Project = {
   project_name: string;
   project_id: number;
@@ -51,8 +52,10 @@ export default function WelcomePage() {
     getCoreRowModel: getCoreRowModel(),
   });
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [projectId, setProjectId] = useState(0);
+  const [projectName, setProjectName] = useState("");
   const [editData, setEditData] = useState<any>({});
 
   // Function to fetch and update project data
@@ -85,24 +88,28 @@ export default function WelcomePage() {
     }
   };
 
-  // Function to handle opening the EditModal and passing data
   const handleEditClick = (project: Project) => {
     setEditData({ project_name: project.project_name, config_id: project.config_id, project_id: project.project_id });
     setEditModalOpen(true);
   };
 
-  // Function to handle project editing
   const handleEditProject = async (project: Project) => {
     try {
-      // Call your updateProject function here
       await updateProjectName(project.project_id, project.project_name);
-      //await updateProjectConfig(project.project_id, project.config_id);
-      // Fetch and update the project data after successful edit
       fetchAndUpdateProjects();
-      // Close the edit modal
       setEditModalOpen(false);
     } catch (error) {
       console.error("Error editing project:", error);
+    }
+  };
+
+  const handleCreateProject = async (project_name: string) => {
+    try {
+      await postProject(project_name);
+      fetchAndUpdateProjects();
+      setCreateModalOpen(false);
+    } catch (error) {
+      console.error("Error creating project:", error);
     }
   };
 
@@ -120,6 +127,12 @@ export default function WelcomePage() {
         onDelete={handleDeleteProject}
         projectId={projectId}
       />
+      <CreateModal
+        open={createModalOpen}
+        handleClose={() => setCreateModalOpen(false)}
+        onCreate={handleCreateProject}
+        project_name={projectName}
+      />
 
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
         <Header title="Code View" />
@@ -130,7 +143,12 @@ export default function WelcomePage() {
               <th className="text-left">Project Name</th>
               <th className="text-left">Project ID</th>
               <th className="text-left">Config ID</th>
-              <th className="text-left">Actions</th>
+              <th className="text-left">
+                <p>Actions</p>{" "}
+                <button onClick={() => setCreateModalOpen(true)}>
+                  <AiOutlinePlus />
+                </button>{" "}
+              </th>
             </tr>
           </thead>
           <tbody>
