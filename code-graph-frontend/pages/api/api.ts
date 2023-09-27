@@ -175,7 +175,20 @@ export const listFiles = (): Promise<any> => {
   return axios.get<any>(`${baseURL}/databases/list-files`);
 };
 
-export const downloadFile = (filePath: string): Promise<any> => {
+export const downloadFile = (filePath: string) => {
+  let filename: string = filePath.split("/").pop() || "";
   console.log(`${baseURL}/databases/download/${filePath}`);
-  return axios.get<any>(`${baseURL}/databases/download/${filePath}`);
+  fetch(`${baseURL}/databases/download/${filePath}`, {
+    method: "GET",
+  })
+    .then((response) => response.blob())
+    .then((blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    });
 };
