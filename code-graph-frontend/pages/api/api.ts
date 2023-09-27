@@ -148,3 +148,34 @@ export const insertCodeRouteWithParent = (
   console.log(`${baseURL}/projects/${project_id}/codes/?code_name=${codeName}&parent_id=${topLevelCodeId}`);
   return axios.post(`${baseURL}/projects/${project_id}/codes/?code_name=${codeName}&parent_id=${topLevelCodeId}`);
 };
+
+// Databases
+export const initTables = (): Promise<any> => {
+  console.log(`${baseURL}/databases/tables/init`);
+  return axios.get<any>(`${baseURL}/databases/tables/init`);
+};
+
+export const getDatabaseInfos = (): Promise<any> => {
+  console.log(`${baseURL}/databases/tables/infos`);
+  return axios.get<any>(`${baseURL}/databases/tables/infos`);
+};
+
+export const deleteDatabaseTables = (): Promise<any> => {
+  console.log(`${baseURL}/databases/tables`);
+  return axios.delete(`${baseURL}/databases/tables`);
+};
+
+export const deleteDatabaseTable = (tableName: string): Promise<any> => {
+  console.log(`${baseURL}/databases/${tableName}`);
+  return axios.delete(`${baseURL}/databases/${tableName}`);
+};
+
+export const listFiles = (): Promise<any> => {
+  console.log(`${baseURL}/databases/list-files`);
+  return axios.get<any>(`${baseURL}/databases/list-files`);
+};
+
+export const downloadFile = (filePath: string): Promise<any> => {
+  console.log(`${baseURL}/databases/download/${filePath}`);
+  return axios.get<any>(`${baseURL}/databases/download/${filePath}`);
+};

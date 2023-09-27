@@ -107,6 +107,15 @@ export default function Header(props: HeaderProps) {
                 <span>Codes</span>
                 <HiOutlineAnnotation />
               </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/databases`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Databases</span>
+                <HiOutlineAnnotation />
+              </Button>
             </ButtonGroup>
           </div>
         </div>

@@ -1,52 +1,52 @@
 import React, { useState, useEffect } from "react";
-import { getProjects, deleteProject, updateProjectName, updateProjectConfig, postProject } from "@/pages/api/api";
+import {
+  getDatabaseInfos,
+  deleteDatabaseTables,
+  deleteDatabaseTable,
+  downloadFile,
+  listFiles,
+  initTables,
+} from "@/pages/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
-import EditModal from "@/components/project/EditProjectModal";
 import CreateModal from "@/components/project/CreateProjectModal";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
-import ConfirmModal from "@/components/project/DeleteProjectModal";
+import DeleteAllDatabasesModal from "@/components/database/DeleteDatabasesModal";
+import DeleteDatabasesModal from "@/components/database/DeleteDatabaseModal";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Button } from "@mui/material";
+import { BsTrash } from "react-icons/bs";
+import { BsListColumnsReverse } from "react-icons/bs";
 
-type Project = {
-  project_name: string;
-  project_id: number;
-  config_id: number;
+type Database = {
+  name: string;
+  count: number;
 };
 
 export default function ProjectPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [projectId, setProjectId] = useState(0);
-  const [projectName, setProjectName] = useState("");
-  const [editData, setEditData] = useState<any>({});
+  const [databases, setDatabases] = useState<Database[]>([]);
+  const [deleteAllModalOpen, setDeleteAllModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [databaseName, setDatabaseName] = useState("");
 
-  const columns: ColumnDef<Project>[] = [
+  const columns: ColumnDef<Database>[] = [
     {
-      header: "Projects",
+      header: "Database",
       footer: (props) => props.column.id,
       columns: [
         {
-          accessorFn: (row) => row.project_id,
-          id: "project_id",
+          accessorFn: (row) => row.name,
+          id: "name",
           cell: (info) => info.getValue(),
-          header: () => <span>Project ID</span>,
+          header: () => <span>Name</span>,
           footer: (props) => props.column.id,
         },
         {
-          accessorFn: (row) => row.config_id,
-          id: "config_id",
+          accessorFn: (row) => row.count,
+          id: "count",
           cell: (info) => info.getValue(),
-          header: () => <span>Config ID</span>,
-          footer: (props) => props.column.id,
-        },
-        {
-          accessorKey: "project_name",
-          cell: (info) => info.getValue(),
+          header: () => <span>Count</span>,
           footer: (props) => props.column.id,
         },
       ],
@@ -56,22 +56,6 @@ export default function ProjectPage() {
       footer: (props) => props.column.id,
       columns: [
         {
-          id: "edit",
-          maxSize: 5,
-          header: () => <span>Edit</span>,
-          cell: (info) => (
-            <div className="flex justify-center">
-              <Edit
-                className="cursor-pointer"
-                onClick={() => {
-                  handleEditClick(info.row.original);
-                }}
-              />
-            </div>
-          ),
-          footer: (props) => props.column.id,
-        },
-        {
           id: "delete",
           maxSize: 5,
           header: () => <span>Delete</span>,
@@ -80,8 +64,8 @@ export default function ProjectPage() {
               <Delete
                 className="cursor-pointer"
                 onClick={() => {
-                  setConfirmModalOpen(true);
-                  setProjectId(info.row.original.project_id);
+                  setDatabaseName(info.row.original.name);
+                  setDeleteModalOpen(true);
                 }}
               />
             </div>
@@ -94,7 +78,7 @@ export default function ProjectPage() {
 
   const table = useReactTable({
     columns,
-    data: projects,
+    data: databases,
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel(),
@@ -102,9 +86,8 @@ export default function ProjectPage() {
   // Function to fetch and update project data
   const fetchAndUpdateProjects = async () => {
     try {
-      const result = await getProjects();
-      let projectData: Project[] = result.data.data;
-      setProjects(projectData);
+      const databases: Database[] = (await getDatabaseInfos()).data;
+      setDatabases(databases);
     } catch (error) {
       console.error("Error fetching projects:", error);
     }
@@ -114,60 +97,47 @@ export default function ProjectPage() {
     fetchAndUpdateProjects();
   }, []);
 
-  const handleDeleteProject = async (projectIdToDelete: number) => {
+  const handleDeleteDatabases = async () => {
     try {
-      await deleteProject(projectIdToDelete);
+      await deleteDatabaseTables();
       fetchAndUpdateProjects();
-      setConfirmModalOpen(false);
+      setDeleteAllModalOpen(false);
     } catch (error) {
       console.error("Error deleting project:", error);
     }
   };
 
-  const handleEditClick = (project: Project) => {
-    setEditData({ project_name: project.project_name, config_id: project.config_id, project_id: project.project_id });
-    setEditModalOpen(true);
-  };
-
-  const handleEditProject = async (project: Project) => {
+  const handleDeleteDatabase = async (databaseName: string) => {
     try {
-      await updateProjectName(project.project_id, project.project_name);
+      await deleteDatabaseTable(databaseName);
       fetchAndUpdateProjects();
-      setEditModalOpen(false);
+      setDeleteModalOpen(false);
     } catch (error) {
-      console.error("Error editing project:", error);
+      console.error("Error deleting project:", error);
     }
   };
 
-  const handleCreateProject = async (project_name: string) => {
+  const initDatabases = async () => {
     try {
-      await postProject(project_name);
+      await initTables();
       fetchAndUpdateProjects();
-      setCreateModalOpen(false);
     } catch (error) {
-      console.error("Error creating project:", error);
+      console.error("Error deleting project:", error);
     }
   };
 
   return (
     <header>
-      <EditModal
-        open={editModalOpen}
-        handleClose={() => setEditModalOpen(false)}
-        onEdit={handleEditProject}
-        project={editData}
+      <DeleteAllDatabasesModal
+        open={deleteAllModalOpen}
+        handleClose={() => setDeleteAllModalOpen(false)}
+        onDelete={handleDeleteDatabases}
       />
-      <ConfirmModal
-        open={confirmModalOpen}
-        handleClose={() => setConfirmModalOpen(false)}
-        onDelete={handleDeleteProject}
-        projectId={projectId}
-      />
-      <CreateModal
-        open={createModalOpen}
-        handleClose={() => setCreateModalOpen(false)}
-        onCreate={handleCreateProject}
-        project_name={projectName}
+      <DeleteDatabasesModal
+        open={deleteModalOpen}
+        handleClose={() => setDeleteModalOpen(false)}
+        onDelete={handleDeleteDatabase}
+        databaseName={databaseName}
       />
 
       <Header title="Code View" />
@@ -175,11 +145,20 @@ export default function ProjectPage() {
         <Button
           variant="outlined"
           component="label"
-          className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => setCreateModalOpen(true)}
+          className="flex items-center justify-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => initDatabases()}
         >
-          <AiOutlinePlus className="mr-2" />
-          Create Project
+          <BsListColumnsReverse className="mr-2" />
+          Initialize Databases
+        </Button>
+        <Button
+          variant="outlined"
+          component="label"
+          className="flex items-center justify-center bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => setDeleteAllModalOpen(true)}
+        >
+          <BsTrash className="mr-2" />
+          Delete All Databases
         </Button>
       </div>
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
