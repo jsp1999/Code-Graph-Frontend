@@ -37,16 +37,15 @@ export default function ProjectPage() {
           footer: (props) => props.column.id,
         },
         {
-          accessorKey: "project_name",
-          cell: (info) => info.getValue(),
-          footer: (props) => props.column.id,
-        },
-
-        {
           accessorFn: (row) => row.config_id,
           id: "config_id",
           cell: (info) => info.getValue(),
           header: () => <span>Config ID</span>,
+          footer: (props) => props.column.id,
+        },
+        {
+          accessorKey: "project_name",
+          cell: (info) => info.getValue(),
           footer: (props) => props.column.id,
         },
       ],
@@ -54,9 +53,11 @@ export default function ProjectPage() {
     {
       header: "Actions",
       footer: (props) => props.column.id,
+      // set header to center
       columns: [
         {
           id: "edit",
+          maxSize: 5,
           header: () => <span>Edit</span>,
           cell: (info) => (
             <div className="flex justify-center">
@@ -72,6 +73,7 @@ export default function ProjectPage() {
         },
         {
           id: "delete",
+          maxSize: 5,
           header: () => <span>Delete</span>,
           cell: (info) => (
             <div className="flex justify-center">
