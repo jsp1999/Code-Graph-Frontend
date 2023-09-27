@@ -6,38 +6,35 @@ import annotation_hierachy_mapping from "../src/annotations_hierachy.json";
 import Header from "@/components/Header";
 import Link from "next/link";
 
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
+import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import { Grid, Button, Box, Paper } from "@mui/material";
 
-
 //Defimed components
-import {CollideForceScrubber, CenterForceScrubber, AttractionForceScrubber, LimitScruber} from "@/components/clusterview/Scrubber"
+import {
+  CollideForceScrubber,
+  CenterForceScrubber,
+  AttractionForceScrubber,
+  LimitScruber,
+} from "@/components/clusterview/Scrubber";
 import { ClusterGraph } from "@/components/clusterview/ClusterGraph";
-import {NodeInfo} from "@/components/clusterview/NodeInfo"
+import { NodeInfo } from "@/components/clusterview/NodeInfo";
 import { Legend } from "@/components/clusterview/Legend";
-import {useRouter} from "next/router";
-import {useState} from "react";
-
-
-
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 //DATA
 
-
 const nodes_limit = 10000;
 
-
-var node_data = Object.entries(new_data).map(([id, entry]) => (
-  {
+var node_data = Object.entries(new_data).map(([id, entry]) => ({
   id: id,
   segment: entry?.segment,
   sentence: entry?.sentence,
   x: entry?.embedding?.[0],
   y: entry?.embedding?.[1],
   annotation: entry?.annotation,
-  cluster: entry?.cluster
-}))
-
+  cluster: entry?.cluster,
+}));
 
 // .map( data => ({
 //     id: data.segment,
@@ -56,20 +53,25 @@ var node_data = Object.entries(new_data).map(([id, entry]) => (
 //   topic_index: entry.topic_index
 // }))
 //   .slice(0, nodes_limit)
-const higherCategoryNameDict: { [key: string]: string } = Object.entries(annotation_hierachy_mapping).reduce((dict, [key, value]) => {
-  dict[key] = value.higherCategoryName;
-  return dict;
-}, {});
+const higherCategoryNameDict: { [key: string]: string } = Object.entries(annotation_hierachy_mapping).reduce(
+  (dict, [key, value]) => {
+    dict[key] = value.higherCategoryName;
+    return dict;
+  },
+  {},
+);
 
-console.log(higherCategoryNameDict)
-const unique_topic_index = Array.from(new Set(node_data.map((d: { annotation: any; }) => higherCategoryNameDict[d.annotation])));
+console.log(higherCategoryNameDict);
+const unique_topic_index = Array.from(
+  new Set(node_data.map((d: { annotation: any }) => higherCategoryNameDict[d.annotation])),
+);
 const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10);
 
 //HYPER PARAMETER
-const height = 800
-const width = 800
-const radius = 3
-const size_info = [height, width, radius]
+const height = 800;
+const width = 800;
+const radius = 3;
+const size_info = [height, width, radius];
 
 const defaultTheme = createTheme();
 
@@ -102,64 +104,66 @@ const Page: React.FC = () => {
   };
 
   const router = useRouter();
-  const {project_id} = router.query;
-  const [projectId, setProjectId] = useState(typeof project_id === 'string' ? parseInt(project_id, 10) : 1);
-
+  const { project_id } = router.query;
+  const [projectId, setProjectId] = useState(typeof project_id === "string" ? parseInt(project_id, 10) : 1);
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Grid container spacing={2}
+      <Grid
+        container
+        spacing={2}
         sx={{
           backgroundColor: (theme) =>
-            theme.palette.mode === 'light'
-              ? theme.palette.grey[100]
-              : theme.palette.grey[900],
-        }}>
+            theme.palette.mode === "light" ? theme.palette.grey[100] : theme.palette.grey[900],
+        }}
+      >
         <Grid item xs={12}>
           <Header title="Cluster View" />
         </Grid>
         <Grid item xs={3}>
           {/* Left column with adjustment buttons */}
           <Paper>Adjustment Buttons</Paper>
-          <LimitScruber scrubberValue={limitValue}
-            onScrubberChange={handleLimitScrubberChange}></LimitScruber>
+          <LimitScruber scrubberValue={limitValue} onScrubberChange={handleLimitScrubberChange}></LimitScruber>
 
           <CollideForceScrubber
             scrubberValue={collideValue}
-            onScrubberChange={handleScrubberChange}></CollideForceScrubber>
+            onScrubberChange={handleScrubberChange}
+          ></CollideForceScrubber>
 
-          <AttractionForceScrubber scrubberValue={attractionValue}
-            onScrubberChange={handleAttractionChange}></AttractionForceScrubber>
+          <AttractionForceScrubber
+            scrubberValue={attractionValue}
+            onScrubberChange={handleAttractionChange}
+          ></AttractionForceScrubber>
 
-          <CenterForceScrubber scrubberValue={centerForceValue}
-            onScrubberChange={handleCenterForceChange}></CenterForceScrubber>
+          <CenterForceScrubber
+            scrubberValue={centerForceValue}
+            onScrubberChange={handleCenterForceChange}
+          ></CenterForceScrubber>
         </Grid>
-        <Grid item xs={6}
-          component="main"
-        >
+        <Grid item xs={6} component="main">
           {/* Main box to display the graph */}
           <Paper
             sx={{
               p: 2,
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              height: 600
-
-            }}>
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+              height: 600,
+            }}
+          >
             <Box
               sx={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <ClusterGraph
-                node_data = {node_data}
-                size_info = {size_info}
-                cluster_color = {cluster_color}
+                node_data={node_data}
+                size_info={size_info}
+                cluster_color={cluster_color}
                 selectedNode={selectedNodeData}
                 handleSelectedNodeChange={handleSelectedNodeChange}
                 collideValue={collideValue}
@@ -173,7 +177,7 @@ const Page: React.FC = () => {
         <Grid item xs={3}>
           {/* Right column to display additional information */}
           <Paper>
-            <Legend cluster_color={cluster_color} ></Legend>
+            <Legend cluster_color={cluster_color}></Legend>
             <NodeInfo nodeData={selectedNodeData} />
           </Paper>
         </Grid>
@@ -183,10 +187,8 @@ const Page: React.FC = () => {
           </Button>
         </div>
       </Grid>
-
-
-    </ThemeProvider>)
+    </ThemeProvider>
+  );
 };
 
 export default Page;
-

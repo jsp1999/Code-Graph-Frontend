@@ -32,12 +32,7 @@ export default function ConfirmModal(props: ConfirmModalProps) {
             <Button className="mx-2" variant="outlined" onClick={setClosed}>
               No
             </Button>
-            <Button
-              className="mx-2"
-              variant="contained"
-              component="label"
-              onClick={handleFinish}
-            >
+            <Button className="mx-2" variant="contained" component="label" onClick={handleFinish}>
               Yes
             </Button>
           </div>
