@@ -1,6 +1,5 @@
 import { Button, Modal } from "@mui/material";
 import React from "react";
-import { getProjects, deleteProject, updateProject } from "@/pages/api/api";
 
 type ConfirmModalProps = {
   open: boolean;
@@ -28,6 +27,7 @@ export default function ConfirmModal(props: ConfirmModalProps) {
       <Modal open={props.open} onClose={setClosed}>
         <div className="w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10vh] grid-cols-1 text-center">
           <p>Do you want to delete this project?</p>
+          <p>Project ID: {props.projectId}</p>
           <div className="w-fit mx-auto mt-5">
             <Button className="mx-2" variant="outlined" onClick={setClosed}>
               No
