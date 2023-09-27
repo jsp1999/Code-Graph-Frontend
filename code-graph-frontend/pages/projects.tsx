@@ -53,6 +53,7 @@ export default function WelcomePage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [projectId, setProjectId] = useState(0);
+  const [editData, setEditData] = useState<any>({}); // State to store edited data
 
   // Function to fetch and update project data
   const fetchAndUpdateProjects = async () => {
@@ -84,9 +85,38 @@ export default function WelcomePage() {
     }
   };
 
+  // Function to handle opening the EditModal and passing data
+  const handleEditClick = (project: Project) => {
+    setEditData({ project_name: project.project_name, config_id: project.config_id, project_id: project.project_id });
+    setProjectId(project.project_id);
+    setEditModalOpen(true);
+  };
+
+  // Function to handle project editing
+  const handleEditProject = async (project_id: number, project_name: string) => {
+    try {
+      console.log("newProjectData", project_id, project_name);
+      // Call your updateProject function here
+      await updateProject(project_id, project_name);
+      // Fetch and update the project data after successful edit
+      fetchAndUpdateProjects();
+      // Close the edit modal
+      setEditModalOpen(false);
+    } catch (error) {
+      console.error("Error editing project:", error);
+    }
+  };
+
   return (
     <header>
-      <EditModal open={editModalOpen} handleClose={() => setEditModalOpen(false)} />
+      <EditModal
+        open={editModalOpen}
+        handleClose={() => setEditModalOpen(false)}
+        onEdit={handleEditProject}
+        projectId={projectId}
+        projectName={editData.project_name}
+        configId={editData.config_id}
+      />
       <ConfirmModal
         open={confirmModalOpen}
         handleClose={() => setConfirmModalOpen(false)}
@@ -114,7 +144,12 @@ export default function WelcomePage() {
                 <td className="text-left">{project.config_id}</td>
                 <td className="text-left">
                   <div>
-                    <button onClick={() => setEditModalOpen(true)}>
+                    <button
+                      onClick={() => {
+                        setProjectId(project.project_id);
+                        handleEditClick(project);
+                      }}
+                    >
                       <Edit />
                     </button>
                     <button

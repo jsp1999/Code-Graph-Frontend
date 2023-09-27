@@ -22,12 +22,8 @@ export const deleteProject = (project_id: number): Promise<any> => {
 };
 
 export const updateProject = (project_id: number, projectName: string): Promise<any> => {
-  const body = {
-    project_name: projectName,
-  };
-
-  console.log(`${baseURL}/projects/${project_id}/`, body);
-  return axios.put<any>(`${baseURL}/projects/${project_id}/`, body);
+  console.log(projectName, "projectName");
+  return axios.put(`${baseURL}/projects/${project_id}/?project_name=${projectName}`);
 };
 
 export const postProject = (projectName: string): Promise<any> => {
