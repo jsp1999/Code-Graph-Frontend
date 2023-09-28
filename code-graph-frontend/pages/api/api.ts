@@ -228,6 +228,24 @@ export const extractEmbeddings = (project_id: number): Promise<any> => {
   return axios.get<any>(`${baseURL}/projects/${project_id}/embeddings/extract`);
 };
 
+// Reduced Embeddings
+export const getReducedEmbeddings = (
+  project_id: number,
+  all: boolean,
+  page: number,
+  page_size: number,
+): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/reduced_embeddings/?all=${all}&page=${page}&page_size=${page_size}`);
+  return axios.get<any>(
+    `${baseURL}/projects/${project_id}/reduced_embeddings/?all=${all}&page=${page}&page_size=${page_size}`,
+  );
+};
+
+export const extractReducedEmbeddings = (project_id: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/reduced_embeddings/extract`);
+  return axios.get<any>(`${baseURL}/projects/${project_id}/reduced_embeddings/extract`);
+};
+
 // Clusters
 export const getClusters = (project_id: number, all: boolean, page: number, page_size: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/clusters/?all=${all}&page=${page}&page_size=${page_size}`);

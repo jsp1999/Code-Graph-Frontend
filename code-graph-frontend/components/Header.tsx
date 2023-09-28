@@ -15,6 +15,7 @@ import { BsFillDatabaseFill } from "react-icons/bs";
 import { MdOutlineDataset } from "react-icons/md";
 import { AiOutlineBoxPlot } from "react-icons/ai";
 import { GrCluster } from "react-icons/gr";
+import { GiPositionMarker } from "react-icons/gi";
 
 interface HeaderProps {
   title: string;
@@ -147,6 +148,15 @@ export default function Header(props: HeaderProps) {
               >
                 <span>Clusters</span>
                 <GrCluster />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/reducedEmbeddings`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Positions</span>
+                <GiPositionMarker />
               </Button>
             </ButtonGroup>
           </div>
