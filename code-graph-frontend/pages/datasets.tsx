@@ -8,6 +8,8 @@ import Delete from "@mui/icons-material/Delete";
 import DeleteDatasetModal from "@/components/dataset/DeleteDatasetModal";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Button } from "@mui/material";
+import UploadModal from "@/components/dataset/UploadDatasetModal";
+import LoadingModal from "@/components/LoadingModal";
 
 type Dataset = {
   project_id: number;
@@ -17,11 +19,10 @@ type Dataset = {
 
 export default function DatasetPage() {
   const [datasets, setDatasets] = useState<Dataset[]>([]);
-  const [datasetName, setDatasetName] = useState("");
-
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
   const [projectId, setProjectId] = useState(0);
   const [datasetId, setDatasetId] = useState(0);
   const [editData, setEditData] = useState<any>({});
@@ -144,15 +145,6 @@ export default function DatasetPage() {
     }
   };
 
-  const handleCreateDataset = async (project_name: string) => {
-    try {
-      fetchAndUpdateDatasets();
-      setCreateModalOpen(false);
-    } catch (error) {
-      console.error("Error creating project:", error);
-    }
-  };
-
   return (
     <header>
       <EditModal
@@ -171,15 +163,13 @@ export default function DatasetPage() {
 
       <Header title="Code View" />
       <div className="flex justify-center">
-        <Button
-          variant="outlined"
-          component="label"
-          className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => setCreateModalOpen(true)}
-        >
-          <AiOutlinePlus className="mr-2" />
-          Create Project
-        </Button>
+        <div className="content-center">
+          <UploadModal open={open} handleClose={() => setOpen(false)} setLoading={() => setLoading(!loading)} />
+          <LoadingModal open={loading} />
+          <Button variant="contained" className="my-5" component="label" onClick={() => setOpen(true)}>
+            Upload
+          </Button>
+        </div>
       </div>
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
         <div className="h-2" />
