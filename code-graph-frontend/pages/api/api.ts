@@ -27,8 +27,20 @@ export const updateProjectName = (project_id: number, projectName: string): Prom
   return axios.put(`${baseURL}/projects/${project_id}/?project_name=${projectName}`);
 };
 
-export const updateProjectConfig = (project_id: number, config: number): Promise<any> => {
-  return axios.put(`${baseURL}/projects/${project_id}/config=${config}`);
+// Configs
+
+export const getconfigs = (): Promise<any> => {
+  console.log(`${baseURL}/configs/`);
+  return axios.get<any>(`${baseURL}/configs/`);
+};
+
+export const updateConfig = (project_id: number, configData: any): Promise<any> => {
+  return axios.put(`${baseURL}/configs/${project_id}`, configData, {
+    headers: {
+      accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 export const postProject = (projectName: string): Promise<any> => {

@@ -16,6 +16,7 @@ import { MdOutlineDataset } from "react-icons/md";
 import { AiOutlineBoxPlot } from "react-icons/ai";
 import { GrCluster } from "react-icons/gr";
 import { GiPositionMarker } from "react-icons/gi";
+import { GrConfigure } from "react-icons/gr";
 
 interface HeaderProps {
   title: string;
@@ -157,6 +158,15 @@ export default function Header(props: HeaderProps) {
               >
                 <span>Positions</span>
                 <GiPositionMarker />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/configs`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Configs</span>
+                <GrConfigure />
               </Button>
             </ButtonGroup>
           </div>
