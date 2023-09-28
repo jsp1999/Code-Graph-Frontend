@@ -9,6 +9,7 @@ import {
 } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
+import CreateModal from "@/components/project/CreateProjectModal";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import DeleteAllDatabasesModal from "@/components/database/DeleteDatabasesModal";
@@ -17,26 +18,19 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { Button } from "@mui/material";
 import { BsTrash } from "react-icons/bs";
 import { BsListColumnsReverse } from "react-icons/bs";
-import DownloadIcon from "@mui/icons-material/Download";
+
 type Database = {
   name: string;
   count: number;
 };
 
-type File = {
-  name: string;
-};
-
-export default function databasesPage() {
+export default function ProjectPage() {
   const [databases, setDatabases] = useState<Database[]>([]);
   const [deleteAllModalOpen, setDeleteAllModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [databaseName, setDatabaseName] = useState("");
-  const [filePath, setFilePath] = useState("");
-  const [files, setFiles] = useState<any[]>([]);
-  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
 
-  const database_columns: ColumnDef<Database>[] = [
+  const columns: ColumnDef<Database>[] = [
     {
       header: "Database",
       footer: (props) => props.column.id,
@@ -82,129 +76,53 @@ export default function databasesPage() {
     },
   ];
 
-  const file_columns: ColumnDef<File>[] = [
-    {
-      header: "Files",
-      footer: (props) => props.column.id,
-      columns: [
-        {
-          accessorFn: (row) => row.name,
-          id: "path",
-          cell: (info) => info.getValue(),
-          header: () => <span>Path</span>,
-          footer: (props) => props.column.id,
-        },
-      ],
-    },
-    {
-      header: "Actions",
-      footer: (props) => props.column.id,
-      columns: [
-        {
-          id: "download",
-          maxSize: 5,
-          header: () => <span>Download</span>,
-          cell: (info) => (
-            <div className="flex justify-center">
-              <DownloadIcon
-                className="cursor-pointer"
-                onClick={() => {
-                  console.log("info.row.original.name", info.row.original.name);
-                  setFilePath(info.row.original.name);
-                  handleDownloadFile(info.row.original.name);
-                }}
-              />
-            </div>
-          ),
-          footer: (props) => props.column.id,
-        },
-      ],
-    },
-  ];
-
-  const database_table = useReactTable({
-    columns: database_columns,
+  const table = useReactTable({
+    columns,
     data: databases,
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel(),
   });
-  const file_tables = useReactTable({
-    columns: file_columns,
-    data: files,
-    enableColumnResizing: true,
-    columnResizeMode: "onChange",
-    getCoreRowModel: getCoreRowModel(),
-  });
-
-  // Function to fetch and update database data
-  const fetchAndUpdateDatabases = async () => {
+  // Function to fetch and update project data
+  const fetchAndUpdateProjects = async () => {
     try {
       const databases: Database[] = (await getDatabaseInfos()).data;
       setDatabases(databases);
     } catch (error) {
-      console.error("Error fetching databases:", error);
-    }
-  };
-
-  const fetchAndUpdateFiles = async () => {
-    try {
-      const files: string[] = (await listFiles()).data.files;
-      //transform files to json object with name
-      let filesTransformed: any[] = [];
-      for (let i = 0; i < files.length; i++) {
-        let fileTransformed = {
-          name: files[i],
-        };
-        filesTransformed.push(fileTransformed);
-      }
-
-      setFiles(filesTransformed);
-    } catch (error) {
-      console.error("Error fetching files:", error);
+      console.error("Error fetching projects:", error);
     }
   };
 
   useEffect(() => {
-    fetchAndUpdateDatabases();
-    fetchAndUpdateFiles();
+    fetchAndUpdateProjects();
   }, []);
 
   const handleDeleteDatabases = async () => {
     try {
       await deleteDatabaseTables();
-      fetchAndUpdateDatabases();
+      fetchAndUpdateProjects();
       setDeleteAllModalOpen(false);
     } catch (error) {
-      console.error("Error deleting database:", error);
+      console.error("Error deleting project:", error);
     }
   };
 
   const handleDeleteDatabase = async (databaseName: string) => {
     try {
       await deleteDatabaseTable(databaseName);
-      fetchAndUpdateDatabases();
+      fetchAndUpdateProjects();
       setDeleteModalOpen(false);
     } catch (error) {
-      console.error("Error deleting database:", error);
-    }
-  };
-
-  const handleDownloadFile = async (filePath: string) => {
-    try {
-      downloadFile(filePath);
-      setDownloadModalOpen(false);
-    } catch (error) {
-      console.error("Error downloading file:", error);
+      console.error("Error deleting project:", error);
     }
   };
 
   const initDatabases = async () => {
     try {
       await initTables();
-      fetchAndUpdateDatabases();
+      fetchAndUpdateProjects();
     } catch (error) {
-      console.error("Error deleting database:", error);
+      console.error("Error deleting project:", error);
     }
   };
 
@@ -221,6 +139,7 @@ export default function databasesPage() {
         onDelete={handleDeleteDatabase}
         databaseName={databaseName}
       />
+
       <Header title="Code View" />
       <div className="flex justify-center">
         <Button
@@ -239,14 +158,14 @@ export default function databasesPage() {
           onClick={() => setDeleteAllModalOpen(true)}
         >
           <BsTrash className="mr-2" />
-          Delete All
+          Delete All Databases
         </Button>
       </div>
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
         <div className="h-2" />
         <table className="w-full ">
           <thead>
-            {database_table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -270,51 +189,7 @@ export default function databasesPage() {
             ))}
           </thead>
           <tbody>
-            {database_table.getRowModel().rows.map((row) => {
-              return (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td key={cell.id} style={{ width: cell.column.getSize() }}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
-        <div className="h-2" />
-        <table className="w-full ">
-          <thead>
-            {file_tables.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      style={{ position: "relative", width: header.getSize() }}
-                    >
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.getCanResize() && (
-                        <div
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          className={`resizer ${header.column.getIsResizing() ? "isResizing" : ""}`}
-                        ></div>
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {file_tables.getRowModel().rows.map((row) => {
+            {table.getRowModel().rows.map((row) => {
               return (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => {
