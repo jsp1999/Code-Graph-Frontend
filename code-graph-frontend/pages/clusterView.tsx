@@ -14,6 +14,7 @@ import { CollideForceScrubber, CenterForceScrubber, AttractionForceScrubber, Lim
 import { ClusterGraph } from "@/components/clusterview/ClusterGraph";
 import { NodeInfo } from "@/components/clusterview/NodeInfo"
 import { Legend } from "@/components/clusterview/Legend";
+import { useRouter } from "next/router";
 
 //DATA
 
@@ -116,6 +117,7 @@ const Page: React.FC = () => {
     }
   };
 
+  const router = useRouter();
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -210,7 +212,7 @@ const Page: React.FC = () => {
           </Paper>
         </Grid>
         <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
-          <Button variant="contained" className="" onClick={() => router.push(`/codeView?project_id=${projectId}`)}>
+          <Button variant="contained" className="" onClick={() => router.push(`/codeView`)}>
             Change View
           </Button>
         </div>

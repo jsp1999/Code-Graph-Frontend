@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { Button } from "@mui/material";
 import AddToCodeModal from "@/components/AddToCodeModal";
 import CodeTreeView from "@/components/CodeTreeView";
-import { extractCodes, getCodeTree } from "@/pages/api/api";
+import { getCodeTree } from "@/pages/api/api";
 import { useRouter } from "next/router";
 import LoadingModal from "@/components/LoadingModal";
 import CodeItem from "@/components/CodeItem";
@@ -12,7 +12,6 @@ import ContextMenu from "@/components/ContextMenu";
 
 export default function CodeView() {
   const router = useRouter();
-  const { project_id } = router.query;
 
   const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
   const [showContextMenu, setShowContextMenu] = useState(false);
@@ -21,9 +20,8 @@ export default function CodeView() {
   const [rightClickedItem, setRightClickedItem] = useState(0);
   const [open, setOpen] = useState(false);
   const [jsonData, setJsonData] = useState(data);
-  const [extractedCodes, setExtractedCodes] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [projectId, setProjectId] = useState(typeof project_id === "string" ? parseInt(project_id, 10) : 1);
+  const [projectId, setProjectId] = useState(parseInt(JSON.parse(localStorage.getItem('projectId') ?? "1")));
 
   const handleOpen = () => setOpen(true);
   const handleAddModalClose = () => {
@@ -135,7 +133,7 @@ export default function CodeView() {
         <Button
           variant="contained"
           className="bg-blue-900 rounded"
-          onClick={() => router.push(`/clusterView?project_id=${projectId}`)}
+          onClick={() => router.push(`/clusterView`)}
         >
           Change View
         </Button>

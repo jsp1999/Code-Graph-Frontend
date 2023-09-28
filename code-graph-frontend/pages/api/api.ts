@@ -203,6 +203,6 @@ export const downloadFile = (filePath: string) => {
       link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
-      link.parentNode.removeChild(link);
+      link.parentNode!.removeChild(link);
     });
 };

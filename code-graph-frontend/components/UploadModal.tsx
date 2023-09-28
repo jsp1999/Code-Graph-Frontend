@@ -41,7 +41,8 @@ export default function UploadModal(props: CategoryModalProps) {
       if (!advancedSettingsSelected) {
         uploadDataset(projectId, projectName, selectedFile!).then(() => {
           props.setLoading();
-          router.push(`/codeView?project_id=${projectId}`);
+          localStorage.setItem("projectId",  projectId.toString())
+          router.push(`/codeView`);
         });
       } else {
         uploadAdvancedDataset(

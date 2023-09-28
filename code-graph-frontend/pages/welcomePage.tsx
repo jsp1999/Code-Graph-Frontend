@@ -11,7 +11,7 @@ export default function WelcomePage() {
 
   return (
     <header>
-      <Header title="Code View" />
+      <Header title="" />
 
       <div className="content-center">
         <UploadModal open={open} handleClose={() => setOpen(false)} setLoading={() => setLoading(!loading)} />
