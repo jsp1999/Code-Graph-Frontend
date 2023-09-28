@@ -1,7 +1,6 @@
 import { Button, FormControlLabel, FormGroup, Modal, Switch, TextField } from "@mui/material";
 import React, { useState } from "react";
-import { getProjects, postProject, uploadAdvancedDataset, uploadDataset, uploadTestDataset } from "@/pages/api/api";
-import { useRouter } from "next/router";
+import { uploadAdvancedDataset, uploadDataset } from "@/pages/api/api";
 
 interface CategoryModalProps {
   open: boolean;
@@ -10,7 +9,8 @@ interface CategoryModalProps {
 }
 
 export default function UploadModal(props: CategoryModalProps) {
-  const [projectName, setProjectName] = useState("");
+  const [projectId, setProjectId] = useState<number>(0);
+  const [datasetName, setDatasetName] = useState<string>("");
   const [split, setSplit] = useState("\\t");
   const [sentenceSplit, setSentenceSplit] = useState("\\n\\n");
   const [wordIdx, setWordIdx] = useState(0);
@@ -20,10 +20,12 @@ export default function UploadModal(props: CategoryModalProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [advancedSettingsSelected, setAdvancedSettingsSelected] = useState(false);
 
-  const router = useRouter();
+  const handleIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setProjectId(parseInt(event.target.value));
+  };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setProjectName(event.target.value);
+  const handleDatasetNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDatasetName(event.target.value);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,35 +38,31 @@ export default function UploadModal(props: CategoryModalProps) {
   const handleFinish = () => {
     props.handleClose();
     props.setLoading();
-    postProject(projectName).then((response) => {
-      const projectId = response.data.data.project_id;
-      if (!advancedSettingsSelected) {
-        uploadDataset(projectId, projectName, selectedFile!).then(() => {
-          props.setLoading();
-          router.push(`/codeView?project_id=${projectId}`);
-        });
-      } else {
-        uploadAdvancedDataset(
-          projectId,
-          projectName,
-          selectedFile!,
-          encodeURIComponent(split),
-          encodeURIComponent(sentenceSplit),
-          wordIdx,
-          labelIdx,
-          encodeURIComponent(labelSplit),
-          encodeURIComponent(type),
-        ).then(() => {
-          props.setLoading();
-          router.push(`/codeView?project_id=${projectId}`);
-        });
-      }
-    });
+
+    if (!advancedSettingsSelected) {
+      uploadDataset(projectId, datasetName, selectedFile!).then(() => {
+        props.setLoading();
+      });
+    } else {
+      uploadAdvancedDataset(
+        projectId,
+        datasetName,
+        selectedFile!,
+        encodeURIComponent(split),
+        encodeURIComponent(sentenceSplit),
+        wordIdx,
+        labelIdx,
+        encodeURIComponent(labelSplit),
+        encodeURIComponent(type),
+      ).then(() => {
+        props.setLoading();
+      });
+    }
   };
 
   function setClosed() {
     props.handleClose();
-    setProjectName("");
+    setDatasetName("");
     setAdvancedSettingsSelected(false);
     setSplit("\\t");
     setSentenceSplit("\\n\\n");
@@ -82,9 +80,16 @@ export default function UploadModal(props: CategoryModalProps) {
             <TextField
               className="w-[25rem]"
               id="standard-basic"
-              label="Project Name"
-              value={projectName}
-              onChange={handleInputChange}
+              label="Project ID"
+              value={projectId}
+              onChange={handleIdChange}
+            />
+            <TextField
+              className="w-[25rem]"
+              id="standard-basic"
+              label="Dataset Name"
+              value={datasetName}
+              onChange={handleDatasetNameChange}
             />
           </div>
           <div className="mt-10 w-fit mx-auto">
@@ -179,7 +184,7 @@ export default function UploadModal(props: CategoryModalProps) {
               variant="contained"
               component="label"
               onClick={handleFinish}
-              disabled={!(projectName != "" && selectedFile != null)}
+              disabled={!(datasetName != "" && selectedFile != null)}
             >
               Submit
             </Button>

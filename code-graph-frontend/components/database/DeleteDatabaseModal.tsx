@@ -1,14 +1,21 @@
 import { Button, Modal } from "@mui/material";
 import React from "react";
 
-interface EditModalProps {
+type ConfirmModalProps = {
   open: boolean;
   handleClose: () => void;
-}
+  onDelete: (databaseName: string) => Promise<any>;
+  databaseName: string;
+};
 
-export default function EditModal(props: EditModalProps) {
-  const handleFinish = () => {
-    // Api call to edit project here
+export default function DeleteDatabaseModal(props: ConfirmModalProps) {
+  const handleFinish = async () => {
+    try {
+      await props.onDelete(props.databaseName);
+      // Handle successful deletion
+    } catch (error) {
+      // Handle error
+    }
   };
 
   function setClosed() {
@@ -19,13 +26,14 @@ export default function EditModal(props: EditModalProps) {
     <>
       <Modal open={props.open} onClose={setClosed}>
         <div className="w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10vh] grid-cols-1 text-center">
-          <p>Edit your stuff here</p>
-          <div className="w-fit mx-auto">
+          <p>Do you want to delete ?</p>
+          <p>Database Name: {props.databaseName}</p>
+          <div className="w-fit mx-auto mt-5">
             <Button className="mx-2" variant="outlined" onClick={setClosed}>
-              Cancel
+              No
             </Button>
             <Button className="mx-2" variant="contained" component="label" onClick={handleFinish}>
-              Submit
+              Yes
             </Button>
           </div>
         </div>

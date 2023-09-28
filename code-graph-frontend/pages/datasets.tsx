@@ -1,35 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { getProjects, deleteProject, updateProjectName, updateProjectConfig, postProject } from "@/pages/api/api";
+import { getDatasets, updateDataset, deleteDataset } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
-import EditModal from "@/components/project/EditProjectModal";
-import CreateModal from "@/components/project/CreateProjectModal";
+import EditModal from "@/components/dataset/EditDatasetModal";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
-import ConfirmModal from "@/components/project/DeleteProjectModal";
+import DeleteDatasetModal from "@/components/dataset/DeleteDatasetModal";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Button } from "@mui/material";
+import UploadModal from "@/components/dataset/UploadDatasetModal";
+import LoadingModal from "@/components/LoadingModal";
 
-type Project = {
-  project_name: string;
+type Dataset = {
   project_id: number;
-  config_id: number;
+  dataset_name: string;
+  dataset_id: number;
 };
 
-export default function ProjectPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+export default function DatasetPage() {
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
   const [projectId, setProjectId] = useState(0);
-  const [projectName, setProjectName] = useState("");
+  const [datasetId, setDatasetId] = useState(0);
   const [editData, setEditData] = useState<any>({});
+  let project_id: number = 1;
 
-  const columns: ColumnDef<Project>[] = [
+  const columns: ColumnDef<Dataset>[] = [
     {
-      header: "Projects",
+      header: "Dataset",
       footer: (props) => props.column.id,
       columns: [
+        {
+          accessorFn: (row) => row.dataset_id,
+          id: "dataset_id",
+          cell: (info) => info.getValue(),
+          header: () => <span>Dataset ID</span>,
+          footer: (props) => props.column.id,
+        },
         {
           accessorFn: (row) => row.project_id,
           id: "project_id",
@@ -38,15 +48,10 @@ export default function ProjectPage() {
           footer: (props) => props.column.id,
         },
         {
-          accessorFn: (row) => row.config_id,
-          id: "config_id",
+          accessorFn: (row) => row.dataset_name,
+          id: "dataset_name",
           cell: (info) => info.getValue(),
-          header: () => <span>Config ID</span>,
-          footer: (props) => props.column.id,
-        },
-        {
-          accessorKey: "project_name",
-          cell: (info) => info.getValue(),
+          header: () => <span>Dataset name</span>,
           footer: (props) => props.column.id,
         },
       ],
@@ -80,8 +85,9 @@ export default function ProjectPage() {
               <Delete
                 className="cursor-pointer"
                 onClick={() => {
-                  setConfirmModalOpen(true);
+                  setDatasetId(info.row.original.dataset_id);
                   setProjectId(info.row.original.project_id);
+                  setConfirmModalOpen(true);
                 }}
               />
             </div>
@@ -94,58 +100,48 @@ export default function ProjectPage() {
 
   const table = useReactTable({
     columns,
-    data: projects,
+    data: datasets,
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel(),
   });
   // Function to fetch and update project data
-  const fetchAndUpdateProjects = async () => {
+  const fetchAndUpdateDatasets = async () => {
     try {
-      const result = await getProjects();
-      let projectData: Project[] = result.data.data;
-      setProjects(projectData);
+      const result = await getDatasets(project_id);
+      let datasetData: Dataset[] = result.data;
+      setDatasets(datasetData);
     } catch (error) {
       console.error("Error fetching projects:", error);
     }
   };
 
   useEffect(() => {
-    fetchAndUpdateProjects();
+    fetchAndUpdateDatasets();
   }, []);
 
-  const handleDeleteProject = async (projectIdToDelete: number) => {
+  const handleDeleteDataset = async () => {
     try {
-      await deleteProject(projectIdToDelete);
-      fetchAndUpdateProjects();
+      await deleteDataset(projectId, datasetId);
+      fetchAndUpdateDatasets();
       setConfirmModalOpen(false);
     } catch (error) {
       console.error("Error deleting project:", error);
     }
   };
 
-  const handleEditClick = (project: Project) => {
-    setEditData({ project_name: project.project_name, config_id: project.config_id, project_id: project.project_id });
+  const handleEditClick = (dataset: Dataset) => {
+    setEditData({ dataset_id: dataset.dataset_id, project_id: dataset.project_id, dataset_name: dataset.dataset_name });
     setEditModalOpen(true);
   };
 
-  const handleEditProject = async (project: Project) => {
+  const handleEditDataset = async (dataset: Dataset) => {
     try {
-      await updateProjectName(project.project_id, project.project_name);
-      fetchAndUpdateProjects();
+      await updateDataset(dataset.project_id, dataset.dataset_id, dataset.dataset_name);
+      fetchAndUpdateDatasets();
       setEditModalOpen(false);
     } catch (error) {
       console.error("Error editing project:", error);
-    }
-  };
-
-  const handleCreateProject = async (project_name: string) => {
-    try {
-      await postProject(project_name);
-      fetchAndUpdateProjects();
-      setCreateModalOpen(false);
-    } catch (error) {
-      console.error("Error creating project:", error);
     }
   };
 
@@ -154,33 +150,26 @@ export default function ProjectPage() {
       <EditModal
         open={editModalOpen}
         handleClose={() => setEditModalOpen(false)}
-        onEdit={handleEditProject}
-        project={editData}
+        onEdit={handleEditDataset}
+        dataset={editData}
       />
-      <ConfirmModal
+      <DeleteDatasetModal
         open={confirmModalOpen}
         handleClose={() => setConfirmModalOpen(false)}
-        onDelete={handleDeleteProject}
+        onDelete={handleDeleteDataset}
         projectId={projectId}
-      />
-      <CreateModal
-        open={createModalOpen}
-        handleClose={() => setCreateModalOpen(false)}
-        onCreate={handleCreateProject}
-        project_name={projectName}
+        datasetId={datasetId}
       />
 
       <Header title="Code View" />
       <div className="flex justify-center">
-        <Button
-          variant="outlined"
-          component="label"
-          className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => setCreateModalOpen(true)}
-        >
-          <AiOutlinePlus className="mr-2" />
-          Create Project
-        </Button>
+        <div className="content-center">
+          <UploadModal open={open} handleClose={() => setOpen(false)} setLoading={() => setLoading(!loading)} />
+          <LoadingModal open={loading} />
+          <Button variant="contained" className="my-5" component="label" onClick={() => setOpen(true)}>
+            Upload
+          </Button>
+        </div>
       </div>
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
         <div className="h-2" />
