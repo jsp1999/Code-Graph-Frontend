@@ -210,9 +210,17 @@ export const downloadFile = (filePath: string) => {
 };
 
 // Embeddings
-export const getEmbeddings = (project_id: number): Promise<any> => {
-  console.log(`${baseURL}/projects/${project_id}/embeddings`);
-  return axios.get<any>(`${baseURL}/projects/${project_id}/embeddings`);
+export const getEmbeddings = (
+  project_id: number,
+  all: boolean,
+  page: number,
+  page_size: number,
+  reduce_length: number,
+): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/embeddings/?all=${all}&page=${page}&page_size=${page_size}`);
+  return axios.get<any>(
+    `${baseURL}/projects/${project_id}/embeddings/?all=${all}&page=${page}&page_size=${page_size}&reduce_length=${reduce_length}`,
+  );
 };
 
 export const extractEmbeddings = (project_id: number): Promise<any> => {
