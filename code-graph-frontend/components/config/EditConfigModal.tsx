@@ -139,7 +139,10 @@ export default function EditModal(props: EditModalProps) {
     if (formData.config.model_type != undefined && formData.config.model_type != "") {
       oldFormData.config.model_type = formData.config.model_type;
     }
-    if (formData.config.embedding_config.args.pretrained_model_name_or_path != "") {
+    if (
+      formData.config.embedding_config.args.pretrained_model_name_or_path != undefined &&
+      formData.config.embedding_config.args.pretrained_model_name_or_path != ""
+    ) {
       oldFormData.config.embedding_config.args.pretrained_model_name_or_path =
         formData.config.embedding_config.args.pretrained_model_name_or_path;
     }

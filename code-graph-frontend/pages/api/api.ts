@@ -38,9 +38,9 @@ export const updateConfig = (config_id: number, configData: any): Promise<any> =
   let body = {
     name: configData.name,
     model_type: configData.config.model_type,
-    embeding_type: configData.config.embeding_type,
-    reduction_type: configData.config.reduction_type,
-    cluster_type: configData.config.cluster_type,
+    embedding_config: configData.config.embedding_config,
+    reduction_config: configData.config.reduction_config,
+    cluster_config: configData.config.cluster_config,
   };
   console.log(`${baseURL}/configs/${config_id}`, body);
 
