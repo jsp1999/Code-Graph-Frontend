@@ -6,6 +6,7 @@ import * as React from "react";
 interface ClusterProps {
     node_data: Array<any>,
     size_info: any,
+    radius: number,
     selectedNode: any,
     cluster_color: any,
     handleSelectedNodeChange: (d: any) => void;
@@ -13,19 +14,22 @@ interface ClusterProps {
     limitValue: number;
     attractionValue: number;
     centerForceValue: number;
+    filterCriteria: number[]
 }
 
 //COMPONENT THAT CALLS CANVA AND DRAW
 export const ClusterGraph: React.FC<ClusterProps> = ({
     node_data: node_data,
     size_info: size_info,
+    radius: radius,
     cluster_color: cluster_color,
     selectedNode: selectedNode,
     handleSelectedNodeChange: HandleSelectedNodeChange,
     collideValue: collide_force,
     limitValue: limit,
     attractionValue: attraction_force,
-    centerForceValue: center_force }) => {
+    centerForceValue: center_force,
+    filterCriteria: filterCriteria}) => {
 
     const arrows = Object.entries(node_data).map(([id, entry]) => ({
         id: parseInt(id),
@@ -33,7 +37,7 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
     }))
         .slice(0, limit)
 
-    const [height, width, radius] = size_info
+    const [height, width] = size_info
     const w_border = width * 1;
     const h_border = height * 1;
 
@@ -60,14 +64,23 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
         return { id: id, segment: segment, sentence: sentence, x: scaledX, y: scaledY, annotation: annotation, cluster: cluster };
     })
 
-    // NODE LIMIT
     React.useEffect(() => {
-        const nodes = all_nodes.slice(0, limit);
         const svg = d3.select(svgChart.current);
         svg.selectAll("*").remove();
         return () => {
         };
     }, [limit]);
+
+
+    React.useEffect(() => {
+        const nodes = all_nodes.slice(0, limit);
+        const svg = d3.select(svgChart.current);
+        const circles = svg.selectAll("circle")
+            .attr("r", radius)
+
+        return () => {
+        };
+    }, [radius]);
 
 
     //FORCE
@@ -83,7 +96,7 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
             .on('tick', ticked)
             .stop()
 
-        drawChart(svgChart, height, width, nodes, arrows, radius, cluster_color, HandleSelectedNodeChange);
+        drawChart(svgChart, height, width, nodes, arrows, radius, cluster_color, HandleSelectedNodeChange, filterCriteria);
 
         function ticked() {
             svg.selectAll('circle')
@@ -103,7 +116,7 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
         const timeout = setTimeout(stopSimulation, duration);
         // Clean up the timeout when the component unmounts or the duration changes
         return () => clearTimeout(timeout);
-    }, [center_force, collide_force, attraction_force, limit]);
+    }, [center_force, collide_force, attraction_force, limit, filterCriteria]);
 
 
     React.useEffect(() => {

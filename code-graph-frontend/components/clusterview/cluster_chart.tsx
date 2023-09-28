@@ -122,3 +122,4 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
 
     return svg
     }
+

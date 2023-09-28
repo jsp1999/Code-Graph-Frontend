@@ -32,7 +32,7 @@ var node_data = Object.entries(new_data).map(([id, entry]) => (
     cluster: entry?.cluster
   }))
 
-// .map( data => ({lễ cưới việt nam
+// .map( data => ({
 //     y: parseFloat(data.embedding[1]),
 //     topic_index: data.annotation
 //   }))
@@ -220,3 +220,4 @@ const Page: React.FC = () => {
 };
 
 export default Page;
+
