@@ -125,7 +125,6 @@ export default function ConfigPage() {
           }
         }
       }
-      console.log("configData", configData);
 
       setConfigs(configData);
     } catch (error) {
@@ -139,7 +138,6 @@ export default function ConfigPage() {
 
   const handleEditClick = (config: Config) => {
     setEditData(config);
-    console.log("configid", config.config_id);
     setEditModalOpen(true);
   };
 

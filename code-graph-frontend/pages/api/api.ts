@@ -34,13 +34,17 @@ export const getconfigs = (): Promise<any> => {
   return axios.get<any>(`${baseURL}/configs/`);
 };
 
-export const updateConfig = (project_id: number, configData: any): Promise<any> => {
-  return axios.put(`${baseURL}/configs/${project_id}`, configData, {
-    headers: {
-      accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  });
+export const updateConfig = (config_id: number, configData: any): Promise<any> => {
+  let body = {
+    name: configData.name,
+    model_type: configData.config.model_type,
+    embeding_type: configData.config.embeding_type,
+    reduction_type: configData.config.reduction_type,
+    cluster_type: configData.config.cluster_type,
+  };
+  console.log(`${baseURL}/configs/${config_id}`, body);
+
+  return axios.put<any>(`${baseURL}/configs/${config_id}`, body);
 };
 
 export const postProject = (projectName: string): Promise<any> => {

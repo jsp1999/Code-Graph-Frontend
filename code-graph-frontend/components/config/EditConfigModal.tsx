@@ -79,8 +79,6 @@ export default function EditModal(props: EditModalProps) {
     },
   };
 
-  console.log("initialFormData", initialFormData);
-
   const [formData, setFormData] = useState<Config>(initialFormData);
 
   const handleFinish = async (newbody: any) => {
@@ -132,11 +130,19 @@ export default function EditModal(props: EditModalProps) {
 
   const handleSave = () => {
     let oldFormData = initialFormData;
-    console.log("oldFormData", oldFormData);
+    if (!formData) {
+      setClosed();
+    }
     if (formData.name != "") {
       oldFormData.name = formData.name;
     }
-    console.log("newoldFormData", oldFormData);
+    if (formData.config.model_type != undefined && formData.config.model_type != "") {
+      oldFormData.config.model_type = formData.config.model_type;
+    }
+    if (formData.config.embedding_config.args.pretrained_model_name_or_path != "") {
+      oldFormData.config.embedding_config.args.pretrained_model_name_or_path =
+        formData.config.embedding_config.args.pretrained_model_name_or_path;
+    }
     setFormData(oldFormData);
 
     handleFinish(oldFormData);
@@ -145,9 +151,7 @@ export default function EditModal(props: EditModalProps) {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("old formData", formData);
     const { name, value } = event.target;
-    console.log(name, value);
     switch (name) {
       case "pretrained_model_name_or_path":
         setFormData({
