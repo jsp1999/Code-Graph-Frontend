@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getEmbeddings, extractEmbeddings } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { BsListColumnsReverse } from "react-icons/bs";
 
 type Embedding = {
@@ -10,10 +10,11 @@ type Embedding = {
   embedding: number[];
 };
 
-export default function databasesPage() {
+export default function DatabasesPage() {
   const [embeddings, setEmbeddings] = useState<Embedding[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
+  const [reducedLength, setReducedLength] = useState(3);
 
   const project_id: number = 1;
 
@@ -50,9 +51,8 @@ export default function databasesPage() {
 
   const fetchAndUpdateEmbeddings = async (page: number, pageSize: number) => {
     let all = false;
-    let reduced_length = 3;
     try {
-      const embeddings: Embedding[] = (await getEmbeddings(project_id, all, page, pageSize, reduced_length)).data.data;
+      const embeddings: Embedding[] = (await getEmbeddings(project_id, all, page, pageSize, reducedLength)).data.data; // Use reducedLength
       setEmbeddings(embeddings);
     } catch (error) {
       console.error("Error fetching databases:", error);
@@ -61,7 +61,7 @@ export default function databasesPage() {
 
   useEffect(() => {
     fetchAndUpdateEmbeddings(currentPage, pageSize);
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, reducedLength]);
 
   const handleExportEmbeddings = async () => {
     try {
@@ -79,6 +79,11 @@ export default function databasesPage() {
   const changePageSize = (size: number) => {
     setPageSize(size);
     setCurrentPage(0);
+  };
+
+  // Function to update reducedLength
+  const handleReducedLengthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setReducedLength(Number(event.target.value));
   };
 
   return (
@@ -108,6 +113,16 @@ export default function databasesPage() {
           <option value={50}>Page Size: 50</option>
           <option value={25}>Page Size: 25</option>
         </select>
+      </div>
+      {/* Input field for reduced_length */}
+      <div className="flex justify-center mt-4">
+        <TextField
+          label="Reduced Length"
+          variant="outlined"
+          type="number"
+          value={reducedLength}
+          onChange={handleReducedLengthChange}
+        />
       </div>
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
         <div className="h-2" />
