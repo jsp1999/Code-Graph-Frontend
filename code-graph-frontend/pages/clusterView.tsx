@@ -17,7 +17,6 @@ import { Legend } from "@/components/clusterview/Legend";
 
 //DATA
 
-
 const nodes_limit = 10000;
 
 
@@ -48,6 +47,7 @@ var node_data = Object.entries(new_data).map(([id, entry]) => (
 //   .slice(0, nodes_limit)
 
 
+
 const higherCategoryNameDict: { [key: string]: string } = Object.entries(annotation_hierachy_mapping).reduce((dict, [key, value]) => {
   dict[key] = value.higherCategoryName;
   return dict;
@@ -61,6 +61,7 @@ const cluster_color = d3.scaleOrdinal(unique_topic_index, d3.schemeCategory10);
 const height = 800
 const width = 800
 const size_info = [height, width];
+
 const defaultTheme = createTheme();
 
 //MAIN PAGE
@@ -101,7 +102,6 @@ const Page: React.FC = () => {
     setSelectedNodeData(value);
   };
 
-
   const [inputValue, setInputValue] = React.useState('');
   const [idArray, setIdArray] = React.useState([]);
   const handleInputChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
@@ -116,15 +116,17 @@ const Page: React.FC = () => {
     }
   };
 
+
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Grid container spacing={2}
+      <Grid
+        container
+        spacing={2}
         sx={{
           backgroundColor: (theme) =>
-            theme.palette.mode === 'light'
-              ? theme.palette.grey[100]
-              : theme.palette.grey[900],
-        }}>
+            theme.palette.mode === "light" ? theme.palette.grey[100] : theme.palette.grey[900],
+        }}
+      >
         <Grid item xs={12}>
           <Header title="Cluster View" />
         </Grid>
@@ -162,27 +164,26 @@ const Page: React.FC = () => {
 
           <RadiusScruber scrubberValue={radiusValue}
             onScrubberChange={handleRadiusChange}></RadiusScruber>
+
         </Grid>
-        <Grid item xs={6}
-          component="main"
-        >
+        <Grid item xs={6} component="main">
           {/* Main box to display the graph */}
           <Paper
             sx={{
               p: 2,
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              height: 600
-
-            }}>
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+              height: 600,
+            }}
+          >
             <Box
               sx={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <ClusterGraph
@@ -204,20 +205,18 @@ const Page: React.FC = () => {
         <Grid item xs={3}>
           {/* Right column to display additional information */}
           <Paper>
-            <Legend cluster_color={cluster_color} ></Legend>
+            <Legend cluster_color={cluster_color}></Legend>
             <NodeInfo nodeData={selectedNodeData} />
           </Paper>
         </Grid>
         <div className="absolute right-5 bottom-5 bg-blue-900 rounded">
-          <Button variant="contained" className="">
-            <Link href="/">Change View</Link>
+          <Button variant="contained" className="" onClick={() => router.push(`/codeView?project_id=${projectId}`)}>
+            Change View
           </Button>
         </div>
       </Grid>
-
-
-    </ThemeProvider>)
+    </ThemeProvider>
+  );
 };
 
 export default Page;
-

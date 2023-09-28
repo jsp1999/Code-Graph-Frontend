@@ -2,7 +2,6 @@ import { createCanva, drawChart } from "./cluster_chart";
 import * as d3 from "d3";
 import * as React from "react";
 
-
 interface ClusterProps {
     node_data: Array<any>,
     size_info: any,
@@ -145,3 +144,4 @@ export const ClusterGraph: React.FC<ClusterProps> = ({
 
     );
 };
+
