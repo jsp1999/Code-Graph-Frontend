@@ -21,7 +21,21 @@ export default function CodeView() {
   const [open, setOpen] = useState(false);
   const [jsonData, setJsonData] = useState(data);
   const [loading, setLoading] = useState(false);
-  const [projectId, setProjectId] = useState(parseInt(JSON.parse(localStorage.getItem('projectId') ?? "1")));
+  const [projectId, setProjectId] = useState(2);
+
+  useEffect(() => {
+    parseInt(sessionStorage.getItem("projectId") ?? "2")
+
+    setLoading(true);
+    getCodeTree(projectId)
+      .then((response) => {
+        setJsonData(response.data.codes);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, [projectId]);
 
   const handleOpen = () => setOpen(true);
   const handleAddModalClose = () => {
@@ -57,18 +71,6 @@ export default function CodeView() {
     handleContextMenu(e);
     setRightClickedItem(value);
   };
-
-  useEffect(() => {
-    setLoading(true);
-    getCodeTree(projectId)
-      .then((response) => {
-        setJsonData(response.data.codes);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {

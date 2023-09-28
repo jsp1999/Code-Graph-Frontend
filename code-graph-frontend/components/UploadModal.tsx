@@ -1,6 +1,6 @@
 import { Button, FormControlLabel, FormGroup, Modal, Switch, TextField } from "@mui/material";
 import React, { useState } from "react";
-import { getProjects, postProject, uploadAdvancedDataset, uploadDataset, uploadTestDataset } from "@/pages/api/api";
+import { getProjects, postProject, uploadAdvancedDataset, uploadDataset } from "@/pages/api/api";
 import { useRouter } from "next/router";
 
 interface CategoryModalProps {
@@ -41,7 +41,7 @@ export default function UploadModal(props: CategoryModalProps) {
       if (!advancedSettingsSelected) {
         uploadDataset(projectId, projectName, selectedFile!).then(() => {
           props.setLoading();
-          localStorage.setItem("projectId",  projectId.toString())
+          sessionStorage.setItem("projectId",  projectId.toString());
           router.push(`/codeView`);
         });
       } else {
@@ -57,7 +57,8 @@ export default function UploadModal(props: CategoryModalProps) {
           encodeURIComponent(type),
         ).then(() => {
           props.setLoading();
-          router.push(`/codeView?project_id=${projectId}`);
+          sessionStorage.setItem("projectId",  projectId.toString())
+          router.push(`/codeView`);
         });
       }
     });
