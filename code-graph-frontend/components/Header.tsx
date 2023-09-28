@@ -14,6 +14,7 @@ import { HiOutlineAnnotation } from "react-icons/hi";
 import { BsFillDatabaseFill } from "react-icons/bs";
 import { MdOutlineDataset } from "react-icons/md";
 import { AiOutlineBoxPlot } from "react-icons/ai";
+import { GrCluster } from "react-icons/gr";
 
 interface HeaderProps {
   title: string;
@@ -137,6 +138,15 @@ export default function Header(props: HeaderProps) {
               >
                 <span>Embeddings</span>
                 <AiOutlineBoxPlot />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/clusters`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Clusters</span>
+                <GrCluster />
               </Button>
             </ButtonGroup>
           </div>

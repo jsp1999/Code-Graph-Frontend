@@ -5,16 +5,15 @@ import { BsListColumnsReverse } from "react-icons/bs";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { getClusters, extractClusters } from "@/pages/api/api"; // Import clusters API functions
 
-type ReducedEmbedding = {
-  reduced_embedding_id: number;
-  pos_x: number;
-  embedding_id: number;
+type Cluster = {
   model_id: number;
-  pos_y: number;
+  cluster: number;
+  cluster_id: number;
+  reduced_embedding_id: number;
 };
+
 export default function ClustersPage() {
   const [clusters, setClusters] = useState<Cluster[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
 
