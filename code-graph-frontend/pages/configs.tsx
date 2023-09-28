@@ -44,7 +44,6 @@ export default function ConfigPage() {
   const [configs, setConfigs] = useState<Config[]>([]);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [editData, setEditData] = useState<any>({});
-  const [configId, setConfigId] = useState(0);
 
   const columns: ColumnDef<Config>[] = [
     {
@@ -141,7 +140,6 @@ export default function ConfigPage() {
   const handleEditClick = (config: Config) => {
     setEditData(config);
     console.log("configid", config.config_id);
-    setConfigId(config.config_id);
     setEditModalOpen(true);
   };
 
@@ -162,7 +160,6 @@ export default function ConfigPage() {
         handleClose={() => setEditModalOpen(false)}
         onEdit={handleEditConfig}
         config={editData}
-        configId={configId}
       />
       <Header title="Code View" />
 

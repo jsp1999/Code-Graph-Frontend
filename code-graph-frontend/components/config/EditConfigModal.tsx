@@ -83,9 +83,9 @@ export default function EditModal(props: EditModalProps) {
 
   const [formData, setFormData] = useState<Config>(initialFormData);
 
-  const handleFinish = async () => {
+  const handleFinish = async (newbody: any) => {
     try {
-      await props.onEdit(formData);
+      await props.onEdit(newbody);
 
       setFormData({
         name: "",
@@ -127,64 +127,41 @@ export default function EditModal(props: EditModalProps) {
   };
 
   function setClosed() {
-    setFormData({
-      name: "",
-      config_id: 0,
-      project_id: 0,
-      project_name: "",
-      config: {
-        name: "",
-        embedding_config: {
-          args: {
-            pretrained_model_name_or_path: "",
-          },
-          model_name: "",
-        },
-        reduction_config: {
-          args: {
-            n_neighbors: 0,
-            n_components: 0,
-            metric: "",
-            random_state: 0,
-            n_jobs: 0,
-          },
-          model_name: "",
-        },
-        cluster_config: {
-          args: {
-            min_cluster_size: 0,
-            metric: "",
-            cluster_selection_method: "",
-          },
-          model_name: "",
-        },
-        model_type: "",
-      },
-    });
-
     props.handleClose();
   }
 
   const handleSave = () => {
-    let propsObject = props.config;
-    // build new body
+    let oldFormData = initialFormData;
+    console.log("oldFormData", oldFormData);
     if (formData.name != "") {
-      propsObject.name = formData.name;
+      oldFormData.name = formData.name;
     }
-    if (formData.config.model_type != "") {
-      propsObject.config.model_type = formData.config.model_type;
-    }
+    console.log("newoldFormData", oldFormData);
+    setFormData(oldFormData);
 
-    setFormData(propsObject);
-    handleFinish();
+    handleFinish(oldFormData);
 
     setClosed();
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("old formData", formData);
     const { name, value } = event.target;
     console.log(name, value);
     switch (name) {
+      case "pretrained_model_name_or_path":
+        setFormData({
+          ...formData,
+          config: {
+            ...formData.config,
+            embedding_config: {
+              ...formData.config.embedding_config,
+              args: { pretrained_model_name_or_path: value },
+            },
+          },
+        });
+
+        break;
       case "model_type":
         setFormData({ ...formData, config: { ...formData.config, model_type: value } });
 
@@ -249,7 +226,11 @@ export default function EditModal(props: EditModalProps) {
         <TextField
           name="pretrained_model_name_or_path"
           label="pretrained_model_name_or_path"
-          value={props?.config?.config?.embedding_config?.args?.pretrained_model_name_or_path}
+          value={
+            formData?.config?.embedding_config?.args?.pretrained_model_name_or_path ||
+            props?.config?.config?.embedding_config?.args?.pretrained_model_name_or_path
+          }
+          onChange={handleInputChange}
           variant="outlined"
           className="mb-2"
           fullWidth
