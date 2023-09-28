@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import React from "react";
 
 import annotation_hierachy_mapping from "../../src/annotations_hierachy.json";
+import { type } from "os";
 
 
 const higherCategoryNameDict: { [key: string]: string } = Object.entries(annotation_hierachy_mapping).reduce((dict, [key, value]) => {
@@ -10,6 +11,14 @@ const higherCategoryNameDict: { [key: string]: string } = Object.entries(annotat
   return dict;
 }, {});
 
+function filterNodes(nodes: any, filterCriteria: number[] ) {
+  // return nodes;
+  if (filterCriteria.length === 0) {
+    return nodes; // Return all nodes if filterCriteria is empty
+  } else {
+    return nodes.filter((node: any) => filterCriteria.includes(parseInt(node.id)));
+  }
+}
 
 
 //CREATE CANVA
@@ -35,13 +44,14 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
      arrows: any,
      radius: number,
      cluster_color: any,
-     onSelectedNodeChange: (data: any) => void
-     ) {
+     onSelectedNodeChange: (data: any) => void,
+     filterCriteria: number[] 
 
-    
+     ) {
+    const filteredNodes = filterNodes(nodes, filterCriteria);
     const svg = d3.select(svgRef.current);
     const circles = svg.selectAll("circle")
-      .data(nodes)
+      .data(filteredNodes)
       .enter()
       .append("circle")
       .classed("node", true)
@@ -56,7 +66,6 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
     function mouseover(this: any, mouse_event: any, data: any) {
       // this.parentElement.appendChild(this)
       d3.select(this).attr("r", radius * 5);
-  
   
       d3.select(this.parentNode)
         .append("text")
@@ -113,4 +122,3 @@ export function drawChart(svgRef: React.RefObject<SVGSVGElement>,
 
     return svg
     }
-
