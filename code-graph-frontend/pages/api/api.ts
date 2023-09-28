@@ -203,6 +203,19 @@ export const downloadFile = (filePath: string) => {
       link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
-      link.parentNode!.removeChild(link);
+      if (link.parentNode) {
+        link.parentNode.removeChild(link);
+      }
     });
+};
+
+// Embeddings
+export const getEmbeddings = (project_id: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/embeddings`);
+  return axios.get<any>(`${baseURL}/projects/${project_id}/embeddings`);
+};
+
+export const extractEmbeddings = (project_id: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/embeddings/extract`);
+  return axios.get<any>(`${baseURL}/projects/${project_id}/embeddings/extract`);
 };

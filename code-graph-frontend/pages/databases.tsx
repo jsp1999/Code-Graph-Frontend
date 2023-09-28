@@ -13,7 +13,6 @@ import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import DeleteAllDatabasesModal from "@/components/database/DeleteDatabasesModal";
 import DeleteDatabasesModal from "@/components/database/DeleteDatabaseModal";
-import { AiOutlinePlus } from "react-icons/ai";
 import { Button } from "@mui/material";
 import { BsTrash } from "react-icons/bs";
 import { BsListColumnsReverse } from "react-icons/bs";

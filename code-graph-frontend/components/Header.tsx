@@ -13,6 +13,7 @@ import { FcScatterPlot } from "react-icons/fc";
 import { HiOutlineAnnotation } from "react-icons/hi";
 import { BsFillDatabaseFill } from "react-icons/bs";
 import { MdOutlineDataset } from "react-icons/md";
+import { AiOutlineBoxPlot } from "react-icons/ai";
 
 interface HeaderProps {
   title: string;
@@ -127,6 +128,15 @@ export default function Header(props: HeaderProps) {
               >
                 <span>Graph</span>
                 <FcScatterPlot />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/embeddings`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Embeddings</span>
+                <AiOutlineBoxPlot />
               </Button>
             </ButtonGroup>
           </div>
