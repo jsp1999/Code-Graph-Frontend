@@ -41,7 +41,7 @@ export default function UploadModal(props: CategoryModalProps) {
       if (!advancedSettingsSelected) {
         uploadDataset(projectId, projectName, selectedFile!).then(() => {
           props.setLoading();
-          sessionStorage.setItem("projectId",  projectId.toString());
+          localStorage.setItem("projectId",  projectId.toString());
           router.push(`/codeView`);
         });
       } else {
@@ -57,7 +57,7 @@ export default function UploadModal(props: CategoryModalProps) {
           encodeURIComponent(type),
         ).then(() => {
           props.setLoading();
-          sessionStorage.setItem("projectId",  projectId.toString())
+          localStorage.setItem("projectId",  projectId.toString())
           router.push(`/codeView`);
         });
       }

@@ -21,10 +21,10 @@ export default function CodeView() {
   const [open, setOpen] = useState(false);
   const [jsonData, setJsonData] = useState(data);
   const [loading, setLoading] = useState(false);
-  const [projectId, setProjectId] = useState(2);
+  const [projectId, setProjectId] = useState(typeof window !== 'undefined' ? parseInt(localStorage.getItem("projectId") ?? "2"): 1);
 
   useEffect(() => {
-    parseInt(sessionStorage.getItem("projectId") ?? "2")
+    setProjectId(parseInt(localStorage.getItem("projectId") ?? "2"));
 
     setLoading(true);
     getCodeTree(projectId)
@@ -35,7 +35,7 @@ export default function CodeView() {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [projectId]);
+  }, []);
 
   const handleOpen = () => setOpen(true);
   const handleAddModalClose = () => {
