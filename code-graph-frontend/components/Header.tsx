@@ -13,6 +13,9 @@ import { FcScatterPlot } from "react-icons/fc";
 import { HiOutlineAnnotation } from "react-icons/hi";
 import { BsFillDatabaseFill } from "react-icons/bs";
 import { MdOutlineDataset } from "react-icons/md";
+import { AiOutlineBoxPlot } from "react-icons/ai";
+import { GrCluster } from "react-icons/gr";
+import { GiPositionMarker } from "react-icons/gi";
 
 interface HeaderProps {
   title: string;
@@ -127,6 +130,33 @@ export default function Header(props: HeaderProps) {
               >
                 <span>Graph</span>
                 <FcScatterPlot />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/embeddings`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Embeddings</span>
+                <AiOutlineBoxPlot />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/clusters`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Clusters</span>
+                <GrCluster />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/reducedEmbeddings`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Positions</span>
+                <GiPositionMarker />
               </Button>
             </ButtonGroup>
           </div>
