@@ -4,11 +4,12 @@ import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
 import EditModal from "@/components/config/EditConfigModal";
 import Edit from "@mui/icons-material/Edit";
-import Delete from "@mui/icons-material/Delete";
-import { config } from "process";
 
 type Config = {
   name: string;
+  config_id: number;
+  project_id: number;
+  project_name: string;
   config: {
     name: string;
     embedding_config: {
@@ -37,16 +38,13 @@ type Config = {
     };
     model_type: string;
   };
-  config_id: number;
-  project_id: number;
-  project_name: string;
 };
 
 export default function ConfigPage() {
   const [configs, setConfigs] = useState<Config[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [editData, setEditData] = useState<any>({});
+  const [configId, setConfigId] = useState(0);
 
   const columns: ColumnDef<Config>[] = [
     {
@@ -115,7 +113,6 @@ export default function ConfigPage() {
     try {
       const projectsResponse = await getProjects();
       let projects = projectsResponse.data.data;
-      setProjects(projects);
       const configResponse = await getconfigs();
 
       let configData: Config[] = configResponse.data;
@@ -142,13 +139,15 @@ export default function ConfigPage() {
   }, []);
 
   const handleEditClick = (config: Config) => {
-    setEditData({ config_id: config.config_id, project_id: config.project_id, config_name: config.config_name });
+    setEditData(config);
+    console.log("configid", config.config_id);
+    setConfigId(config.config_id);
     setEditModalOpen(true);
   };
 
   const handleEditConfig = async (config: Config) => {
     try {
-      await updateConfig(config.project_id, config.config_id, config.config_name);
+      await updateConfig(config.config_id, config);
       fetchAndUpdateConfigs();
       setEditModalOpen(false);
     } catch (error) {
@@ -163,6 +162,7 @@ export default function ConfigPage() {
         handleClose={() => setEditModalOpen(false)}
         onEdit={handleEditConfig}
         config={editData}
+        configId={configId}
       />
       <Header title="Code View" />
 
