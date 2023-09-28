@@ -48,16 +48,51 @@ export const AttractionForceScrubber: React.FC<ScrubberProps> = ({ scrubberValue
   );
 };
 
-export const LimitScruber: React.FC<ScrubberProps> = ({ scrubberValue, onScrubberChange }) => {
-  const handleScrubberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-    onScrubberChange(value);
-  };
 
-  return (
-    <div id="limit">
-      <div>Node Limit: {scrubberValue}</div>
-      <input type="range" min="0" max="10000" value={scrubberValue} onChange={handleScrubberChange} />
-    </div>
-  );
+
+export const LimitScruber: React.FC<ScrubberProps> = ({
+    scrubberValue,
+    onScrubberChange, }) => {
+    const handleScrubberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(e.target.value, 10);
+        onScrubberChange(value);
+    };
+
+    return (
+        <div id="limit">
+            <div>Node Limit: {scrubberValue}</div>
+            <input
+                type="range"
+                min="0"
+                max="10000"
+                value={scrubberValue}
+                onChange={handleScrubberChange}
+            />
+
+        </div>
+    );
 };
+
+export const RadiusScruber: React.FC<ScrubberProps> = ({
+    scrubberValue,
+    onScrubberChange, }) => {
+    const handleScrubberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(e.target.value, 10);
+        onScrubberChange(value);
+    };
+
+    return (
+        <div id="limit">
+            <div>Radius: {scrubberValue}</div>
+            <input
+                type="range"
+                min="2"
+                max="10"
+                value={scrubberValue}
+                onChange={handleScrubberChange}
+            />
+
+        </div>
+    );
+};
+
