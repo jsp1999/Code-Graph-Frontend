@@ -14,7 +14,7 @@ type Cluster = {
 
 export default function ClustersPage() {
   const [clusters, setClusters] = useState<Cluster[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0); // State to store the total count
+  const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
 
