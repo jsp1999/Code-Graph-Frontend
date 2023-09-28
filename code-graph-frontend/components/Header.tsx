@@ -12,6 +12,8 @@ import { PiSuitcaseSimpleLight } from "react-icons/pi";
 import { FcScatterPlot } from "react-icons/fc";
 import { HiOutlineAnnotation } from "react-icons/hi";
 import { BsFillDatabaseFill } from "react-icons/bs";
+import { MdOutlineDataset } from "react-icons/md";
+
 interface HeaderProps {
   title: string;
 }
@@ -92,11 +94,21 @@ export default function Header(props: HeaderProps) {
               <Button
                 variant="outlined"
                 component="label"
-                onClick={() => router.push(`/clusterView`)}
+                onClick={() => router.push(`/databases`)}
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
-                <span>Graph</span>
-                <FcScatterPlot />
+                <span>Databases</span>
+                <BsFillDatabaseFill />
+              </Button>
+              <div className="h-2" />
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/datasets`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Datasets</span>
+                <MdOutlineDataset />
               </Button>
               <Button
                 variant="outlined"
@@ -110,11 +122,11 @@ export default function Header(props: HeaderProps) {
               <Button
                 variant="outlined"
                 component="label"
-                onClick={() => router.push(`/databases`)}
+                onClick={() => router.push(`/clusterView`)}
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
-                <span>Databases</span>
-                <BsFillDatabaseFill />
+                <span>Graph</span>
+                <FcScatterPlot />
               </Button>
             </ButtonGroup>
           </div>

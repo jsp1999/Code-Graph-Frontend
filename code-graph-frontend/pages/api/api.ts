@@ -37,6 +37,20 @@ export const postProject = (projectName: string): Promise<any> => {
 };
 
 // Datasets
+export const getDatasets = (project_id: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/datasets/`);
+  return axios.get<any>(`${baseURL}/projects/${project_id}/datasets/`);
+};
+
+export const updateDataset = (project_id: number, dataset_id: number, datasetName: string): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/datasets/${dataset_id}/?dataset_name=${datasetName}`);
+  return axios.put(`${baseURL}/projects/${project_id}/datasets/${dataset_id}/?dataset_name=${datasetName}`);
+};
+
+export const deleteDataset = (project_id: number, dataset_id: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/datasets/${dataset_id}`);
+  return axios.delete(`${baseURL}/projects/${project_id}/datasets/${dataset_id}`);
+};
 
 export const uploadTestDataset = (): Promise<any> => {
   console.log(`${baseURL}/data/${datasetName}/codes/roots`);
