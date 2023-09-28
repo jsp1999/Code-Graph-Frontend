@@ -15,6 +15,7 @@ export default function DatabasesPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
   const [reducedLength, setReducedLength] = useState(3);
+  const [totalCount, setTotalCount] = useState(0);
 
   const project_id: number = 1;
 
@@ -52,10 +53,14 @@ export default function DatabasesPage() {
   const fetchAndUpdateEmbeddings = async (page: number, pageSize: number) => {
     let all = false;
     try {
-      const embeddings: Embedding[] = (await getEmbeddings(project_id, all, page, pageSize, reducedLength)).data.data; // Use reducedLength
-      setEmbeddings(embeddings);
+      const embeddingsResponse: any = await getEmbeddings(project_id, all, page, pageSize, reducedLength);
+      const embeddingsData: Embedding[] = embeddingsResponse.data.data;
+      const totalCount = embeddingsResponse.data.count;
+
+      setEmbeddings(embeddingsData);
+      setTotalCount(totalCount);
     } catch (error) {
-      console.error("Error fetching databases:", error);
+      console.error("Error fetching embeddings:", error);
     }
   };
 
@@ -72,8 +77,16 @@ export default function DatabasesPage() {
     }
   };
 
-  const goToPage = (page: number) => {
-    setCurrentPage(page);
+  const nextPage = () => {
+    if (currentPage < Math.ceil(totalCount / pageSize) - 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   const changePageSize = (size: number) => {
@@ -101,11 +114,12 @@ export default function DatabasesPage() {
         </Button>
       </div>
       {/* Pagination controls */}
+      <div className="text-center mt-2">Total Count: {totalCount}</div>
       <div className="flex justify-center mt-4">
-        <Button variant="outlined" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 0}>
+        <Button variant="outlined" onClick={prevPage} disabled={currentPage === 0}>
           Previous Page
         </Button>
-        <Button variant="outlined" onClick={() => goToPage(currentPage + 1)}>
+        <Button variant="outlined" onClick={nextPage} disabled={currentPage === Math.ceil(totalCount / pageSize) - 1}>
           Next Page
         </Button>
         <select value={pageSize} onChange={(e) => changePageSize(Number(e.target.value))} className="ml-2">
@@ -123,6 +137,23 @@ export default function DatabasesPage() {
           value={reducedLength}
           onChange={handleReducedLengthChange}
         />
+        <input
+          type="number"
+          value={currentPage}
+          onChange={(e) => {
+            const enteredValue = parseInt(e.target.value, 10);
+            if (!isNaN(enteredValue)) {
+              setCurrentPage(enteredValue);
+            } else {
+              // Handle empty input by setting it to 0
+              setCurrentPage(0);
+            }
+          }}
+          className="ml-2 p-1"
+          style={{ width: "60px" }}
+        />
+
+        <span>/ {Math.ceil(totalCount / pageSize)}</span>
       </div>
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
         <div className="h-2" />
