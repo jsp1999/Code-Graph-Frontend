@@ -9,12 +9,13 @@ import {
   Tooltip,
   Legend,
   PointElement,
+  ArcElement,
 } from "chart.js";
-import { Bar, Bubble } from "react-chartjs-2";
+import { Bar, Bubble, Pie } from "react-chartjs-2";
 import { getCodeStats, getClusterStats, getProjectStats, getProjects } from "@/pages/api/api";
 import { CodeSegmentsResponse, ProjectStatsResponse, ClusterStatsResponse } from "@/pages/api/types";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, Title, Tooltip, Legend, ArcElement);
 
 export default function StatsPage() {
   const [projectData, setProjectData] = useState<any>(null);
@@ -593,12 +594,55 @@ export default function StatsPage() {
     });
   };
 
+  const renderPieCharts = () => {
+    if (!projectData) return null;
+
+    return projectData.map((project: any, index: number) => {
+      const labels = project.codeStats.code_segments_count.codes.map((code: any) => code.text);
+      const data = project.codeStats.code_segments_count.codes.map((code: any) => code.segment_count);
+
+      const pieData = {
+        labels: labels,
+        datasets: [
+          {
+            label: "Code Segment Count",
+            data: data,
+            backgroundColor: [
+              "rgb(255, 99, 132)",
+              "rgb(54, 162, 235)",
+              "rgb(75, 192, 192)",
+              "rgb(255, 205, 86)",
+              "rgb(201, 203, 207)",
+              "rgb(54, 162, 235)",
+              "rgb(255, 99, 132)",
+            ],
+          },
+        ],
+      };
+
+      const pieOptions = {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      };
+
+      return (
+        <div key={index} className="pie-chart">
+          <Pie options={pieOptions} data={pieData} />
+        </div>
+      );
+    });
+  };
+
   return (
     <header>
       <Header title="Project stats" />
       <div id="barChartContainer">
         <Bar options={barOptions} data={projectBarStats} />
       </div>
+      <div className="pie-container">{renderPieCharts()}</div>
       <div className="bubble-container">{renderBubbleCharts()}</div>
     </header>
   );
