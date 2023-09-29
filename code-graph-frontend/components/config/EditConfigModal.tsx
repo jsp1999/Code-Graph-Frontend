@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { Button, Modal, TextField } from "@mui/material";
 
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+
 type Config = {
   name: string;
   config: {
@@ -44,6 +50,12 @@ interface EditModalProps {
 }
 
 export default function EditModal(props: EditModalProps) {
+  const [age, setAge] = React.useState("");
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setAge(event.target.value as string);
+  };
+
   const initialFormData: Config = {
     name: props?.config?.name,
     config_id: props?.config?.config_id,
@@ -169,6 +181,16 @@ export default function EditModal(props: EditModalProps) {
         });
 
         break;
+      default:
+        setFormData({ ...formData, name: value });
+
+        break;
+    }
+  };
+
+  const handleSelectChange = (event: SelectChangeEvent<string>) => {
+    const { name, value } = event.target;
+    switch (name) {
       case "model_type":
         setFormData({ ...formData, config: { ...formData.config, model_type: value } });
 
@@ -210,16 +232,24 @@ export default function EditModal(props: EditModalProps) {
           className="mb-2"
           fullWidth
         />
-        <TextField
-          name="model_type"
-          label="Model Type"
-          value={formData?.config?.model_type || props?.config?.config?.model_type}
-          onChange={handleInputChange}
-          variant="outlined"
-          className="mb-2"
-          fullWidth
-        />
-
+        <Box sx={{ minWidth: 120 }}>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Model Type</InputLabel>
+            <Select
+              name="model_type"
+              label="Model Type"
+              value={formData?.config?.model_type || props?.config?.config?.model_type}
+              variant="outlined"
+              className="mb-2"
+              fullWidth
+              onChange={handleSelectChange}
+              sx={{ textAlign: "left" }}
+            >
+              <MenuItem value={"static"}>static</MenuItem>
+              <MenuItem value={"dynamic"}>dynamic</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
         {/* all config properties */}
         <p>embedding_config</p>
         <TextField
