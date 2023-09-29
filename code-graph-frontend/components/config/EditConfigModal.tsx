@@ -265,14 +265,6 @@ export default function EditModal(props: EditModalProps) {
           className="mb-3"
           fullWidth
         />
-        <TextField
-          name="config_name"
-          label="Config Name"
-          value={props?.config?.config?.name}
-          variant="outlined"
-          className="mb-3"
-          fullWidth
-        />
         <Box sx={{ minWidth: 120 }}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Model Type</InputLabel>
@@ -386,7 +378,7 @@ export default function EditModal(props: EditModalProps) {
             />
           </div>
         )}
-        <p>cluster_config</p>
+        <p>Cluster config</p>
         <TextField
           name="config.cluster_config.model_name"
           label="cluster_config"
