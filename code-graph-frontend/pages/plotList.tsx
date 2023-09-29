@@ -26,6 +26,7 @@ export default function PlotsPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
   const [searchText, setSearchText] = useState("");
+  const [searchClusterId, setSearchCluster] = useState(0);
 
   const project_id: number = 1;
 
@@ -149,6 +150,18 @@ export default function PlotsPage() {
     }
   };
 
+  const handleClusterSearch = async () => {
+    try {
+      const clusterResponse: any = await searchCluster(project_id, searchClusterId, pageSize);
+      const clusterArray: Plot[] = clusterResponse.data.data;
+      const clusterCount = clusterResponse.data.count;
+      setPlots(clusterArray);
+      setTotalCount(clusterCount);
+    } catch (error) {
+      console.error("Error searching for clusters:", error);
+    }
+  };
+
   return (
     <header>
       <Header title="Plot List" />
@@ -161,6 +174,18 @@ export default function PlotsPage() {
           className="mr-2"
         />
         <IconButton color="primary" onClick={handleSearch}>
+          <SearchIcon />
+        </IconButton>
+      </div>
+      <div className="flex items-center justify-center mt-2">
+        <TextField
+          label="Search Cluster"
+          value={searchClusterId}
+          onChange={(e) => setSearchCluster(parseInt(e.target.value))}
+          variant="outlined"
+          className="mr-2"
+        />
+        <IconButton color="primary" onClick={handleClusterSearch}>
           <SearchIcon />
         </IconButton>
       </div>
