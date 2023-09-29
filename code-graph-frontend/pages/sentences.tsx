@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { getSentences } from "@/pages/api/api";
 import Header from "@/components/Header";
-import { Button } from "@mui/material";
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
 type Sentence = {
   sentence_id: number;
   text: string;
+  segments: { start_position: number; text: string }[];
 };
 
 export default function SentencesPage() {
@@ -104,8 +105,8 @@ export default function SentencesPage() {
   }
 
   return (
-    <header>
-      <Header title="sentences View" />
+    <div>
+      <Header title="Sentences View" />
       <div className="flex justify-center mt-4">
         <Button variant="outlined" onClick={prevPage} disabled={currentPage === 0}>
           Previous Page
@@ -116,7 +117,7 @@ export default function SentencesPage() {
         <select value={pageSize} onChange={(e) => changePageSize(Number(e.target.value))} className="ml-2">
           <option value={100}>Page Size: 100</option>
           <option value={50}>Page Size: 50</option>
-          <option value={2}>Page Size: 2</option>
+          <option value={25}>Page Size: 25</option>
         </select>
         <input
           type="number"
@@ -136,13 +137,26 @@ export default function SentencesPage() {
 
         <span>/ {Math.ceil(totalCount / pageSize)}</span>
       </div>
-      <div>
-        {sentences.map((item: any) => (
-          <div key={item.sentence_id}>
-            <HighlightAnnotatedWords sentence={item.text} segments={item.segments} />
-          </div>
-        ))}
-      </div>
-    </header>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Sentence ID</TableCell>
+              <TableCell>Text with Marked Words</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sentences.map((item: Sentence) => (
+              <TableRow key={item.sentence_id}>
+                <TableCell>{item.sentence_id}</TableCell>
+                <TableCell>
+                  <HighlightAnnotatedWords sentence={item.text} segments={item.segments} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 }
