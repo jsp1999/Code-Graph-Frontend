@@ -183,59 +183,60 @@ export default function PlotsPage() {
   return (
     <header>
       <Header title="Plot List" />
-      <p>Refresh</p>
       <div className="flex items-center justify-center mt-2">
+        {/* Refresh Button */}
         <IconButton color="primary" onClick={handleRefresh}>
           <RefreshIcon />
         </IconButton>
-      </div>
-      <div className="flex items-center justify-center mt-2">
-        <TextField
-          label="Search Sentence"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          variant="outlined"
-          className="mr-2"
-        />
-        <IconButton color="primary" onClick={handleSearch}>
-          <SearchIcon />
-        </IconButton>
-      </div>
-      <div className="flex items-center justify-center mt-2">
-        <TextField
-          label="Search Cluster"
-          value={searchClusterId}
-          onChange={(e) => setSearchClusterId(parseInt(e.target.value))}
-          variant="outlined"
-          className="mr-2"
-        />
-        <IconButton color="primary" onClick={handleClusterSearch}>
-          <SearchIcon />
-        </IconButton>
-      </div>
-      <div className="flex items-center justify-center mt-2">
-        <TextField
-          label="Search Code"
-          value={searchCodeId}
-          onChange={(e) => setSearchCodeId(parseInt(e.target.value))}
-          variant="outlined"
-          className="mr-2"
-        />
-        <IconButton color="primary" onClick={handleCodeSearch}>
-          <SearchIcon />
-        </IconButton>
-      </div>
-      <div className="flex items-center justify-center mt-2">
-        <TextField
-          label="Search Segment"
-          value={searchSegmentText}
-          onChange={(e) => setSearchSegmentText(e.target.value)} // New handler for segment search
-          variant="outlined"
-          className="mr-2"
-        />
-        <IconButton color="primary" onClick={handleSegmentSearch}>
-          <SearchIcon />
-        </IconButton>
+        {/* Searchs */}
+        <div className="flex items-center">
+          <TextField
+            label="Search Sentence"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            variant="outlined"
+            className="ml-2"
+          />
+          <IconButton color="primary" onClick={handleSearch}>
+            <SearchIcon />
+          </IconButton>
+        </div>
+        <div className="flex items-center">
+          <TextField
+            label="Search Cluster"
+            value={searchClusterId}
+            onChange={(e) => setSearchClusterId(parseInt(e.target.value))}
+            variant="outlined"
+            className="ml-2"
+          />
+          <IconButton color="primary" onClick={handleClusterSearch}>
+            <SearchIcon />
+          </IconButton>
+        </div>
+        <div className="flex items-center">
+          <TextField
+            label="Search Code"
+            value={searchCodeId}
+            onChange={(e) => setSearchCodeId(parseInt(e.target.value))}
+            variant="outlined"
+            className="ml-2"
+          />
+          <IconButton color="primary" onClick={handleCodeSearch}>
+            <SearchIcon />
+          </IconButton>
+        </div>
+        <div className="flex items-center">
+          <TextField
+            label="Search Segment"
+            value={searchSegmentText}
+            onChange={(e) => setSearchSegmentText(e.target.value)}
+            variant="outlined"
+            className="ml-2"
+          />
+          <IconButton color="primary" onClick={handleSegmentSearch}>
+            <SearchIcon />
+          </IconButton>
+        </div>
       </div>
       <div className="text-center mt-2">Total Count: {totalCount}</div>
       <div className="flex justify-center mt-4">
