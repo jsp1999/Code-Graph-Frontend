@@ -71,3 +71,7 @@ tfoot th {
     opacity: 1;
   }
 }
+
+.mb-3 {
+  background-color: #dcdcdc;
+}

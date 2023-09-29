@@ -262,7 +262,7 @@ export default function EditModal(props: EditModalProps) {
           label="Project Name"
           value={props?.config?.project_name}
           variant="outlined"
-          className="mb-2"
+          className="mb-3"
           fullWidth
         />
         <TextField
@@ -270,7 +270,7 @@ export default function EditModal(props: EditModalProps) {
           label="Config Name"
           value={props?.config?.config?.name}
           variant="outlined"
-          className="mb-2"
+          className="mb-3"
           fullWidth
         />
         <Box sx={{ minWidth: 120 }}>
@@ -298,7 +298,7 @@ export default function EditModal(props: EditModalProps) {
           label="embedding_config"
           value={props?.config?.config?.embedding_config?.model_name}
           variant="outlined"
-          className="mb-2"
+          className="mb-3"
           fullWidth
         />
         <TextField
@@ -319,7 +319,7 @@ export default function EditModal(props: EditModalProps) {
           label="reduction_config"
           value={props?.config?.config?.reduction_config?.model_name}
           variant="outlined"
-          className="mb-2"
+          className="mb-3"
           fullWidth
         />
         <TextField
@@ -392,7 +392,7 @@ export default function EditModal(props: EditModalProps) {
           label="cluster_config"
           value={props?.config?.config?.cluster_config?.model_name}
           variant="outlined"
-          className="mb-2"
+          className="mb-3"
           fullWidth
         />
         <TextField
@@ -412,7 +412,7 @@ export default function EditModal(props: EditModalProps) {
           label="metric"
           value={props?.config?.config?.cluster_config?.args?.metric}
           variant="outlined"
-          className="mb-2"
+          className="mb-3"
           fullWidth
         />
         <TextField
@@ -420,7 +420,7 @@ export default function EditModal(props: EditModalProps) {
           label="cluster_selection_method"
           value={props?.config?.config?.cluster_config?.args?.cluster_selection_method}
           variant="outlined"
-          className="mb-2"
+          className="mb-3"
           fullWidth
         />
         <Button variant="contained" className="my-5" component="label" onClick={handleSave}>
