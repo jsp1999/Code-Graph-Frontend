@@ -272,3 +272,11 @@ export const extractClusters = (project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/clusters/extract`);
   return axios.get<any>(`${baseURL}/projects/${project_id}/clusters/extract`);
 };
+
+// Sentences
+export const getSentences = (project_id: number, dataset_id: number, page: number, page_size: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/datasets/${dataset_id}/entries/?page=${page}&page_size=${page_size}`);
+  return axios.get<any>(
+    `${baseURL}/projects/${project_id}/datasets/${dataset_id}/entries/?page=${page}&page_size=${page_size}`,
+  );
+};

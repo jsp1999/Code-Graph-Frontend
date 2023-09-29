@@ -17,6 +17,7 @@ import { AiOutlineBoxPlot } from "react-icons/ai";
 import { GrCluster } from "react-icons/gr";
 import { GiPositionMarker } from "react-icons/gi";
 import { GrConfigure } from "react-icons/gr";
+import { BsChatRightText } from "react-icons/bs";
 
 interface HeaderProps {
   title: string;
@@ -167,6 +168,15 @@ export default function Header(props: HeaderProps) {
               >
                 <span>Configs</span>
                 <GrConfigure />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/sentences`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Sentences</span>
+                <BsChatRightText />
               </Button>
             </ButtonGroup>
           </div>
