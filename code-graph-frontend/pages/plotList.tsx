@@ -26,7 +26,8 @@ export default function PlotsPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
   const [searchText, setSearchText] = useState("");
-  const [searchClusterId, setSearchCluster] = useState(0);
+  const [searchClusterId, setSearchClusterId] = useState(0);
+  const [searchCodeId, setSearchCodeId] = useState(0);
 
   const project_id: number = 1;
 
@@ -142,9 +143,7 @@ export default function PlotsPage() {
     try {
       const sentenceResponse: any = await searchSentence(project_id, searchText, pageSize);
       const plotArray: Plot[] = sentenceResponse.data.data;
-      const plotCount = sentenceResponse.data.count;
       setPlots(plotArray);
-      setTotalCount(plotCount);
     } catch (error) {
       console.error("Error searching for sentences:", error);
     }
@@ -154,11 +153,19 @@ export default function PlotsPage() {
     try {
       const clusterResponse: any = await searchCluster(project_id, searchClusterId, pageSize);
       const clusterArray: Plot[] = clusterResponse.data.data;
-      const clusterCount = clusterResponse.data.count;
       setPlots(clusterArray);
-      setTotalCount(clusterCount);
     } catch (error) {
       console.error("Error searching for clusters:", error);
+    }
+  };
+
+  const handleCodeSearch = async () => {
+    try {
+      const codeResponse: any = await searchCode(project_id, searchCodeId, pageSize);
+      const codeArray: Plot[] = codeResponse.data.data;
+      setPlots(codeArray);
+    } catch (error) {
+      console.error("Error searching by code:", error);
     }
   };
 
@@ -181,7 +188,7 @@ export default function PlotsPage() {
         <TextField
           label="Search Cluster"
           value={searchClusterId}
-          onChange={(e) => setSearchCluster(parseInt(e.target.value))}
+          onChange={(e) => setSearchClusterId(parseInt(e.target.value))}
           variant="outlined"
           className="mr-2"
         />
@@ -189,6 +196,19 @@ export default function PlotsPage() {
           <SearchIcon />
         </IconButton>
       </div>
+      <div className="flex items-center justify-center mt-2">
+        <TextField
+          label="Search Code"
+          value={searchCodeId}
+          onChange={(e) => setSearchCodeId(parseInt(e.target.value))}
+          variant="outlined"
+          className="mr-2"
+        />
+        <IconButton color="primary" onClick={handleCodeSearch}>
+          <SearchIcon />
+        </IconButton>
+      </div>
+
       <div className="text-center mt-2">Total Count: {totalCount}</div>
       <div className="flex justify-center mt-4">
         <Button variant="outlined" onClick={prevPage} disabled={currentPage === 0}>
