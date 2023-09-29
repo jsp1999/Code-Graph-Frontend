@@ -49,13 +49,30 @@ interface EditModalProps {
   onEdit: (project: Config) => Promise<any>;
 }
 
+function updateJsonWithPath(json: any, path: string, value: any): any {
+  console.log("old json", json);
+  const keys = path.split(".");
+  let current = json;
+  if (keys.length === 1) {
+    current[keys[0]] = value;
+    console.log("new json", current);
+
+    return current;
+  }
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    if (!current[key]) {
+      current[key] = {};
+    }
+    current = current[key];
+  }
+
+  current[keys[keys.length - 1]] = value;
+  console.log("new json", current);
+  return current;
+}
+
 export default function EditModal(props: EditModalProps) {
-  const [age, setAge] = React.useState("");
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value as string);
-  };
-
   const initialFormData: Config = {
     name: props?.config?.name,
     config_id: props?.config?.config_id,
@@ -158,6 +175,49 @@ export default function EditModal(props: EditModalProps) {
       oldFormData.config.embedding_config.args.pretrained_model_name_or_path =
         formData.config.embedding_config.args.pretrained_model_name_or_path;
     }
+    // formData?.config?.reduction_config?.args?.n_neighbors
+    if (
+      formData.config.reduction_config.args.n_neighbors != undefined &&
+      formData.config.reduction_config.args.n_neighbors != 0
+    ) {
+      oldFormData.config.reduction_config.args.n_neighbors = formData.config.reduction_config.args.n_neighbors;
+    }
+    // props?.config?.config?.reduction_config?.args?.n_components
+    if (
+      formData.config.reduction_config.args.n_components != undefined &&
+      formData.config.reduction_config.args.n_components != 0
+    ) {
+      oldFormData.config.reduction_config.args.n_components = formData.config.reduction_config.args.n_components;
+    }
+    // props?.config?.config?.reduction_config?.args?.metric
+    if (
+      formData.config.reduction_config.args.metric != undefined &&
+      formData.config.reduction_config.args.metric != ""
+    ) {
+      oldFormData.config.reduction_config.args.metric = formData.config.reduction_config.args.metric;
+    }
+    // props?.config?.config?.reduction_config?.args?.random_state
+    if (
+      formData.config.reduction_config.args.random_state != undefined &&
+      formData.config.reduction_config.args.random_state != 0
+    ) {
+      oldFormData.config.reduction_config.args.random_state = formData.config.reduction_config.args.random_state;
+    }
+    // props?.config?.config?.reduction_config?.args?.n_jobs
+    if (
+      formData.config.reduction_config.args.n_jobs != undefined &&
+      formData.config.reduction_config.args.n_jobs != 0
+    ) {
+      oldFormData.config.reduction_config.args.n_jobs = formData.config.reduction_config.args.n_jobs;
+    }
+    // props?.config?.config?.cluster_config?.args?.min_cluster_size
+    if (
+      formData.config.cluster_config.args.min_cluster_size != undefined &&
+      formData.config.cluster_config.args.min_cluster_size != 0
+    ) {
+      oldFormData.config.cluster_config.args.min_cluster_size = formData.config.cluster_config.args.min_cluster_size;
+    }
+
     setFormData(oldFormData);
 
     handleFinish(oldFormData);
@@ -167,25 +227,8 @@ export default function EditModal(props: EditModalProps) {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    switch (name) {
-      case "pretrained_model_name_or_path":
-        setFormData({
-          ...formData,
-          config: {
-            ...formData.config,
-            embedding_config: {
-              ...formData.config.embedding_config,
-              args: { pretrained_model_name_or_path: value },
-            },
-          },
-        });
-
-        break;
-      default:
-        setFormData({ ...formData, name: value });
-
-        break;
-    }
+    let updatedForm = updateJsonWithPath(formData, name, value);
+    setFormData({ ...formData, ...updatedForm });
   };
 
   const handleSelectChange = (event: SelectChangeEvent<string>) => {
@@ -251,9 +294,9 @@ export default function EditModal(props: EditModalProps) {
           </FormControl>
         </Box>
         {/* all config properties */}
-        <p>embedding_config</p>
+        <p>Embedding config</p>
         <TextField
-          name="embedding_config"
+          name="config.embedding_config.model_name"
           label="embedding_config"
           value={props?.config?.config?.embedding_config?.model_name}
           variant="outlined"
@@ -261,7 +304,7 @@ export default function EditModal(props: EditModalProps) {
           fullWidth
         />
         <TextField
-          name="pretrained_model_name_or_path"
+          name="config.embedding_config.args.pretrained_model_name_or_path"
           label="pretrained_model_name_or_path"
           value={
             formData?.config?.embedding_config?.args?.pretrained_model_name_or_path ||
@@ -272,9 +315,9 @@ export default function EditModal(props: EditModalProps) {
           className="mb-2"
           fullWidth
         />
-        <p>reduction_config</p>
+        <p>Reduction config</p>
         <TextField
-          name="reduction_config"
+          name="config.reduction_config.model_name"
           label="reduction_config"
           value={props?.config?.config?.reduction_config?.model_name}
           variant="outlined"
@@ -282,48 +325,66 @@ export default function EditModal(props: EditModalProps) {
           fullWidth
         />
         <TextField
-          name="n_neighbors"
+          name="config.reduction_config.args.n_neighbors"
           label="n_neighbors"
-          value={props?.config?.config?.reduction_config?.args?.n_neighbors}
+          value={
+            formData?.config?.reduction_config?.args?.n_neighbors ||
+            props?.config?.config?.reduction_config?.args?.n_neighbors
+          }
+          onChange={handleInputChange}
           variant="outlined"
           className="mb-2"
           fullWidth
         />
         <TextField
-          name="n_components"
+          name="config.reduction_config.args.n_components"
           label="n_components"
-          value={props?.config?.config?.reduction_config?.args?.n_components}
+          value={
+            formData?.config?.reduction_config?.args?.n_components ||
+            props?.config?.config?.reduction_config?.args?.n_components
+          }
+          onChange={handleInputChange}
           variant="outlined"
           className="mb-2"
           fullWidth
         />
         <TextField
-          name="metric"
+          name="config.reduction_config.args.metric"
           label="metric"
-          value={props?.config?.config?.reduction_config?.args?.metric}
+          value={
+            formData?.config?.reduction_config?.args?.metric || props?.config?.config?.reduction_config?.args?.metric
+          }
+          onChange={handleInputChange}
           variant="outlined"
           className="mb-2"
           fullWidth
         />
         <TextField
-          name="random_state"
+          name="config.reduction_config.args.random_state"
           label="random_state"
-          value={props?.config?.config?.reduction_config?.args?.random_state}
+          value={
+            formData?.config?.reduction_config?.args?.random_state ||
+            props?.config?.config?.reduction_config?.args?.random_state
+          }
+          onChange={handleInputChange}
           variant="outlined"
           className="mb-2"
           fullWidth
         />
         <TextField
-          name="n_jobs"
+          name="config.reduction_config.args.n_jobs"
           label="n_jobs"
-          value={props?.config?.config?.reduction_config?.args?.n_jobs}
+          value={
+            formData?.config?.reduction_config?.args?.n_jobs || props?.config?.config?.reduction_config?.args?.n_jobs
+          }
+          onChange={handleInputChange}
           variant="outlined"
           className="mb-2"
           fullWidth
         />
         <p>cluster_config</p>
         <TextField
-          name="cluster_config"
+          name="config.cluster_config.model_name"
           label="cluster_config"
           value={props?.config?.config?.cluster_config?.model_name}
           variant="outlined"
@@ -331,15 +392,19 @@ export default function EditModal(props: EditModalProps) {
           fullWidth
         />
         <TextField
-          name="min_cluster_size"
+          name="config.cluster_config.args.min_cluster_size"
           label="min_cluster_size"
-          value={props?.config?.config?.cluster_config?.args?.min_cluster_size}
+          value={
+            formData?.config?.cluster_config?.args?.min_cluster_size ||
+            props?.config?.config?.cluster_config?.args?.min_cluster_size
+          }
+          onChange={handleInputChange}
           variant="outlined"
           className="mb-2"
           fullWidth
         />
         <TextField
-          name="metric"
+          name="config.cluster_config.args.metric"
           label="metric"
           value={props?.config?.config?.cluster_config?.args?.metric}
           variant="outlined"
@@ -347,7 +412,7 @@ export default function EditModal(props: EditModalProps) {
           fullWidth
         />
         <TextField
-          name="cluster_selection_method"
+          name="config.cluster_config.args.cluster_selection_method"
           label="cluster_selection_method"
           value={props?.config?.config?.cluster_config?.args?.cluster_selection_method}
           variant="outlined"
