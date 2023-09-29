@@ -37,8 +37,8 @@ export default function StatsPage() {
           codeStats: codeStatsResponse,
         };
         all_project_data.push(project_data);
-        setProjectData(all_project_data);
       }
+      setProjectData(all_project_data);
     } catch (error) {
       console.error("Error fetching stats:", error);
     }
@@ -550,40 +550,47 @@ export default function StatsPage() {
     ],
   };
 
-  const bubbleOptions = {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
+  const renderBubbleCharts = () => {
+    if (!projectData) return null;
 
-  // take first project
-  // Bubble Chart for codes and their segment count and average position.
-  console.log(projectData?.[0]);
-  let project = projectData?.[0];
+    return projectData.map((project: any, index: number) => {
+      const labels = project.codeStats.code_segments_count.codes.map((code: any) => code.text);
+      let data: any[] = [];
+      for (let i = 0; i < project.codeStats.code_segments_count.codes.length; i++) {
+        let code = project.codeStats.code_segments_count.codes[i];
+        let codeData = {
+          label: code.text,
+          data: [
+            {
+              x: code.average_position.x,
+              y: code.average_position.y,
+              r: code.segment_count,
+              backgroundColor: "rgba(255, 99, 132, 0.5)",
+            },
+          ],
+        };
+        data.push(codeData);
+      }
 
-  const lables = project?.codeStats.code_segments_count.codes.map((code: any) => code.text);
-  let data: any[] = [];
-  for (let i = 0; i < project?.codeStats.code_segments_count.codes.length; i++) {
-    let code = project?.codeStats.code_segments_count.codes[i];
-    let codeData = {
-      label: code.text,
-      data: [
-        {
-          x: code.average_position.x,
-          y: code.average_position.y,
-          r: code.segment_count,
-          backgroundColor: "rgba(255, 99, 132, 0.5)",
+      const bubbleData = {
+        labels: labels,
+        datasets: data,
+      };
+
+      const bubbleOptions = {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
         },
-      ],
-    };
-    data.push(codeData);
-  }
+      };
 
-  const bubbleData = {
-    labels: lables,
-    datasets: data,
+      return (
+        <div key={index} className="bubble-chart">
+          <Bubble options={bubbleOptions} data={bubbleData} />
+        </div>
+      );
+    });
   };
 
   return (
@@ -592,9 +599,7 @@ export default function StatsPage() {
       <div id="barChartContainer">
         <Bar options={barOptions} data={projectBarStats} />
       </div>
-      <div id="bubbleContainer">
-        <Bubble options={bubbleOptions} data={bubbleData} />
-      </div>
+      <div className="bubble-container">{renderBubbleCharts()}</div>
     </header>
   );
 }
