@@ -50,12 +50,10 @@ interface EditModalProps {
 }
 
 function updateJsonWithPath(json: any, path: string, value: any): any {
-  console.log("old json", json);
   const keys = path.split(".");
   let current = json;
   if (keys.length === 1) {
     current[keys[0]] = value;
-    console.log("new json", current);
 
     return current;
   }
@@ -68,7 +66,6 @@ function updateJsonWithPath(json: any, path: string, value: any): any {
   }
 
   current[keys[keys.length - 1]] = value;
-  console.log("new json", current);
   return current;
 }
 
