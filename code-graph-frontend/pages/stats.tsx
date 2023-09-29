@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  PointElement,
+} from "chart.js";
+import { Bar, Bubble } from "react-chartjs-2";
 import { getCodeStats, getClusterStats, getProjectStats, getProjects } from "@/pages/api/api";
 import { CodeSegmentsResponse, ProjectStatsResponse, ClusterStatsResponse } from "@/pages/api/types";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, Title, Tooltip, Legend);
 
 export default function StatsPage() {
   const [projectData, setProjectData] = useState<any>(null);
@@ -28,7 +37,6 @@ export default function StatsPage() {
           codeStats: codeStatsResponse,
         };
         all_project_data.push(project_data);
-        console.log(all_project_data);
         setProjectData(all_project_data);
       }
     } catch (error) {
@@ -498,7 +506,7 @@ export default function StatsPage() {
     fetchAndUpdateStats();
   }, []);
 
-  const options = {
+  const barOptions = {
     scales: {
       y: {
         beginAtZero: true,
@@ -506,7 +514,7 @@ export default function StatsPage() {
     },
   };
 
-  const data = {
+  const projectBarStats = {
     labels: projectData?.map((project: any) => `${project.project.project_id}: ${project.project.project_name}`),
     datasets: [
       {
@@ -542,10 +550,51 @@ export default function StatsPage() {
     ],
   };
 
+  const bubbleOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
+  // take first project
+  // Bubble Chart for codes and their segment count and average position.
+  console.log(projectData?.[0]);
+  let project = projectData?.[0];
+
+  const lables = project?.codeStats.code_segments_count.codes.map((code: any) => code.text);
+  let data: any[] = [];
+  for (let i = 0; i < project?.codeStats.code_segments_count.codes.length; i++) {
+    let code = project?.codeStats.code_segments_count.codes[i];
+    let codeData = {
+      label: code.text,
+      data: [
+        {
+          x: code.average_position.x,
+          y: code.average_position.y,
+          r: code.segment_count,
+          backgroundColor: "rgba(255, 99, 132, 0.5)",
+        },
+      ],
+    };
+    data.push(codeData);
+  }
+
+  const bubbleData = {
+    labels: lables,
+    datasets: data,
+  };
+
   return (
     <header>
-      <Header title="Code View" />
-      <Bar options={options} data={data} />;
+      <Header title="Project stats" />
+      <div id="barChartContainer">
+        <Bar options={barOptions} data={projectBarStats} />
+      </div>
+      <div id="bubbleContainer">
+        <Bubble options={bubbleOptions} data={bubbleData} />
+      </div>
     </header>
   );
 }
