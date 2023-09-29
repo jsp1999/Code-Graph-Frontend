@@ -4,6 +4,9 @@ import { Button } from "@mui/material";
 import { BsListColumnsReverse } from "react-icons/bs";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { getPlots, searchSentence, searchCode, searchCluster, searchSegment } from "@/pages/api/api";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
 
 type Plot = {
   id: number;
@@ -22,6 +25,7 @@ export default function PlotsPage() {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
+  const [searchText, setSearchText] = useState("");
 
   const project_id: number = 1;
 
@@ -94,6 +98,11 @@ export default function PlotsPage() {
     let all = false;
     try {
       const plotsResponse: any = await getPlots(project_id, all, page, pageSize);
+      // Demonstration how to use other endpoints
+      const sentenceResponse: any = await searchSentence(project_id, "test", pageSize);
+      const clusterResponse: any = await searchCluster(project_id, 1, pageSize);
+      const codeResponse: any = await searchCode(project_id, 1, pageSize);
+      const segmentResponse: any = await searchSegment(project_id, "test", pageSize);
       const plotArray: Plot[] = plotsResponse.data.data;
       const plotCount = plotsResponse.data.count;
       setPlots(plotArray);
@@ -128,9 +137,33 @@ export default function PlotsPage() {
     setCurrentPage(0);
   };
 
+  const handleSearch = async () => {
+    try {
+      const sentenceResponse: any = await searchSentence(project_id, searchText, pageSize);
+      const plotArray: Plot[] = sentenceResponse.data.data;
+      const plotCount = sentenceResponse.data.count;
+      setPlots(plotArray);
+      setTotalCount(plotCount);
+    } catch (error) {
+      console.error("Error searching for sentences:", error);
+    }
+  };
+
   return (
     <header>
       <Header title="Plot List" />
+      <div className="flex items-center justify-center mt-2">
+        <TextField
+          label="Search Sentence"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          variant="outlined"
+          className="mr-2"
+        />
+        <IconButton color="primary" onClick={handleSearch}>
+          <SearchIcon />
+        </IconButton>
+      </div>
       <div className="text-center mt-2">Total Count: {totalCount}</div>
       <div className="flex justify-center mt-4">
         <Button variant="outlined" onClick={prevPage} disabled={currentPage === 0}>
