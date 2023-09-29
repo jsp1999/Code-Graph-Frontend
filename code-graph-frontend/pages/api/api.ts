@@ -280,3 +280,72 @@ export const getSentences = (project_id: number, dataset_id: number, page: numbe
     `${baseURL}/projects/${project_id}/datasets/${dataset_id}/entries/?page=${page}&page_size=${page_size}`,
   );
 };
+
+// Plots
+// 'http://localhost:8000/projects/1/plots/?all=false&page=0&page_size=100'
+export const getPlots = (project_id: number, all: boolean, page: number, page_size: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/plots/?all=${all}&page=${page}&page_size=${page_size}`);
+  return axios.get<any>(`${baseURL}/projects/${project_id}/plots/?all=${all}&page=${page}&page_size=${page_size}`);
+};
+
+export const searchSentence = (project_id: number, search_query: string, limit: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/plots/sentence/?search_query=${search_query}&limit=${limit}`);
+  return axios.get<any>(
+    `${baseURL}/projects/${project_id}/plots/sentence/?search_query=${search_query}&limit=${limit}`,
+  );
+};
+// search code
+/*
+curl -X 'GET' \
+  'http://localhost:8000/projects/1/plots/code/?search_code_id=1&limit=100' \
+  -H 'accept: application/json'
+*/
+
+export const searchCode = (project_id: number, search_code_id: number, limit: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/plots/code/?search_code_id=${search_code_id}&limit=${limit}`);
+  return axios.get<any>(
+    `${baseURL}/projects/${project_id}/plots/code/?search_code_id=${search_code_id}&limit=${limit}`,
+  );
+};
+
+// search cluster
+/*
+curl -X 'GET' \
+  'http://localhost:8000/projects/1/plots/cluster/?search_cluster_id=1&limit=100' \
+  -H 'accept: application/json'
+*/
+
+export const searchCluster = (project_id: number, search_cluster_id: number, limit: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/plots/cluster/?search_cluster_id=${search_cluster_id}&limit=${limit}`);
+  return axios.get<any>(
+    `${baseURL}/projects/${project_id}/plots/cluster/?search_cluster_id=${search_cluster_id}&limit=${limit}`,
+  );
+};
+
+// search segment
+/*
+curl -X 'GET' \
+  'http://localhost:8000/projects/1/plots/segment?search_segment_query=statdium&limit=100' \
+  -H 'accept: application/json'
+*/
+
+export const searchSegment = (project_id: number, search_segment_query: string, limit: number): Promise<any> => {
+  console.log(
+    `${baseURL}/projects/${project_id}/plots/segment?search_segment_query=${search_segment_query}&limit=${limit}`,
+  );
+  return axios.get<any>(
+    `${baseURL}/projects/${project_id}/plots/segment?search_segment_query=${search_segment_query}&limit=${limit}`,
+  );
+};
+
+// export to files
+/*
+curl -X 'GET' \
+  'http://localhost:8000/projects/1/plots/exportToFiles/' \
+  -H 'accept: application/json'
+*/
+
+export const exportToFiles = (project_id: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/plots/exportToFiles/`);
+  return axios.get<any>(`${baseURL}/projects/${project_id}/plots/exportToFiles/`);
+};

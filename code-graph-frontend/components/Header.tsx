@@ -18,6 +18,7 @@ import { GrCluster } from "react-icons/gr";
 import { GiPositionMarker } from "react-icons/gi";
 import { GrConfigure } from "react-icons/gr";
 import { BsChatRightText } from "react-icons/bs";
+import { PiListMagnifyingGlassThin } from "react-icons/pi";
 
 interface HeaderProps {
   title: string;
@@ -177,6 +178,15 @@ export default function Header(props: HeaderProps) {
               >
                 <span>Sentences</span>
                 <BsChatRightText />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/plotList`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Plot List</span>
+                <PiListMagnifyingGlassThin />
               </Button>
             </ButtonGroup>
           </div>
