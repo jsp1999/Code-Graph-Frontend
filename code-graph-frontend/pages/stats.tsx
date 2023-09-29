@@ -594,7 +594,7 @@ export default function StatsPage() {
     });
   };
 
-  const renderPieCharts = () => {
+  const renderPieCodeCharts = () => {
     if (!projectData) return null;
 
     return projectData.map((project: any, index: number) => {
@@ -636,14 +636,57 @@ export default function StatsPage() {
     });
   };
 
+  const renderPieClusterCharts = () => {
+    if (!projectData) return null;
+
+    return projectData.map((project: any, index: number) => {
+      const labels = project.clusterStats.cluster_info.map((cluster: any) => cluster.cluster_value);
+      const data = project.clusterStats.cluster_info.map((cluster: any) => cluster.segment_count);
+
+      const pieData = {
+        labels: labels,
+        datasets: [
+          {
+            label: "Cluster Segment Count",
+            data: data,
+            backgroundColor: [
+              "rgb(255, 99, 132)",
+              "rgb(54, 162, 235)",
+              "rgb(75, 192, 192)",
+              "rgb(255, 205, 86)",
+              "rgb(201, 203, 207)",
+              "rgb(54, 162, 235)",
+              "rgb(255, 99, 132)",
+            ],
+          },
+        ],
+      };
+
+      const pieOptions = {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      };
+
+      return (
+        <div key={index} className="pie-chart">
+          <Pie options={pieOptions} data={pieData} />
+        </div>
+      );
+    });
+  };
+
   return (
     <header>
       <Header title="Project stats" />
       <div id="barChartContainer">
         <Bar options={barOptions} data={projectBarStats} />
       </div>
-      <div className="pie-container">{renderPieCharts()}</div>
+      <div className="pie-container">{renderPieCodeCharts()}</div>
       <div className="bubble-container">{renderBubbleCharts()}</div>
+      <div className="pie-container">{renderPieClusterCharts()}</div>
     </header>
   );
 }
