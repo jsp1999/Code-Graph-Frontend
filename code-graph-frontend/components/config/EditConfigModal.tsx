@@ -244,6 +244,7 @@ export default function EditModal(props: EditModalProps) {
         break;
     }
   };
+  const isDynamicModel = formData.config.model_type === "dynamic";
 
   return (
     <Modal open={props.open} onClose={setClosed}>
@@ -336,52 +337,58 @@ export default function EditModal(props: EditModalProps) {
           className="mb-2"
           fullWidth
         />
-        <TextField
-          name="config.reduction_config.args.n_components"
-          label="n_components"
-          value={
-            formData?.config?.reduction_config?.args?.n_components ||
-            props?.config?.config?.reduction_config?.args?.n_components
-          }
-          onChange={handleInputChange}
-          variant="outlined"
-          className="mb-2"
-          fullWidth
-        />
-        <TextField
-          name="config.reduction_config.args.metric"
-          label="metric"
-          value={
-            formData?.config?.reduction_config?.args?.metric || props?.config?.config?.reduction_config?.args?.metric
-          }
-          onChange={handleInputChange}
-          variant="outlined"
-          className="mb-2"
-          fullWidth
-        />
-        <TextField
-          name="config.reduction_config.args.random_state"
-          label="random_state"
-          value={
-            formData?.config?.reduction_config?.args?.random_state ||
-            props?.config?.config?.reduction_config?.args?.random_state
-          }
-          onChange={handleInputChange}
-          variant="outlined"
-          className="mb-2"
-          fullWidth
-        />
-        <TextField
-          name="config.reduction_config.args.n_jobs"
-          label="n_jobs"
-          value={
-            formData?.config?.reduction_config?.args?.n_jobs || props?.config?.config?.reduction_config?.args?.n_jobs
-          }
-          onChange={handleInputChange}
-          variant="outlined"
-          className="mb-2"
-          fullWidth
-        />
+        {!isDynamicModel && (
+          <div>
+            <TextField
+              name="config.reduction_config.args.n_components"
+              label="n_components"
+              value={
+                formData?.config?.reduction_config?.args?.n_components ||
+                props?.config?.config?.reduction_config?.args?.n_components
+              }
+              onChange={handleInputChange}
+              variant="outlined"
+              className="mb-2"
+              fullWidth
+            />
+            <TextField
+              name="config.reduction_config.args.metric"
+              label="metric"
+              value={
+                formData?.config?.reduction_config?.args?.metric ||
+                props?.config?.config?.reduction_config?.args?.metric
+              }
+              onChange={handleInputChange}
+              variant="outlined"
+              className="mb-2"
+              fullWidth
+            />
+            <TextField
+              name="config.reduction_config.args.random_state"
+              label="random_state"
+              value={
+                formData?.config?.reduction_config?.args?.random_state ||
+                props?.config?.config?.reduction_config?.args?.random_state
+              }
+              onChange={handleInputChange}
+              variant="outlined"
+              className="mb-2"
+              fullWidth
+            />
+            <TextField
+              name="config.reduction_config.args.n_jobs"
+              label="n_jobs"
+              value={
+                formData?.config?.reduction_config?.args?.n_jobs ||
+                props?.config?.config?.reduction_config?.args?.n_jobs
+              }
+              onChange={handleInputChange}
+              variant="outlined"
+              className="mb-2"
+              fullWidth
+            />
+          </div>
+        )}
         <p>cluster_config</p>
         <TextField
           name="config.cluster_config.model_name"
