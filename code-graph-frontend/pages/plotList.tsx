@@ -28,6 +28,7 @@ export default function PlotsPage() {
   const [searchText, setSearchText] = useState("");
   const [searchClusterId, setSearchClusterId] = useState(0);
   const [searchCodeId, setSearchCodeId] = useState(0);
+  const [searchSegmentText, setSearchSegmentText] = useState("");
 
   const project_id: number = 1;
 
@@ -169,6 +170,16 @@ export default function PlotsPage() {
     }
   };
 
+  const handleSegmentSearch = async () => {
+    try {
+      const segmentResponse: any = await searchSegment(project_id, searchSegmentText, pageSize);
+      const segmentArray: Plot[] = segmentResponse.data.data;
+      setPlots(segmentArray);
+    } catch (error) {
+      console.error("Error searching by segment:", error);
+    }
+  };
+
   return (
     <header>
       <Header title="Plot List" />
@@ -208,7 +219,18 @@ export default function PlotsPage() {
           <SearchIcon />
         </IconButton>
       </div>
-
+      <div className="flex items-center justify-center mt-2">
+        <TextField
+          label="Search Segment"
+          value={searchSegmentText}
+          onChange={(e) => setSearchSegmentText(e.target.value)} // New handler for segment search
+          variant="outlined"
+          className="mr-2"
+        />
+        <IconButton color="primary" onClick={handleSegmentSearch}>
+          <SearchIcon />
+        </IconButton>
+      </div>
       <div className="text-center mt-2">Total Count: {totalCount}</div>
       <div className="flex justify-center mt-4">
         <Button variant="outlined" onClick={prevPage} disabled={currentPage === 0}>
