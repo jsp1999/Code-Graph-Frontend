@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { getSentences } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { Button } from "@mui/material";
-import { BsListColumnsReverse } from "react-icons/bs";
-import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
-import { getSentences } from "@/pages/api/api";
 
 type Sentence = {
   sentence_id: number;
@@ -18,36 +16,6 @@ export default function SentencesPage() {
 
   const project_id: number = 1;
   const dataset_id: number = 1;
-
-  const sentences_columns: ColumnDef<Sentence>[] = [
-    {
-      header: "Sentences",
-      columns: [
-        {
-          accessorFn: (row) => row.sentence_id,
-          id: "sentence_id",
-          cell: (info) => info.getValue(),
-          header: () => <span>Sentence ID</span>,
-          maxSize: 5,
-        },
-        {
-          accessorFn: (row) => row.text,
-          id: "text",
-          cell: (info) => info.getValue(),
-          header: () => <span>Text</span>,
-          minSize: 10000,
-        },
-      ],
-    },
-  ];
-
-  const sentence_table = useReactTable({
-    columns: sentences_columns,
-    data: sentences,
-    enableColumnResizing: true,
-    columnResizeMode: "onChange",
-    getCoreRowModel: getCoreRowModel(),
-  });
 
   const fetchAndUpdateSentences = async (page: number, pageSize: number) => {
     try {
@@ -82,10 +50,62 @@ export default function SentencesPage() {
     setCurrentPage(0);
   };
 
+  function HighlightAnnotatedWords({
+    sentence,
+    segments,
+  }: {
+    sentence: string;
+    segments: { start_position: number; text: string }[];
+  }) {
+    // Function to split the sentence into words and apply highlights
+    const splitSentenceWithHighlights = () => {
+      let currentPosition = 0;
+      let sentenceWords = [];
+
+      // Sort segments by start_position
+      const sortedSegments = segments.sort(
+        (a: { start_position: number }, b: { start_position: number }) => a.start_position - b.start_position,
+      );
+
+      for (const segment of sortedSegments) {
+        // Add words before the segment
+        const segmentText = segment.text;
+        if (segment.start_position > currentPosition) {
+          const beforeSegmentText = sentence.slice(currentPosition, segment.start_position);
+          sentenceWords.push({ text: beforeSegmentText, highlighted: false });
+          currentPosition = segment.start_position;
+        }
+
+        // Add the annotated segment with a yellow background
+        sentenceWords.push({ text: segmentText, highlighted: true });
+        currentPosition += segmentText.length;
+      }
+
+      // Add any remaining words after the last segment
+      if (currentPosition < sentence.length) {
+        const remainingText = sentence.slice(currentPosition);
+        sentenceWords.push({ text: remainingText, highlighted: false });
+      }
+
+      return sentenceWords;
+    };
+
+    const sentenceWords = splitSentenceWithHighlights();
+
+    return (
+      <div>
+        {sentenceWords.map((word: { text: string; highlighted: boolean }, index: number) => (
+          <span key={index} style={{ backgroundColor: word.highlighted ? "yellow" : "transparent" }}>
+            {word.text}
+          </span>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <header>
       <Header title="sentences View" />
-      <div className="text-center mt-2">Total Count: {totalCount}</div>
       <div className="flex justify-center mt-4">
         <Button variant="outlined" onClick={prevPage} disabled={currentPage === 0}>
           Previous Page
@@ -96,7 +116,7 @@ export default function SentencesPage() {
         <select value={pageSize} onChange={(e) => changePageSize(Number(e.target.value))} className="ml-2">
           <option value={100}>Page Size: 100</option>
           <option value={50}>Page Size: 50</option>
-          <option value={25}>Page Size: 25</option>
+          <option value={2}>Page Size: 2</option>
         </select>
         <input
           type="number"
@@ -116,49 +136,12 @@ export default function SentencesPage() {
 
         <span>/ {Math.ceil(totalCount / pageSize)}</span>
       </div>
-      <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
-        <div className="h-2" />
-        <table className="w-full ">
-          <thead>
-            {sentence_table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      style={{ position: "relative", width: header.getSize() }}
-                    >
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.getCanResize() && (
-                        <div
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          className={`resizer ${header.column.getIsResizing() ? "isResizing" : ""}`}
-                        ></div>
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {sentence_table.getRowModel().rows.map((row) => {
-              return (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td key={cell.id} style={{ width: cell.column.getSize() }}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div>
+        {sentences.map((item: any) => (
+          <div key={item.sentence_id}>
+            <HighlightAnnotatedWords sentence={item.text} segments={item.segments} />
+          </div>
+        ))}
       </div>
     </header>
   );
