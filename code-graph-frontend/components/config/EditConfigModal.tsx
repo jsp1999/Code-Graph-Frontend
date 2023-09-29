@@ -106,6 +106,7 @@ export default function EditModal(props: EditModalProps) {
   };
 
   const [formData, setFormData] = useState<Config>(initialFormData);
+  const [isDynamicModel, setIsDynamicModel] = useState<boolean>(props?.config?.config?.model_type === "dynamic");
 
   const handleFinish = async (newbody: any) => {
     try {
@@ -233,6 +234,7 @@ export default function EditModal(props: EditModalProps) {
     switch (name) {
       case "model_type":
         setFormData({ ...formData, config: { ...formData.config, model_type: value } });
+        setIsDynamicModel(value === "dynamic");
 
         break;
       default:
@@ -241,7 +243,6 @@ export default function EditModal(props: EditModalProps) {
         break;
     }
   };
-  const isDynamicModel = formData.config.model_type === "dynamic";
 
   return (
     <Modal open={props.open} onClose={setClosed}>
