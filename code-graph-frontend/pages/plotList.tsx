@@ -7,6 +7,7 @@ import { getPlots, searchSentence, searchCode, searchCluster, searchSegment } fr
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 type Plot = {
   id: number;
@@ -101,11 +102,6 @@ export default function PlotsPage() {
     let all = false;
     try {
       const plotsResponse: any = await getPlots(project_id, all, page, pageSize);
-      // Demonstration how to use other endpoints
-      const sentenceResponse: any = await searchSentence(project_id, "test", pageSize);
-      const clusterResponse: any = await searchCluster(project_id, 1, pageSize);
-      const codeResponse: any = await searchCode(project_id, 1, pageSize);
-      const segmentResponse: any = await searchSegment(project_id, "test", pageSize);
       const plotArray: Plot[] = plotsResponse.data.data;
       const plotCount = plotsResponse.data.count;
       setPlots(plotArray);
@@ -180,9 +176,19 @@ export default function PlotsPage() {
     }
   };
 
+  const handleRefresh = async () => {
+    fetchAndUpdatePlots(currentPage, pageSize);
+  };
+
   return (
     <header>
       <Header title="Plot List" />
+      <p>Refresh</p>
+      <div className="flex items-center justify-center mt-2">
+        <IconButton color="primary" onClick={handleRefresh}>
+          <RefreshIcon />
+        </IconButton>
+      </div>
       <div className="flex items-center justify-center mt-2">
         <TextField
           label="Search Sentence"
