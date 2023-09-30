@@ -135,7 +135,13 @@ export default function StatsPage() {
       let zeroData: any[] = [];
       for (let i = 0; i < project.codeStats.code_segments_count.codes.length; i++) {
         let code = project.codeStats.code_segments_count.codes[i];
-        let radius = Math.max(1, Math.min(code.segment_count, 10));
+        let maxRadiusOfAllCodes = Math.max(
+          ...project.codeStats.code_segments_count.codes.map((code: any) => code.segment_count),
+        );
+        let minRadiusOfAllCodes = Math.min(
+          ...project.codeStats.code_segments_count.codes.map((code: any) => code.segment_count),
+        );
+        let radius = ((code.segment_count - minRadiusOfAllCodes) / (maxRadiusOfAllCodes - minRadiusOfAllCodes)) * 50;
         if (code.average_position.x == 0 && code.average_position.y == 0) {
           zeroData.push({
             x: code.average_position.x,
