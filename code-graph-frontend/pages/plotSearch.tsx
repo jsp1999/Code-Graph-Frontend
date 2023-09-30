@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
-import { Button } from "@mui/material";
 import { BsListColumnsReverse } from "react-icons/bs";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
-import { getPlots, searchSentence, searchCode, searchCluster, searchSegment } from "@/pages/api/api";
+import { getPlots, searchSentence, searchCode, searchCluster, searchSegment, exportToFiles } from "@/pages/api/api";
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
 
 type Plot = {
   id: number;
@@ -30,6 +31,7 @@ export default function PlotsPage() {
   const [searchClusterId, setSearchClusterId] = useState(0);
   const [searchCodeId, setSearchCodeId] = useState(0);
   const [searchSegmentText, setSearchSegmentText] = useState("");
+  const [exportSuccessDialogOpen, setExportSuccessDialogOpen] = useState(false);
 
   const project_id: number = 1;
 
@@ -180,6 +182,20 @@ export default function PlotsPage() {
     fetchAndUpdatePlots(currentPage, pageSize);
   };
 
+  const handleCloseExportSuccessDialog = () => {
+    // Close the success modal when the user clicks "Ok"
+    setExportSuccessDialogOpen(false);
+  };
+
+  const handleExportFiles = async () => {
+    try {
+      const exportResponse: any = await exportToFiles(project_id);
+      setExportSuccessDialogOpen(true);
+    } catch (error) {
+      console.error("Error exporting files:", error);
+    }
+  };
+
   return (
     <header>
       <Header title="Plot Search" />
@@ -188,6 +204,18 @@ export default function PlotsPage() {
         <IconButton color="primary" onClick={handleRefresh}>
           <RefreshIcon />
         </IconButton>
+        <IconButton color="primary" onClick={handleExportFiles}>
+          <FileCopyIcon />
+        </IconButton>
+        <Dialog open={exportSuccessDialogOpen} onClose={handleCloseExportSuccessDialog}>
+          <DialogTitle>Data extracted successfully</DialogTitle>
+          <DialogContent>You can download the files in Databases Page</DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseExportSuccessDialog} color="primary" autoFocus>
+              Ok
+            </Button>
+          </DialogActions>
+        </Dialog>
         {/* Searchs */}
         <div className="flex items-center">
           <TextField
