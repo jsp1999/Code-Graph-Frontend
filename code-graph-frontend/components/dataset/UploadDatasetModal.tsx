@@ -6,6 +6,7 @@ interface CategoryModalProps {
   open: boolean;
   handleClose: () => void;
   projectId: number;
+  updateDatasets: () => void;
 }
 
 export default function UploadModal(props: CategoryModalProps) {
@@ -48,6 +49,7 @@ export default function UploadModal(props: CategoryModalProps) {
         encodeURIComponent(type),
       );
     }
+    props.updateDatasets();
   };
 
   function setClosed() {
