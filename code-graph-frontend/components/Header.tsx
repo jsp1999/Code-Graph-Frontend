@@ -77,7 +77,34 @@ export default function Header(props: HeaderProps) {
       </div>
       <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer}>
         <div className="p-4 w-64">
+          <div className="mt-5">
+            <h2 className="text-2xl text-black">Project {projectId}</h2>
+            {/* Für jeden bereich bsp. Projects ein eigenes accordion */}
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <p>{projects.find((project) => project.project_id == projectId)?.project_name}</p>
+              </AccordionSummary>
+              {/* Styling noch anpassen und eigene sachen drüber mappen */}
+              {projects.map((project) => (
+                <div key={project.project_id}>
+                  {project.project_name}
+                  {project.project_id != projectId && (
+                    <button
+                      onClick={() => {
+                        localStorage.setItem("projectId", project.project_id.toString());
+                        window.location.reload(); // Reload the page
+                      }}
+                    >
+                      <CompareArrowsIcon />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </Accordion>
+          </div>
+          <br />
           <h1 className="text-2xl text-black">Menu</h1>
+
           <ButtonGroup
             variant="contained"
             color="primary"
@@ -112,35 +139,11 @@ export default function Header(props: HeaderProps) {
               <BsFillDatabaseFill />
             </Button>
           </ButtonGroup>
-          <div className="mt-5">
-            <p>Project {projectId}</p>
-            {/* Für jeden bereich bsp. Projects ein eigenes accordion */}
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <p>{projects.find((project) => project.project_id == projectId)?.project_name}</p>
-              </AccordionSummary>
-              {/* Styling noch anpassen und eigene sachen drüber mappen */}
-              {projects.map((project) => (
-                <div key={project.project_id}>
-                  {project.project_name}
-                  {project.project_id != projectId && (
-                    <button
-                      onClick={() => {
-                        localStorage.setItem("projectId", project.project_id.toString());
-                        window.location.reload(); // Reload the page
-                      }}
-                    >
-                      <CompareArrowsIcon />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </Accordion>
-          </div>
         </div>
 
         <div className="p-4 w-64">
-          <p>View</p>
+          <h1 className="text-xl text-black">View</h1>
+
           <div className="center">
             <ButtonGroup
               variant="contained"
@@ -168,7 +171,7 @@ export default function Header(props: HeaderProps) {
               </Button>
             </ButtonGroup>
             <br />
-            <p>Data</p>
+            <h1 className="text-xl text-black">Data</h1>
             <ButtonGroup
               variant="contained"
               color="primary"
@@ -231,7 +234,7 @@ export default function Header(props: HeaderProps) {
               </Button>
             </ButtonGroup>
             <br />
-            <p>Stats</p>
+            <h1 className="text-xl text-black">Stats</h1>
             <ButtonGroup
               variant="contained"
               color="primary"
