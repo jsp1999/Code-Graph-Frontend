@@ -33,7 +33,9 @@ export default function PlotsPage() {
   const [searchSegmentText, setSearchSegmentText] = useState("");
   const [exportSuccessDialogOpen, setExportSuccessDialogOpen] = useState(false);
 
-  const project_id: number = 1;
+  const [projectId, setProjectId] = useState(
+    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
+  );
 
   const plots_columns: ColumnDef<Plot>[] = [
     {
@@ -103,7 +105,7 @@ export default function PlotsPage() {
   const fetchAndUpdatePlots = async (page: number, pageSize: number) => {
     let all = false;
     try {
-      const plotsResponse: any = await getPlots(project_id, all, page, pageSize);
+      const plotsResponse: any = await getPlots(projectId, all, page, pageSize);
       const plotArray: Plot[] = plotsResponse.data.data;
       const plotCount = plotsResponse.data.count;
       setPlots(plotArray);
@@ -140,7 +142,7 @@ export default function PlotsPage() {
 
   const handleSearch = async () => {
     try {
-      const sentenceResponse: any = await searchSentence(project_id, searchText, pageSize);
+      const sentenceResponse: any = await searchSentence(projectId, searchText, pageSize);
       const plotArray: Plot[] = sentenceResponse.data.data;
       setPlots(plotArray);
     } catch (error) {
@@ -150,7 +152,7 @@ export default function PlotsPage() {
 
   const handleClusterSearch = async () => {
     try {
-      const clusterResponse: any = await searchCluster(project_id, searchClusterId, pageSize);
+      const clusterResponse: any = await searchCluster(projectId, searchClusterId, pageSize);
       const clusterArray: Plot[] = clusterResponse.data.data;
       setPlots(clusterArray);
     } catch (error) {
@@ -160,7 +162,7 @@ export default function PlotsPage() {
 
   const handleCodeSearch = async () => {
     try {
-      const codeResponse: any = await searchCode(project_id, searchCodeId, pageSize);
+      const codeResponse: any = await searchCode(projectId, searchCodeId, pageSize);
       const codeArray: Plot[] = codeResponse.data.data;
       setPlots(codeArray);
     } catch (error) {
@@ -170,7 +172,7 @@ export default function PlotsPage() {
 
   const handleSegmentSearch = async () => {
     try {
-      const segmentResponse: any = await searchSegment(project_id, searchSegmentText, pageSize);
+      const segmentResponse: any = await searchSegment(projectId, searchSegmentText, pageSize);
       const segmentArray: Plot[] = segmentResponse.data.data;
       setPlots(segmentArray);
     } catch (error) {
@@ -189,7 +191,7 @@ export default function PlotsPage() {
 
   const handleExportFiles = async () => {
     try {
-      const exportResponse: any = await exportToFiles(project_id);
+      const exportResponse: any = await exportToFiles(projectId);
       setExportSuccessDialogOpen(true);
     } catch (error) {
       console.error("Error exporting files:", error);
