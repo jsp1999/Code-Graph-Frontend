@@ -48,7 +48,7 @@ export default function StatsPage() {
     fetchAndUpdateStats();
   }, []);
 
-  const renderProjectBarCharts = () => {
+  const renderProjectInfoBarChart = () => {
     if (!projectData) return null;
 
     const barOptions = {
@@ -59,14 +59,9 @@ export default function StatsPage() {
       },
     };
 
-    const projectBarStats = {
+    const projectInfoBarStats = {
       labels: projectData?.map((project: any) => `${project.project.project_id}: ${project.project.project_name}`),
       datasets: [
-        {
-          label: "Segment Count",
-          data: projectData?.map((project: any) => project.projectStats.segment_count),
-          backgroundColor: "rgb(255, 99, 132)",
-        },
         {
           label: "Dataset Count",
           data: projectData?.map((project: any) => project.projectStats.dataset_count),
@@ -82,6 +77,35 @@ export default function StatsPage() {
           data: projectData?.map((project: any) => project.projectStats.model_count),
           backgroundColor: "rgb(255, 205, 86)",
         },
+      ],
+    };
+
+    return (
+      <div id="infoBarChartContainer">
+        <Bar options={barOptions} data={projectInfoBarStats} />
+      </div>
+    );
+  };
+
+  const renderProjectDataBarChart = () => {
+    if (!projectData) return null;
+
+    const barOptions = {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    };
+
+    const projectDataBarStats = {
+      labels: projectData?.map((project: any) => `${project.project.project_id}: ${project.project.project_name}`),
+      datasets: [
+        {
+          label: "Segment Count",
+          data: projectData?.map((project: any) => project.projectStats.segment_count),
+          backgroundColor: "rgb(255, 99, 132)",
+        },
         {
           label: "Sentence Count",
           data: projectData?.map((project: any) => project.projectStats.sentence_count),
@@ -96,8 +120,8 @@ export default function StatsPage() {
     };
 
     return (
-      <div id="barChartContainer">
-        <Bar options={barOptions} data={projectBarStats} />
+      <div id="dataBarChartContainer">
+        <Bar options={barOptions} data={projectDataBarStats} />
       </div>
     );
   };
@@ -232,7 +256,8 @@ export default function StatsPage() {
   return (
     <header>
       <Header title="Project stats" />
-      <div className="bar-container">{renderProjectBarCharts()}</div>
+      <div className="bar-container">{renderProjectInfoBarChart()}</div>
+      <div className="bar-container">{renderProjectDataBarChart()}</div>
       <div className="pie-container">{renderPieCodeCharts()}</div>
       <div className="bubble-container">{renderBubbleCharts()}</div>
       <div className="pie-container">{renderPieClusterCharts()}</div>
