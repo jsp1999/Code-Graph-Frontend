@@ -67,7 +67,7 @@ export default function StatsPage() {
     };
 
     return (
-      <div id="infoBarChartContainer">
+      <div id="infoBarChartContainer" style={{ width: "900px" }}>
         <Bar options={barOptions} data={projectInfoBarStats} />
       </div>
     );
@@ -106,7 +106,7 @@ export default function StatsPage() {
     };
 
     return (
-      <div id="dataBarChartContainer">
+      <div id="dataBarChartContainer" style={{ width: "1300px" }}>
         <Bar options={barOptions} data={projectDataBarStats} />
       </div>
     );

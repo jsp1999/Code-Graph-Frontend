@@ -90,12 +90,13 @@ export default function StatsPage() {
       const bubbleOptions = {};
 
       return (
-        <div key={index} className="bubble-chart-container">
+        <div key={index} className="chart-container">
+          <h3 className="text-xl text-black">{`${project.project.project_id} - ${project.project.project_name}`}</h3>
           <Bubble options={bubbleOptions} data={bubbleData} />
           <table>
             <thead>
               <tr>
-                <th>Zero Segments</th>
+                <th>Empty Codes</th>
               </tr>
             </thead>
             <tbody>
@@ -135,22 +136,19 @@ export default function StatsPage() {
               "rgb(54, 162, 235)",
               "rgb(255, 99, 132)",
             ],
+            borderWidth: 1,
           },
         ],
       };
-
-      const pieOptions = {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      };
+      const pieOptions = {};
 
       return (
-        <div key={index} className="pie-chart">
+        <div key={index} className="chart-container">
+          <h3 className="text-xl text-black">{`${project.project.project_id} - ${project.project.project_name}`}</h3>
           <h3>{project.project.project_name}</h3>
-          <Pie options={pieOptions} data={pieData} />
+          <div style={{ width: "900px" }}>
+            <Pie options={pieOptions} data={pieData} />
+          </div>
         </div>
       );
     });
@@ -158,7 +156,7 @@ export default function StatsPage() {
 
   return (
     <header>
-      <Header title="Project stats" />
+      <Header title="Code stats" />
       <div className="bubble-container">{renderBubbleCharts()}</div>
       <div className="pie-container">{renderPieCodeCharts()}</div>
     </header>
