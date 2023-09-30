@@ -48,48 +48,58 @@ export default function StatsPage() {
     fetchAndUpdateStats();
   }, []);
 
-  const barOptions = {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
+  const renderProjectBarCharts = () => {
+    if (!projectData) return null;
 
-  const projectBarStats = {
-    labels: projectData?.map((project: any) => `${project.project.project_id}: ${project.project.project_name}`),
-    datasets: [
-      {
-        label: "Segment Count",
-        data: projectData?.map((project: any) => project.projectStats.segment_count),
-        backgroundColor: "rgb(255, 99, 132)",
+    const barOptions = {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
       },
-      {
-        label: "Dataset Count",
-        data: projectData?.map((project: any) => project.projectStats.dataset_count),
-        backgroundColor: "rgb(54, 162, 235)",
-      },
-      {
-        label: "Code Count",
-        data: projectData?.map((project: any) => project.projectStats.code_count),
-        backgroundColor: "rgb(75, 192, 192)",
-      },
-      {
-        label: "Model Count",
-        data: projectData?.map((project: any) => project.projectStats.model_count),
-        backgroundColor: "rgb(255, 205, 86)",
-      },
-      {
-        label: "Sentence Count",
-        data: projectData?.map((project: any) => project.projectStats.sentence_count),
-        backgroundColor: "rgb(201, 203, 207)",
-      },
-      {
-        label: "Embedding Count",
-        data: projectData?.map((project: any) => project.projectStats.embedding_count),
-        backgroundColor: "rgb(54, 162, 235)",
-      },
-    ],
+    };
+
+    const projectBarStats = {
+      labels: projectData?.map((project: any) => `${project.project.project_id}: ${project.project.project_name}`),
+      datasets: [
+        {
+          label: "Segment Count",
+          data: projectData?.map((project: any) => project.projectStats.segment_count),
+          backgroundColor: "rgb(255, 99, 132)",
+        },
+        {
+          label: "Dataset Count",
+          data: projectData?.map((project: any) => project.projectStats.dataset_count),
+          backgroundColor: "rgb(54, 162, 235)",
+        },
+        {
+          label: "Code Count",
+          data: projectData?.map((project: any) => project.projectStats.code_count),
+          backgroundColor: "rgb(75, 192, 192)",
+        },
+        {
+          label: "Model Count",
+          data: projectData?.map((project: any) => project.projectStats.model_count),
+          backgroundColor: "rgb(255, 205, 86)",
+        },
+        {
+          label: "Sentence Count",
+          data: projectData?.map((project: any) => project.projectStats.sentence_count),
+          backgroundColor: "rgb(201, 203, 207)",
+        },
+        {
+          label: "Embedding Count",
+          data: projectData?.map((project: any) => project.projectStats.embedding_count),
+          backgroundColor: "rgb(54, 162, 235)",
+        },
+      ],
+    };
+
+    return (
+      <div id="barChartContainer">
+        <Bar options={barOptions} data={projectBarStats} />
+      </div>
+    );
   };
 
   const renderBubbleCharts = () => {
@@ -222,9 +232,7 @@ export default function StatsPage() {
   return (
     <header>
       <Header title="Project stats" />
-      <div id="barChartContainer">
-        <Bar options={barOptions} data={projectBarStats} />
-      </div>
+      <div className="bar-container">{renderProjectBarCharts()}</div>
       <div className="pie-container">{renderPieCodeCharts()}</div>
       <div className="bubble-container">{renderBubbleCharts()}</div>
       <div className="pie-container">{renderPieClusterCharts()}</div>
