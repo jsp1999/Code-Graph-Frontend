@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ConfirmModal from "./ConfirmModal";
 import EditModal from "./EditModal";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { useRouter } from "next/router";
 import { Button, ButtonGroup } from "@mui/material";
 import { PiSuitcaseSimpleLight } from "react-icons/pi";
@@ -37,8 +37,9 @@ export default function Header(props: HeaderProps) {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [projectId, setProjectId] = useState(typeof window !== 'undefined' ? parseInt(localStorage.getItem("projectId") ?? "1"): 1);
-
+  const [projectId, setProjectId] = useState(
+    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
+  );
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -53,7 +54,7 @@ export default function Header(props: HeaderProps) {
         const projectData = response.data.data; // Access the "data" property of the response
         setProjects(projectData);
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error("Error fetching projects:", error);
       }
     };
 
@@ -84,19 +85,20 @@ export default function Header(props: HeaderProps) {
               </AccordionSummary>
               {/* Styling noch anpassen und eigene sachen drüber mappen */}
               {projects.map((project) => (
-          <div key={project.project_id}>
-            {project.project_name}
-            {project.project_id != projectId &&
-              <button
-                onClick={() => {
-                  localStorage.setItem("projectId", project.project_id.toString());
-                  window.location.reload(); // Reload the page
-                }}
-              >
-              <CompareArrowsIcon />
-            </button>}
-          </div>
-        ))}
+                <div key={project.project_id}>
+                  {project.project_name}
+                  {project.project_id != projectId && (
+                    <button
+                      onClick={() => {
+                        localStorage.setItem("projectId", project.project_id.toString());
+                        window.location.reload(); // Reload the page
+                      }}
+                    >
+                      <CompareArrowsIcon />
+                    </button>
+                  )}
+                </div>
+              ))}
             </Accordion>
           </div>
         </div>
