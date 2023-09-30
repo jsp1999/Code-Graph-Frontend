@@ -5,6 +5,7 @@ import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack
 import { Button, TextField, CircularProgress } from "@mui/material";
 import { BsListColumnsReverse } from "react-icons/bs";
 import CheckIcon from "@mui/icons-material/Check";
+import { Checkbox, FormControlLabel } from "@mui/material";
 
 type Embedding = {
   id: string;
@@ -22,6 +23,8 @@ export default function DatabasesPage() {
   );
   const [loading, setLoading] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
+  const [batchSize, setBatchSize] = useState(124);
+  const [use_disk_storage, setUseDiskStorage] = useState(false);
 
   const embeddings_columns: ColumnDef<Embedding>[] = [
     {
@@ -77,7 +80,7 @@ export default function DatabasesPage() {
     setLoading(true);
     setExportSuccess(false);
     try {
-      await extractEmbeddings(projectId);
+      await extractEmbeddings(projectId, batchSize, use_disk_storage);
       fetchAndUpdateEmbeddings(currentPage, pageSize);
       setExportSuccess(true);
     } catch (error) {
@@ -113,10 +116,31 @@ export default function DatabasesPage() {
     <header>
       <Header title="Code View" />
       <div className="flex justify-center">
+        <TextField
+          label="Batch Size"
+          variant="outlined"
+          type="number"
+          value={batchSize}
+          onChange={(e) => setBatchSize(Number(e.target.value))}
+          className="mr-2"
+        />
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={use_disk_storage}
+              onChange={(e) => setUseDiskStorage(e.target.checked)}
+              color="primary"
+            />
+          }
+          label="Use Disk Storage"
+          className="mr-2"
+        />
+
         <Button
           variant="outlined"
           component="label"
-          className="flex items-center justify-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => handleExtractEmbeddings()}
           disabled={loading}
         >
@@ -130,6 +154,7 @@ export default function DatabasesPage() {
           Export Embeddings
         </Button>
       </div>
+
       {/* Pagination controls */}
       <div className="text-center mt-2">Total Count: {totalCount}</div>
       <div className="flex justify-center mt-4">

@@ -242,9 +242,13 @@ export const getEmbeddings = (
   );
 };
 
-export const extractEmbeddings = (project_id: number): Promise<any> => {
-  console.log(`${baseURL}/projects/${project_id}/embeddings/extract`);
-  return axios.get<any>(`${baseURL}/projects/${project_id}/embeddings/extract`);
+export const extractEmbeddings = (project_id: number, batch_size: number, use_disk_storage: boolean): Promise<any> => {
+  console.log(
+    `${baseURL}/projects/${project_id}/embeddings/extract?batch_size=${batch_size}&use_disk_storage=${use_disk_storage}`,
+  );
+  return axios.get<any>(
+    `${baseURL}/projects/${project_id}/embeddings/extract?batch_size=${batch_size}&use_disk_storage=${use_disk_storage}`,
+  );
 };
 
 // Reduced Embeddings
