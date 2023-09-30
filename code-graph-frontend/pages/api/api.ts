@@ -342,38 +342,12 @@ export const searchSegment = (project_id: number, search_segment_query: string, 
 };
 
 // export to files
-/*
-curl -X 'GET' \
-  'http://localhost:8000/projects/1/plots/exportToFiles/' \
-  -H 'accept: application/json'
-*/
-
 export const exportToFiles = (project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/plots/exportToFiles/`);
   return axios.get<any>(`${baseURL}/projects/${project_id}/plots/exportToFiles/`);
 };
 
 // stats
-
-// project stats
-/*
-curl -X 'GET' \
-  'http://localhost:8000/projects/1/plots/stats/project/' \
-  -H 'accept: application/json'
-  Response body
-  
-    {
-  "project_id": 1,
-  "project_name": "Test",
-  "dataset_count": 1,
-  "code_count": 12,
-  "model_count": 3,
-  "sentence_count": 8,
-  "segment_count": 21,
-  "embedding_count": 21
-}
-*/
-
 export const getProjectStats = (project_id: number): Promise<ProjectStatsResponse> => {
   console.log(`${baseURL}/projects/${project_id}/plots/stats/project/`);
   return axios
@@ -381,63 +355,12 @@ export const getProjectStats = (project_id: number): Promise<ProjectStatsRespons
     .then((response) => response.data);
 };
 
-// code stats
-/*
-curl -X 'GET' \
-  'http://localhost:8000/projects/1/plots/stats/code/' \
-  -H 'accept: application/json'
-
-  Response body
-  {
-  "code_segments_count": {
-    "codes": [
-      {
-        "code_id": 1,
-        "text": "event",
-        "segment_count": 0,
-        "average_position": {
-          "x": 0,
-          "y": 0
-        }
-      },
-      ...
-*/
-
 export const getCodeStats = (project_id: number): Promise<CodeSegmentsResponse> => {
   console.log(`${baseURL}/projects/${project_id}/plots/stats/code/`);
   return axios
     .get<CodeSegmentsResponse>(`${baseURL}/projects/${project_id}/plots/stats/code/`)
     .then((response) => response.data);
 };
-
-// cluster stats
-/*
-curl -X 'GET' \
-  'http://localhost:8000/projects/1/plots/stats/cluster/' \
-  -H 'accept: application/json'
-
-  RESPONSE BODY
-  {
-  "project_name": "Test",
-  "project_id": 1,
-  "cluster_count": 21,
-  "unique_cluster_count": 3,
-  "cluster_info": [
-    {
-      "cluster_value": -1,
-      "segment_count": 2
-    },
-    {
-      "cluster_value": 0,
-      "segment_count": 14
-    },
-    {
-      "cluster_value": 1,
-      "segment_count": 5
-    }
-  ]
-}
-*/
 
 export const getClusterStats = (project_id: number): Promise<ClusterStatsResponse> => {
   console.log(`${baseURL}/projects/${project_id}/plots/stats/cluster/`);
