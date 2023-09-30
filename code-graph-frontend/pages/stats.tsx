@@ -14,6 +14,7 @@ import {
 import { Bar, Bubble, Pie } from "react-chartjs-2";
 import { getCodeStats, getClusterStats, getProjectStats, getProjects } from "@/pages/api/api";
 import { CodeSegmentsResponse, ProjectStatsResponse, ClusterStatsResponse } from "@/pages/api/types";
+import { Doughnut } from "react-chartjs-2";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, Title, Tooltip, Legend, ArcElement);
 
@@ -241,6 +242,7 @@ export default function StatsPage() {
 
       return (
         <div key={index} className="pie-chart">
+          <h3>{project.project.project_name}</h3>
           <Pie options={pieOptions} data={pieData} />
         </div>
       );
@@ -281,9 +283,15 @@ export default function StatsPage() {
         ],
       };
 
+      const options = {
+        maintainAspectRatio: true,
+        height: 600,
+        width: 600,
+      };
+
       return (
         <div key={index} className="pie-chart">
-          <Pie data={pieData} />
+          <Doughnut data={pieData} options={options} />
         </div>
       );
     });
