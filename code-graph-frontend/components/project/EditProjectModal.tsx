@@ -74,6 +74,7 @@ export default function EditModal(props: EditModalProps) {
             variant="outlined"
             className="mb-2"
             fullWidth
+            disabled
           />
           <TextField
             name="config_id"
@@ -82,6 +83,7 @@ export default function EditModal(props: EditModalProps) {
             variant="outlined"
             className="mb-2"
             fullWidth
+            disabled
           />
           <Button className="mx-2" variant="outlined" component="label" onClick={setClosed}>
             Cancel
