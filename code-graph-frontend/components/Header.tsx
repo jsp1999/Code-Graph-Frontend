@@ -40,7 +40,6 @@ export default function Header(props: HeaderProps) {
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
   );
-
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
@@ -77,7 +76,51 @@ export default function Header(props: HeaderProps) {
       <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer}>
         <div className="p-4 w-64">
           <h1 className="text-2xl text-black">Menu</h1>
+          <ButtonGroup
+            variant="contained"
+            color="primary"
+            aria-label="contained primary button group"
+            style={{ display: "flex", flexDirection: "column" }}
+          >
+            <Button
+              variant="outlined"
+              component="label"
+              onClick={() => router.push(`/projects`)}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <span>Projects</span>
+              <PiSuitcaseSimpleLight />
+            </Button>
+            <Button
+              variant="outlined"
+              component="label"
+              onClick={() => router.push(`/configs`)}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <span>Configs</span>
+              <GrConfigure />
+            </Button>
+            <Button
+              variant="outlined"
+              component="label"
+              onClick={() => router.push(`/databases`)}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <span>Databases</span>
+              <BsFillDatabaseFill />
+            </Button>
+            <Button
+              variant="outlined"
+              component="label"
+              onClick={() => router.push(`/stats`)}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <span>Stats</span>
+              <ImStatsBars />
+            </Button>
+          </ButtonGroup>
           <div className="mt-5">
+            <p>Project {projectId}</p>
             {/* Für jeden bereich bsp. Projects ein eigenes accordion */}
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -102,7 +145,9 @@ export default function Header(props: HeaderProps) {
             </Accordion>
           </div>
         </div>
-        <div className="content-center">
+
+        <div className="p-4 w-64">
+          <p>View</p>
           <div className="center">
             <ButtonGroup
               variant="contained"
@@ -110,34 +155,6 @@ export default function Header(props: HeaderProps) {
               aria-label="contained primary button group"
               style={{ display: "flex", flexDirection: "column" }}
             >
-              <Button
-                variant="outlined"
-                component="label"
-                onClick={() => router.push(`/projects`)}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-              >
-                <span>Projects</span>
-                <PiSuitcaseSimpleLight />
-              </Button>
-              <Button
-                variant="outlined"
-                component="label"
-                onClick={() => router.push(`/databases`)}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-              >
-                <span>Databases</span>
-                <BsFillDatabaseFill />
-              </Button>
-              <div className="h-2" />
-              <Button
-                variant="outlined"
-                component="label"
-                onClick={() => router.push(`/datasets`)}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-              >
-                <span>Datasets</span>
-                <MdOutlineDataset />
-              </Button>
               <Button
                 variant="outlined"
                 component="label"
@@ -156,41 +173,23 @@ export default function Header(props: HeaderProps) {
                 <span>Graph</span>
                 <FcScatterPlot />
               </Button>
+            </ButtonGroup>
+            <br />
+            <p>Data</p>
+            <ButtonGroup
+              variant="contained"
+              color="primary"
+              aria-label="contained primary button group"
+              style={{ display: "flex", flexDirection: "column" }}
+            >
               <Button
                 variant="outlined"
                 component="label"
-                onClick={() => router.push(`/embeddings`)}
+                onClick={() => router.push(`/datasets`)}
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
-                <span>Embeddings</span>
-                <AiOutlineBoxPlot />
-              </Button>
-              <Button
-                variant="outlined"
-                component="label"
-                onClick={() => router.push(`/clusters`)}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-              >
-                <span>Clusters</span>
-                <GrCluster />
-              </Button>
-              <Button
-                variant="outlined"
-                component="label"
-                onClick={() => router.push(`/reducedEmbeddings`)}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-              >
-                <span>Positions</span>
-                <GiPositionMarker />
-              </Button>
-              <Button
-                variant="outlined"
-                component="label"
-                onClick={() => router.push(`/configs`)}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-              >
-                <span>Configs</span>
-                <GrConfigure />
+                <span>Datasets</span>
+                <MdOutlineDataset />
               </Button>
               <Button
                 variant="outlined"
@@ -204,20 +203,38 @@ export default function Header(props: HeaderProps) {
               <Button
                 variant="outlined"
                 component="label"
+                onClick={() => router.push(`/embeddings`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Embeddings</span>
+                <AiOutlineBoxPlot />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/reducedEmbeddings`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Positions</span>
+                <GiPositionMarker />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/clusters`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Clusters</span>
+                <GrCluster />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
                 onClick={() => router.push(`/plotSearch`)}
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Plot Search</span>
                 <PiListMagnifyingGlassThin />
-              </Button>
-              <Button
-                variant="outlined"
-                component="label"
-                onClick={() => router.push(`/stats`)}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-              >
-                <span>Stats</span>
-                <ImStatsBars />
               </Button>
             </ButtonGroup>
           </div>
