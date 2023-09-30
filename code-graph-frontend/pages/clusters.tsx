@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
-import { Button } from "@mui/material";
-import { BsListColumnsReverse } from "react-icons/bs";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { getClusters, extractClusters } from "@/pages/api/api"; // Import clusters API functions
+import { BsListColumnsReverse } from "react-icons/bs";
+import CheckIcon from "@mui/icons-material/Check";
+import { Button, CircularProgress } from "@mui/material";
 
 type Cluster = {
   model_id: number;
@@ -17,8 +18,12 @@ export default function ClustersPage() {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
+  const [loading, setLoading] = useState(false);
+  const [exportSuccess, setExportSuccess] = useState(false);
 
-  const project_id: number = 1;
+  const [projectId, setProjectId] = useState(
+    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
+  );
 
   const clusters_columns: ColumnDef<Cluster>[] = [
     {
@@ -63,7 +68,7 @@ export default function ClustersPage() {
   const fetchAndUpdateClusters = async (page: number, pageSize: number) => {
     let all = false;
     try {
-      const clustersResponse: any = await getClusters(project_id, all, page, pageSize);
+      const clustersResponse: any = await getClusters(projectId, all, page, pageSize);
       const clusterArray: Cluster[] = clustersResponse.data.data;
       const clusterCount = clustersResponse.data.count;
       setClusters(clusterArray);
@@ -78,16 +83,16 @@ export default function ClustersPage() {
   }, [currentPage, pageSize]);
 
   const handleExportClusters = async () => {
+    setLoading(true);
     try {
-      await extractClusters(project_id);
+      await extractClusters(projectId);
       fetchAndUpdateClusters(currentPage, pageSize);
+      setExportSuccess(true);
     } catch (error) {
       console.error("Error extracting clusters:", error);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const goToPage = (page: number) => {
-    setCurrentPage(page);
   };
 
   const nextPage = () => {
@@ -109,7 +114,7 @@ export default function ClustersPage() {
 
   return (
     <header>
-      <Header title="Clusters View" />
+      <Header title="Cluster Data" />
       <div className="flex justify-center">
         <Button
           variant="outlined"
@@ -117,7 +122,13 @@ export default function ClustersPage() {
           className="flex items-center justify-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => handleExportClusters()}
         >
-          <BsListColumnsReverse className="mr-2" />
+          {loading ? (
+            <CircularProgress size={20} />
+          ) : exportSuccess ? (
+            <CheckIcon style={{ color: "green", marginRight: "8px" }} />
+          ) : (
+            <BsListColumnsReverse className="mr-2" />
+          )}
           Export Clusters
         </Button>
       </div>
