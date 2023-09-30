@@ -23,10 +23,11 @@ export default function DatasetPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
-  const [projectId, setProjectId] = useState(0);
+  const [projectId, setProjectId] = useState(
+    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
+  );
   const [datasetId, setDatasetId] = useState(0);
   const [editData, setEditData] = useState<any>({});
-  let project_id: number = 1;
 
   const columns: ColumnDef<Dataset>[] = [
     {
@@ -108,7 +109,7 @@ export default function DatasetPage() {
   // Function to fetch and update project data
   const fetchAndUpdateDatasets = async () => {
     try {
-      const result = await getDatasets(project_id);
+      const result = await getDatasets(projectId);
       let datasetData: Dataset[] = result.data;
       setDatasets(datasetData);
     } catch (error) {
