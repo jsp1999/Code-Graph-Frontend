@@ -16,8 +16,9 @@ export default function DatabasesPage() {
   const [pageSize, setPageSize] = useState(100);
   const [reducedLength, setReducedLength] = useState(3);
   const [totalCount, setTotalCount] = useState(0);
-
-  const project_id: number = 1;
+  const [projectId, setProjectId] = useState(
+    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
+  );
 
   const embeddings_columns: ColumnDef<Embedding>[] = [
     {
@@ -53,7 +54,7 @@ export default function DatabasesPage() {
   const fetchAndUpdateEmbeddings = async (page: number, pageSize: number) => {
     let all = false;
     try {
-      const embeddingsResponse: any = await getEmbeddings(project_id, all, page, pageSize, reducedLength);
+      const embeddingsResponse: any = await getEmbeddings(projectId, all, page, pageSize, reducedLength);
       const embeddingsData: Embedding[] = embeddingsResponse.data.data;
       const totalCount = embeddingsResponse.data.count;
 
@@ -65,12 +66,13 @@ export default function DatabasesPage() {
   };
 
   useEffect(() => {
+    setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
     fetchAndUpdateEmbeddings(currentPage, pageSize);
   }, [currentPage, pageSize, reducedLength]);
 
-  const handleExportEmbeddings = async () => {
+  const handleExtractEmbeddings = async () => {
     try {
-      await extractEmbeddings(project_id);
+      await extractEmbeddings(projectId);
       fetchAndUpdateEmbeddings(currentPage, pageSize);
     } catch (error) {
       console.error("Error deleting database:", error);
@@ -107,7 +109,7 @@ export default function DatabasesPage() {
           variant="outlined"
           component="label"
           className="flex items-center justify-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => handleExportEmbeddings()}
+          onClick={() => handleExtractEmbeddings()}
         >
           <BsListColumnsReverse className="mr-2" />
           Export Embeddings
