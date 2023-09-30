@@ -6,10 +6,10 @@ interface CategoryModalProps {
   open: boolean;
   handleClose: () => void;
   setLoading: () => void;
+  projectId: number;
 }
 
 export default function UploadModal(props: CategoryModalProps) {
-  const [projectId, setProjectId] = useState<number>(0);
   const [datasetName, setDatasetName] = useState<string>("");
   const [split, setSplit] = useState("\\t");
   const [sentenceSplit, setSentenceSplit] = useState("\\n\\n");
@@ -19,10 +19,6 @@ export default function UploadModal(props: CategoryModalProps) {
   const [type, setType] = useState("plain");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [advancedSettingsSelected, setAdvancedSettingsSelected] = useState(false);
-
-  const handleIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setProjectId(parseInt(event.target.value));
-  };
 
   const handleDatasetNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDatasetName(event.target.value);
@@ -40,12 +36,12 @@ export default function UploadModal(props: CategoryModalProps) {
     props.setLoading();
 
     if (!advancedSettingsSelected) {
-      uploadDataset(projectId, datasetName, selectedFile!).then(() => {
+      uploadDataset(props.projectId, datasetName, selectedFile!).then(() => {
         props.setLoading();
       });
     } else {
       uploadAdvancedDataset(
-        projectId,
+        props.projectId,
         datasetName,
         selectedFile!,
         encodeURIComponent(split),
@@ -77,13 +73,8 @@ export default function UploadModal(props: CategoryModalProps) {
       <Modal open={props.open} onClose={setClosed}>
         <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10vh] grid-cols-1 text-center">
           <div className="my-5">
-            <TextField
-              className="w-[25rem]"
-              id="standard-basic"
-              label="Project ID"
-              value={projectId}
-              onChange={handleIdChange}
-            />
+            <TextField className="w-[25rem]" id="standard-basic" label="Project ID" value={props.projectId} disabled />
+
             <TextField
               className="w-[25rem]"
               id="standard-basic"

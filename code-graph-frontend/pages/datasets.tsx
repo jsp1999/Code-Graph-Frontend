@@ -165,7 +165,13 @@ export default function DatasetPage() {
       <Header title="Code View" />
       <div className="flex justify-center">
         <div className="content-center">
-          <UploadModal open={open} handleClose={() => setOpen(false)} setLoading={() => setLoading(!loading)} />
+          <UploadModal
+            open={open}
+            handleClose={() => setOpen(false)}
+            setLoading={() => setLoading(!loading)}
+            projectId={projectId}
+          />
+
           <LoadingModal open={loading} />
           <Button variant="contained" className="my-5" component="label" onClick={() => setOpen(true)}>
             Upload
