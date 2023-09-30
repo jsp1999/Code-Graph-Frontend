@@ -198,7 +198,7 @@ export default function PlotsPage() {
 
   return (
     <header>
-      <Header title="Plot Search" />
+      <Header title="Plot Data" />
       <div className="flex items-center justify-center mt-2">
         {/* Refresh Button */}
         <IconButton color="primary" onClick={handleRefresh}>

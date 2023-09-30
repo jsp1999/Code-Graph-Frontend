@@ -229,10 +229,10 @@ export default function Header(props: HeaderProps) {
               <Button
                 variant="outlined"
                 component="label"
-                onClick={() => router.push(`/plotSearch`)}
+                onClick={() => router.push(`/plotData`)}
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
-                <span>Plot Search</span>
+                <span>Plot</span>
                 <PiListMagnifyingGlassThin />
               </Button>
             </ButtonGroup>
