@@ -69,9 +69,6 @@ export default function Header(props: HeaderProps) {
           <Menu />
         </button>
       </div>
-      <span style={{ cursor: "pointer" }} onClick={() => router.push("/")}>
-        CodeGraph
-      </span>
       <div className="">
         <h1 className="font-bold text-3xl">{props.title}</h1>
       </div>
@@ -242,6 +239,15 @@ export default function Header(props: HeaderProps) {
           </div>
         </div>
       </Drawer>
+      <span
+        style={{
+          cursor: "pointer",
+          marginLeft: "auto",
+        }}
+        onClick={() => router.push("/")}
+      >
+        CodeGraph
+      </span>
     </header>
   );
 }
