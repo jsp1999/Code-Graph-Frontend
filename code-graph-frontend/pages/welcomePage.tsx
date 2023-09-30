@@ -23,7 +23,15 @@ export default function WelcomePage() {
             Upload
           </Button>
           <p>or</p>
-          <Button variant="contained" component="label" className="my-5" onClick={() => uploadTestDataset()}>
+          <Button
+            variant="contained"
+            component="label"
+            className="my-5"
+            onClick={() => {
+              uploadTestDataset();
+              window.location.reload();
+            }}
+          >
             Try it out
           </Button>
         </div>
