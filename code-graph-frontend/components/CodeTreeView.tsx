@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { TreeView, TreeItem } from "@mui/lab";
 import { ExpandMore, ChevronRight } from "@mui/icons-material";
-import { Checkbox } from "@mui/material";
+import { Checkbox, TextField } from "@mui/material";
 
 interface Category {
   id: number;
@@ -22,7 +22,21 @@ const CodeTreeView: React.FC<CodeTreeViewProps> = ({
   selectedNodes,
   updateSelectedNodes,
 }) => {
-  const renderTree = (node: Category): React.ReactNode => (
+
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const renderTree = (node: Category): React.ReactNode => {
+    const nodeMatchesSearch = node.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const childrenMatchSearch = Object.keys(node.subcategories).some((subcategoryKey) => {
+      const subcategory = node.subcategories[subcategoryKey];
+      return subcategory.name.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+
+    if (!nodeMatchesSearch && !childrenMatchSearch) {
+    return null;
+  }
+
+  return (
     <TreeItem
       key={node.id}
       nodeId={node.id?.toString()}
@@ -38,9 +52,13 @@ const CodeTreeView: React.FC<CodeTreeViewProps> = ({
         </>
       }
     >
-      {Object.keys(node.subcategories).map((subcategoryKey) => renderTree(node.subcategories[subcategoryKey]))}
+      {Object.keys(node.subcategories).map((subcategoryKey) => {
+        const subcategory = node.subcategories[subcategoryKey];
+        return renderTree(subcategory);
+      })}
     </TreeItem>
   );
+};
 
   const handleNodeSelect = (event: React.ChangeEvent<{}>, node: number) => {
     event.stopPropagation();
@@ -66,6 +84,13 @@ const CodeTreeView: React.FC<CodeTreeViewProps> = ({
   return (
     <div className="w-fit m-12 border p-5">
       <h1 className="text-2xl underline mb-5">Codes</h1>
+      <TextField
+          label="Search"
+          variant="outlined"
+          fullWidth
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+      />
       <div className="h-[60vh] w-80 overflow-auto">
         <TreeView defaultCollapseIcon={<ExpandMore />} defaultExpandIcon={<ChevronRight />} multiSelect>
           {Object.keys(taxonomyData).map((topLevelKey) => renderTree(taxonomyData[topLevelKey]))}

@@ -12,10 +12,20 @@ export default function CodeItem(props: CodeItemProps) {
   const [codeName, setCodeName] = useState("");
 
   useEffect(() => {
-    getCodeRoute(props.id, props.projectId).then((response) => {
-      setCodeName(response.data.text);
+    let isMounted = true;
+    const localId = props.id;
+
+    getCodeRoute(localId, props.projectId).then((response) => {
+      if (isMounted && localId === props.id) {
+        setCodeName(response.data.text);
+      }
     });
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+
+  }, [props.id, props.projectId]);
 
   return (
     <div className="text-center" key={props.id}>

@@ -1,5 +1,5 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getCodesRoutes, insertCodeRoute, insertCodeRouteWithParent } from "@/pages/api/api";
 
 interface AddToCodeModalProps {
@@ -55,10 +55,26 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
     props.handleClose();
   }
 
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const filteredCodeList = codeList.filter((code) =>
+      code.text.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
     setDisabled(false);
   };
+
+  useEffect(() => {
+    if (!props.open) {
+      setSearchQuery('');
+    }
+  }, [props.open]);
 
   return (
     <>
@@ -77,6 +93,13 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
             <FormControl component="fieldset">
               <FormLabel component="legend">Add to Code</FormLabel>
               <div className="overflow-auto h-[25vw]">
+                <TextField
+                    className="w-[25rem]"
+                    id="search"
+                    label="Search"
+                    value={searchQuery}
+                    onChange={handleSearchInputChange}
+                />
                 <RadioGroup aria-label="Add to Code" name="add" value={"Add to Category"}>
                   <FormControlLabel
                     value={noneIndex}
@@ -86,8 +109,8 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
                     checked={checkedId === noneIndex}
                     onChange={() => handleCheckboxChange(noneIndex)}
                   />
-                  {codeList != null &&
-                    codeList.map((code) => (
+                  {filteredCodeList != null &&
+                      filteredCodeList.map((code) => (
                       <FormControlLabel
                         value={code.code_id}
                         control={<Radio />}
