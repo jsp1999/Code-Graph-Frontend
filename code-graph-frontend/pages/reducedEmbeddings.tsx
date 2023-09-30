@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
-import { Button } from "@mui/material";
-import { BsListColumnsReverse } from "react-icons/bs";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { getReducedEmbeddings, extractReducedEmbeddings } from "@/pages/api/api";
+import { Button, CircularProgress } from "@mui/material";
+import { BsListColumnsReverse } from "react-icons/bs";
+import CheckIcon from "@mui/icons-material/Check";
 
 type ReducedEmbedding = {
   reduced_embedding_id: number;
@@ -18,8 +19,12 @@ export default function ReducedEmbeddingsPage() {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
+  const [loading, setLoading] = useState(false);
+  const [exportSuccess, setExportSuccess] = useState(false);
 
-  const project_id: number = 1;
+  const [projectId, setProjectId] = useState(
+    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
+  );
 
   const reducedEmbeddings_columns: ColumnDef<ReducedEmbedding>[] = [
     {
@@ -70,7 +75,7 @@ export default function ReducedEmbeddingsPage() {
   const fetchAndUpdateReducedEmbeddings = async (page: number, pageSize: number) => {
     let all = false;
     try {
-      const reducedEmbeddingsResponse: any = await getReducedEmbeddings(project_id, all, page, pageSize);
+      const reducedEmbeddingsResponse: any = await getReducedEmbeddings(projectId, all, page, pageSize);
       const reducedEmbeddingsArray: ReducedEmbedding[] = reducedEmbeddingsResponse.data.data;
       const reducedEmbeddingsCount = reducedEmbeddingsResponse.data.count;
       setReducedEmbeddings(reducedEmbeddingsArray);
@@ -85,11 +90,17 @@ export default function ReducedEmbeddingsPage() {
   }, [currentPage, pageSize]);
 
   const handleExportReducedEmbeddings = async () => {
+    setLoading(true);
+    setExportSuccess(false);
+
     try {
-      await extractReducedEmbeddings(project_id);
+      await extractReducedEmbeddings(projectId);
       fetchAndUpdateReducedEmbeddings(currentPage, pageSize);
+      setExportSuccess(true);
     } catch (error) {
       console.error("Error extracting reduced Embeddings:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -124,7 +135,13 @@ export default function ReducedEmbeddingsPage() {
           className="flex items-center justify-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => handleExportReducedEmbeddings()}
         >
-          <BsListColumnsReverse className="mr-2" />
+          {loading ? (
+            <CircularProgress size={20} />
+          ) : exportSuccess ? (
+            <CheckIcon style={{ color: "green", marginRight: "8px" }} />
+          ) : (
+            <BsListColumnsReverse className="mr-2" />
+          )}
           Export Positions
         </Button>
       </div>
