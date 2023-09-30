@@ -5,7 +5,6 @@ import { uploadAdvancedDataset, uploadDataset } from "@/pages/api/api";
 interface CategoryModalProps {
   open: boolean;
   handleClose: () => void;
-  setLoading: () => void;
   projectId: number;
 }
 
@@ -33,12 +32,9 @@ export default function UploadModal(props: CategoryModalProps) {
 
   const handleFinish = () => {
     props.handleClose();
-    props.setLoading();
 
     if (!advancedSettingsSelected) {
-      uploadDataset(props.projectId, datasetName, selectedFile!).then(() => {
-        props.setLoading();
-      });
+      uploadDataset(props.projectId, datasetName, selectedFile!);
     } else {
       uploadAdvancedDataset(
         props.projectId,
@@ -50,9 +46,7 @@ export default function UploadModal(props: CategoryModalProps) {
         labelIdx,
         encodeURIComponent(labelSplit),
         encodeURIComponent(type),
-      ).then(() => {
-        props.setLoading();
-      });
+      );
     }
   };
 

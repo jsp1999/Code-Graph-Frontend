@@ -9,7 +9,6 @@ import DeleteDatasetModal from "@/components/dataset/DeleteDatasetModal";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Button } from "@mui/material";
 import UploadModal from "@/components/dataset/UploadDatasetModal";
-import LoadingModal from "@/components/LoadingModal";
 
 type Dataset = {
   project_id: number;
@@ -20,7 +19,6 @@ type Dataset = {
 export default function DatasetPage() {
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [open, setOpen] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
   const [projectId, setProjectId] = useState(
@@ -165,14 +163,7 @@ export default function DatasetPage() {
       <Header title="Code View" />
       <div className="flex justify-center">
         <div className="content-center">
-          <UploadModal
-            open={open}
-            handleClose={() => setOpen(false)}
-            setLoading={() => setLoading(!loading)}
-            projectId={projectId}
-          />
-
-          <LoadingModal open={loading} />
+          <UploadModal open={open} handleClose={() => setOpen(false)} projectId={projectId} />
           <Button variant="contained" className="my-5" component="label" onClick={() => setOpen(true)}>
             Upload
           </Button>
