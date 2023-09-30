@@ -75,3 +75,10 @@ tfoot th {
 .mb-3 {
   background-color: #dcdcdc;
 }
+
+.bubble-chart-container {
+  overflow: auto;
+  max-height: 400px; /* Adjust the maximum height as needed */
+  border: 1px solid #ccc; /* Optional: Add a border for better visualization */
+  margin-bottom: 20px; /* Optional: Add some spacing between charts */
+}

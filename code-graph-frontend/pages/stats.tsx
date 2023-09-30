@@ -132,16 +132,36 @@ export default function StatsPage() {
     return projectData.map((project: any, index: number) => {
       const labels = project.codeStats.code_segments_count.codes.map((code: any) => code.text);
       let data: any[] = [];
+      let zeroData: any[] = [];
       for (let i = 0; i < project.codeStats.code_segments_count.codes.length; i++) {
         let code = project.codeStats.code_segments_count.codes[i];
+        let radius = Math.max(1, Math.min(code.segment_count, 10));
+        if (code.average_position.x == 0 && code.average_position.y == 0) {
+          zeroData.push({
+            x: code.average_position.x,
+            y: code.average_position.y,
+            r: radius,
+            backgroundColor: "rgba(255, 99, 132, 0.5)",
+          });
+          continue;
+        }
         let codeData = {
-          label: code.text,
+          label: `${code.text} (${code.segment_count})`,
+
           data: [
             {
               x: code.average_position.x,
               y: code.average_position.y,
-              r: code.segment_count,
-              backgroundColor: "rgba(255, 99, 132, 0.5)",
+              r: radius,
+              backgroundColor: [
+                "rgb(255, 99, 132)",
+                "rgb(54, 162, 235)",
+                "rgb(75, 192, 192)",
+                "rgb(255, 205, 86)",
+                "rgb(201, 203, 207)",
+                "rgb(54, 162, 235)",
+                "rgb(255, 99, 132)",
+              ],
             },
           ],
         };
@@ -153,17 +173,27 @@ export default function StatsPage() {
         datasets: data,
       };
 
-      const bubbleOptions = {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      };
+      const bubbleOptions = {};
 
       return (
-        <div key={index} className="bubble-chart">
+        <div key={index} className="bubble-chart-container">
           <Bubble options={bubbleOptions} data={bubbleData} />
+          <table>
+            <thead>
+              <tr>
+                <th>Zero Segments</th>
+              </tr>
+            </thead>
+            <tbody>
+              {zeroData.map((code: any, index: number) => {
+                return (
+                  <tr key={index}>
+                    <td>{labels[index]}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       );
     });
@@ -256,10 +286,10 @@ export default function StatsPage() {
   return (
     <header>
       <Header title="Project stats" />
+      <div className="bubble-container">{renderBubbleCharts()}</div>
       <div className="bar-container">{renderProjectInfoBarChart()}</div>
       <div className="bar-container">{renderProjectDataBarChart()}</div>
       <div className="pie-container">{renderPieCodeCharts()}</div>
-      <div className="bubble-container">{renderBubbleCharts()}</div>
       <div className="pie-container">{renderPieClusterCharts()}</div>
     </header>
   );
