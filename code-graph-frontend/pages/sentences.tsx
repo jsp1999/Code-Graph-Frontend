@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { getSentences } from "@/pages/api/api";
+import { getSentences, getDatasets } from "@/pages/api/api";
 import Header from "@/components/Header";
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Select,
+  MenuItem,
+} from "@mui/material";
 
 type Sentence = {
   sentence_id: number;
@@ -14,17 +25,23 @@ export default function SentencesPage() {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
-
-  const project_id: number = 1;
-  const dataset_id: number = 1;
+  const [datasets, setDatasets] = useState<any[]>([]);
+  const [projectId, setProjectId] = useState(
+    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
+  );
+  const [datasetId, setDatasetId] = useState<number | undefined>(undefined); // Add datasetId state
 
   const fetchAndUpdateSentences = async (page: number, pageSize: number) => {
     try {
-      const sentenceResponse: any = await getSentences(project_id, dataset_id, page, pageSize);
-      const sentenceArray: Sentence[] = sentenceResponse.data.data;
-      const sentenceCount = sentenceResponse.data.count;
-      setSentences(sentenceArray);
-      setTotalCount(sentenceCount);
+      // Fetch sentences based on projectId and datasetId
+      if (datasetId !== undefined) {
+        const sentenceResponse: any = await getSentences(projectId, datasetId, page, pageSize);
+        const sentenceArray: Sentence[] = sentenceResponse.data.data;
+        const sentenceCount = sentenceResponse.data.count;
+
+        setSentences(sentenceArray);
+        setTotalCount(sentenceCount);
+      }
     } catch (error) {
       console.error("Error fetching sentences:", error);
     }
@@ -32,7 +49,24 @@ export default function SentencesPage() {
 
   useEffect(() => {
     fetchAndUpdateSentences(currentPage, pageSize);
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, datasetId]); // Include datasetId in the dependency array
+
+  useEffect(() => {
+    // Fetch the list of available datasets and set the initial datasetId
+    const fetchDatasets = async () => {
+      try {
+        const datasetResponse: any = await getDatasets(projectId);
+        const datasetArray: any = datasetResponse.data;
+        setDatasets(datasetArray);
+        if (datasetArray.length > 0) {
+          setDatasetId(datasetArray[0].dataset_id); // Set the initial datasetId to the first available dataset
+        }
+      } catch (error) {
+        console.error("Error fetching datasets:", error);
+      }
+    };
+    fetchDatasets();
+  }, [projectId]);
 
   const nextPage = () => {
     if (currentPage < Math.ceil(totalCount / pageSize) - 1) {
@@ -63,23 +97,28 @@ export default function SentencesPage() {
       let currentPosition = 0;
       let sentenceWords = [];
 
-      // Sort segments by start_position
-      const sortedSegments = segments.sort(
-        (a: { start_position: number }, b: { start_position: number }) => a.start_position - b.start_position,
-      );
+      if (segments?.length > 0) {
+        // Sort segments by start_position
+        const sortedSegments = segments.sort(
+          (a: { start_position: number }, b: { start_position: number }) => a.start_position - b.start_position,
+        );
 
-      for (const segment of sortedSegments) {
-        // Add words before the segment
-        const segmentText = segment.text;
-        if (segment.start_position > currentPosition) {
-          const beforeSegmentText = sentence.slice(currentPosition, segment.start_position);
-          sentenceWords.push({ text: beforeSegmentText, highlighted: false });
-          currentPosition = segment.start_position;
+        for (const segment of sortedSegments) {
+          // Add words before the segment
+          const segmentText = segment.text;
+          if (segment.start_position > currentPosition) {
+            const beforeSegmentText = sentence.slice(currentPosition, segment.start_position);
+            sentenceWords.push({ text: beforeSegmentText, highlighted: false });
+            currentPosition = segment.start_position;
+          }
+
+          // Add the annotated segment with a yellow background
+          sentenceWords.push({ text: segmentText, highlighted: true });
+          currentPosition += segmentText.length;
         }
-
-        // Add the annotated segment with a yellow background
-        sentenceWords.push({ text: segmentText, highlighted: true });
-        currentPosition += segmentText.length;
+      } else {
+        // If there are no segments, add the entire sentence as a single word
+        sentenceWords.push({ text: sentence, highlighted: false });
       }
 
       // Add any remaining words after the last segment
@@ -108,6 +147,18 @@ export default function SentencesPage() {
     <div>
       <Header title="Sentences View" />
       <div className="flex justify-center mt-4">
+        {/* Dropdown menu to select datasetId */}
+        <Select
+          value={datasetId || ""}
+          onChange={(e) => setDatasetId(Number(e.target.value) || undefined)}
+          className="mr-2"
+        >
+          {datasets.map((dataset) => (
+            <MenuItem key={dataset.dataset_id} value={dataset.dataset_id}>
+              {dataset.dataset_name}
+            </MenuItem>
+          ))}
+        </Select>
         <Button variant="outlined" onClick={prevPage} disabled={currentPage === 0}>
           Previous Page
         </Button>
