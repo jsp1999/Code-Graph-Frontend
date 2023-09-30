@@ -7,8 +7,10 @@ import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import DeleteDatasetModal from "@/components/dataset/DeleteDatasetModal";
 import { AiOutlinePlus } from "react-icons/ai";
-import { Button } from "@mui/material";
 import UploadModal from "@/components/dataset/UploadDatasetModal";
+import { Button, CircularProgress } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+import { BsListColumnsReverse } from "react-icons/bs";
 
 type Dataset = {
   project_id: number;
@@ -26,6 +28,8 @@ export default function DatasetPage() {
   );
   const [datasetId, setDatasetId] = useState(0);
   const [editData, setEditData] = useState<any>({});
+  const [loading, setLoading] = useState(false);
+  const [exportSuccess, setSuccess] = useState(false);
 
   const columns: ColumnDef<Dataset>[] = [
     {
@@ -168,8 +172,24 @@ export default function DatasetPage() {
             handleClose={() => setOpen(false)}
             projectId={projectId}
             updateDatasets={fetchAndUpdateDatasets}
+            setLoading={setLoading}
+            setSuccess={setSuccess}
           />
-          <Button variant="contained" className="my-5" component="label" onClick={() => setOpen(true)}>
+
+          <Button
+            variant="outlined"
+            component="label"
+            className="flex items-center justify-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            disabled={loading}
+            onClick={() => setOpen(true)}
+          >
+            {loading ? (
+              <CircularProgress size={20} />
+            ) : exportSuccess ? (
+              <CheckIcon style={{ color: "green", marginRight: "8px" }} />
+            ) : (
+              <BsListColumnsReverse className="mr-2" />
+            )}
             Upload
           </Button>
         </div>

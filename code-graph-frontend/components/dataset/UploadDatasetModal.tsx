@@ -7,6 +7,8 @@ interface CategoryModalProps {
   handleClose: () => void;
   projectId: number;
   updateDatasets: () => void;
+  setLoading: (loaded: boolean) => void;
+  setSuccess: (exportSuccess: boolean) => void;
 }
 
 export default function UploadModal(props: CategoryModalProps) {
@@ -33,9 +35,14 @@ export default function UploadModal(props: CategoryModalProps) {
 
   const handleFinish = () => {
     props.handleClose();
+    props.setLoading(true);
 
     if (!advancedSettingsSelected) {
-      uploadDataset(props.projectId, datasetName, selectedFile!);
+      uploadDataset(props.projectId, datasetName, selectedFile!).then(() => {
+        props.setLoading(false);
+        props.setSuccess(true);
+        props.updateDatasets();
+      });
     } else {
       uploadAdvancedDataset(
         props.projectId,
@@ -47,9 +54,12 @@ export default function UploadModal(props: CategoryModalProps) {
         labelIdx,
         encodeURIComponent(labelSplit),
         encodeURIComponent(type),
-      );
+      ).then(() => {
+        props.setLoading(false);
+        props.setSuccess(true);
+        props.updateDatasets();
+      });
     }
-    props.updateDatasets();
   };
 
   function setClosed() {
