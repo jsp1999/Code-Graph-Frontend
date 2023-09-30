@@ -111,15 +111,6 @@ export default function Header(props: HeaderProps) {
               <span>Databases</span>
               <BsFillDatabaseFill />
             </Button>
-            <Button
-              variant="outlined"
-              component="label"
-              onClick={() => router.push(`/stats`)}
-              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-            >
-              <span>Stats</span>
-              <ImStatsBars />
-            </Button>
           </ButtonGroup>
           <div className="mt-5">
             <p>Project {projectId}</p>
