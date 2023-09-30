@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { getEmbeddings, extractEmbeddings } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, CircularProgress } from "@mui/material";
 import { BsListColumnsReverse } from "react-icons/bs";
+import CheckIcon from "@mui/icons-material/Check";
 
 type Embedding = {
   id: string;
@@ -19,6 +20,8 @@ export default function DatabasesPage() {
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
   );
+  const [loading, setLoading] = useState(false);
+  const [exportSuccess, setExportSuccess] = useState(false);
 
   const embeddings_columns: ColumnDef<Embedding>[] = [
     {
@@ -71,11 +74,16 @@ export default function DatabasesPage() {
   }, [currentPage, pageSize, reducedLength]);
 
   const handleExtractEmbeddings = async () => {
+    setLoading(true);
+    setExportSuccess(false);
     try {
       await extractEmbeddings(projectId);
       fetchAndUpdateEmbeddings(currentPage, pageSize);
+      setExportSuccess(true);
     } catch (error) {
-      console.error("Error deleting database:", error);
+      console.error("Error extracting embeddings:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,8 +118,15 @@ export default function DatabasesPage() {
           component="label"
           className="flex items-center justify-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => handleExtractEmbeddings()}
+          disabled={loading}
         >
-          <BsListColumnsReverse className="mr-2" />
+          {loading ? (
+            <CircularProgress size={20} />
+          ) : exportSuccess ? (
+            <CheckIcon style={{ color: "green", marginRight: "8px" }} />
+          ) : (
+            <BsListColumnsReverse className="mr-2" />
+          )}
           Export Embeddings
         </Button>
       </div>
