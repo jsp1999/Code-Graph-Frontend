@@ -156,7 +156,7 @@ export default function DatabasesPage() {
       </div>
 
       {/* Pagination controls */}
-      <div className="text-center mt-2">Total Count: {totalCount}</div>
+
       <div className="flex justify-center mt-4">
         <Button variant="outlined" onClick={prevPage} disabled={currentPage === 0}>
           Previous Page
@@ -197,6 +197,7 @@ export default function DatabasesPage() {
 
         <span>/ {Math.ceil(totalCount / pageSize)}</span>
       </div>
+      <div className="text-center mt-2">Total Count: {totalCount}</div>
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
         <div className="h-2" />
         <table className="w-full ">
