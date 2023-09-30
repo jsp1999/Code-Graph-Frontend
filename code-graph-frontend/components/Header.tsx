@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import ConfirmModal from "./ConfirmModal";
 import EditModal from "./EditModal";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Edit from "@mui/icons-material/Edit";
-import Delete from "@mui/icons-material/Delete";
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import { useRouter } from "next/router";
 import { Button, ButtonGroup } from "@mui/material";
 import { PiSuitcaseSimpleLight } from "react-icons/pi";
@@ -20,9 +19,16 @@ import { GrConfigure } from "react-icons/gr";
 import { BsChatRightText } from "react-icons/bs";
 import { PiListMagnifyingGlassThin } from "react-icons/pi";
 import { ImStatsBars } from "react-icons/im";
+import { getProjects } from "@/pages/api/api";
 
 interface HeaderProps {
   title: string;
+}
+
+interface Project {
+  project_id: number;
+  project_name: string;
+  config_id: number;
 }
 
 export default function Header(props: HeaderProps) {
@@ -30,7 +36,9 @@ export default function Header(props: HeaderProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [projects, setProjects] = useState([""]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [projectId, setProjectId] = useState(typeof window !== 'undefined' ? parseInt(localStorage.getItem("projectId") ?? "1"): 1);
+
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -38,8 +46,18 @@ export default function Header(props: HeaderProps) {
 
   // Do api stuff here
   useEffect(() => {
-    const fetchedProjects = ["haha", "hihi", "hohoo", "huhu"];
-    setProjects(fetchedProjects);
+    setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
+    const fetchProjects = async () => {
+      try {
+        const response = await getProjects(); // Replace with your API endpoint
+        const projectData = response.data.data; // Access the "data" property of the response
+        setProjects(projectData);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
   return (
@@ -62,22 +80,23 @@ export default function Header(props: HeaderProps) {
             {/* Für jeden bereich bsp. Projects ein eigenes accordion */}
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <p>haha</p>
+                <p>{projects.find((project) => project.project_id == projectId)?.project_name}</p>
               </AccordionSummary>
               {/* Styling noch anpassen und eigene sachen drüber mappen */}
-              {projects.map((value, index) => (
-                <div key={index} className="flex items-center space-between">
-                  <p>{value}</p>
-                  <div>
-                    <button onClick={() => setEditModalOpen(true)}>
-                      <Edit />
-                    </button>
-                    <button onClick={() => setConfirmModalOpen(true)}>
-                      <Delete />
-                    </button>
-                  </div>
-                </div>
-              ))}
+              {projects.map((project) => (
+          <div key={project.project_id}>
+            {project.project_name}
+            {project.project_id != projectId &&
+              <button
+                onClick={() => {
+                  localStorage.setItem("projectId", project.project_id.toString());
+                  window.location.reload(); // Reload the page
+                }}
+              >
+              <CompareArrowsIcon />
+            </button>}
+          </div>
+        ))}
             </Accordion>
           </div>
         </div>

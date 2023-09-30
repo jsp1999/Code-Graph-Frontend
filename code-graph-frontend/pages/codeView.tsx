@@ -21,10 +21,10 @@ export default function CodeView() {
   const [open, setOpen] = useState(false);
   const [jsonData, setJsonData] = useState(data);
   const [loading, setLoading] = useState(false);
-  const [projectId, setProjectId] = useState(typeof window !== 'undefined' ? parseInt(localStorage.getItem("projectId") ?? "2"): 1);
+  const [projectId, setProjectId] = useState(typeof window !== 'undefined' ? parseInt(localStorage.getItem("projectId") ?? "1"): 1);
 
   useEffect(() => {
-    setProjectId(parseInt(localStorage.getItem("projectId") ?? "2"));
+    setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
 
     setLoading(true);
     getCodeTree(projectId)
