@@ -173,6 +173,7 @@ export default function databasesPage() {
     try {
       await deleteDatabaseTables();
       fetchAndUpdateDatabases();
+      fetchAndUpdateFiles();
       setDeleteAllModalOpen(false);
     } catch (error) {
       console.error("Error deleting database:", error);
