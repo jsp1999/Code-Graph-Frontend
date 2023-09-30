@@ -64,12 +64,14 @@ export default function Header(props: HeaderProps) {
     <header className="w-screen h-16 bg-blue-900 p-3 pl-5 mb-5 text-white flex items-center">
       <ConfirmModal open={confirmModalOpen} handleClose={() => setConfirmModalOpen(false)} />
       <EditModal open={editModalOpen} handleClose={() => setEditModalOpen(false)} />
-
       <div className="mr-5">
         <button onClick={toggleDrawer}>
           <Menu />
         </button>
       </div>
+      <span style={{ cursor: "pointer" }} onClick={() => router.push("/")}>
+        CodeGraph
+      </span>
       <div className="">
         <h1 className="font-bold text-3xl">{props.title}</h1>
       </div>
