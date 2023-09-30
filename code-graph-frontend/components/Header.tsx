@@ -20,6 +20,9 @@ import { BsChatRightText } from "react-icons/bs";
 import { PiListMagnifyingGlassThin } from "react-icons/pi";
 import { ImStatsBars } from "react-icons/im";
 import { getProjects } from "@/pages/api/api";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import BubbleChartIcon from "@mui/icons-material/BubbleChart";
+import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 
 interface HeaderProps {
   title: string;
@@ -236,6 +239,43 @@ export default function Header(props: HeaderProps) {
                 <PiListMagnifyingGlassThin />
               </Button>
             </ButtonGroup>
+            <br />
+            <p>Stats</p>
+            <ButtonGroup
+              variant="contained"
+              color="primary"
+              aria-label="contained primary button group"
+              style={{ display: "flex", flexDirection: "column" }}
+            >
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/projectStats`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Project</span>
+                <BarChartIcon />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/codeStats`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Code</span>
+                <BubbleChartIcon />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/clusterStats`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Cluster</span>
+                <DonutLargeIcon />
+              </Button>
+            </ButtonGroup>
+            <br />
           </div>
         </div>
       </Drawer>
