@@ -92,7 +92,7 @@ export default function UploadModal(props: CategoryModalProps) {
           <div className="mt-10 w-fit mx-auto">
             <form>
               <Button variant="contained" component="label">
-                Upload
+                Select file
                 <input hidden accept=".txt" type="file" onChange={handleFileChange} />
               </Button>
             </form>
