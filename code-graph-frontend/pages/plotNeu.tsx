@@ -594,7 +594,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
             console.log("Initializing dot plotter...");
             const svg_ = d3.select(canvasRef.current);
             const container_ = d3.select('#container');
-            const newPlot = new DotPlotter('container', 1, "http://localhost:8000/", svg_, container_);
+            const newPlot = new DotPlotter('container', projectId, "http://localhost:8000/", svg_, container_);
             const newTrain = new TrainSlide(newPlot);
 
             setPlot(newPlot);
