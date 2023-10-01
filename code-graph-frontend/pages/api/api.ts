@@ -350,6 +350,11 @@ export const searchSegment = (project_id: number, search_segment_query: string, 
   );
 };
 
+export const refreshEntries = (project_id: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/plots/refreshEntries/`);
+  return axios.get<any>(`${baseURL}/projects/${project_id}/plots/refreshEntries/`);
+};
+
 // export to files
 export const exportToFiles = (project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/plots/exportToFiles/`);

@@ -10,7 +10,7 @@ import LoadingModal from "@/components/LoadingModal";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
 import { useRouter } from "next/router";
-import { getconfig, updateConfig } from "@/pages/api/api";
+import { getconfig, updateConfig, refreshEntries } from "@/pages/api/api";
 import EditModal from "@/components/config/EditConfigModal";
 
 function hsvToRgb(h, s, v) {
@@ -720,6 +720,15 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     setEditModalOpen(true);
   };
 
+  const handleRefresh = async () => {
+    try {
+      await refreshEntries(projectId);
+      fetchAndUpdateConfigs();
+    } catch (error) {
+      console.error("Error refreshing entries:", error);
+    }
+  };
+
   return (
     <div>
       <header>
@@ -765,6 +774,15 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
               }}
             >
               Edit Config
+            </Button>
+            <Button
+              variant="outlined"
+              className="bg-blue-900 rounded"
+              onClick={() => {
+                handleRefresh();
+              }}
+            >
+              Refresh
             </Button>
           </ButtonGroup>
         </div>
