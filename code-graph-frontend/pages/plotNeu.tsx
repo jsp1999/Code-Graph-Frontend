@@ -554,6 +554,7 @@ class DotPlotter {
     else {
       newData = [];
     }
+
     newData.forEach((dotData) => {
       //console.log(dotData);
       let existingDot = this.data.find((d) => d.dotId === dotData.id);
