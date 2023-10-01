@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import data from "../src/NER_Tags.json";
 import { getCodeTree } from "@/pages/api/api";
-import { Button } from "@mui/material";
+import { Button, ButtonGroup } from "@mui/material";
 import Header from "@/components/Header";
 import CodeTreeView from "@/components/CodeTreeView";
 import AddToCodeModal from "@/components/AddToCodeModal";
@@ -10,7 +10,8 @@ import LoadingModal from "@/components/LoadingModal";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
 import { useRouter } from "next/router";
-import { getconfig } from "@/pages/api/api";
+import { getconfig, updateConfig } from "@/pages/api/api";
+import EditModal from "@/components/config/EditConfigModal";
 
 function hsvToRgb(h, s, v) {
   let r, g, b;
@@ -597,7 +598,10 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
   );
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
   const [config, setConfig] = useState<any>();
+  const [editData, setEditData] = useState<any>();
 
   const [selectedNodes, setSelectedNodes] = useState<number[]>(() => {
     if (typeof window === "undefined") {
@@ -622,9 +626,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
       const container_ = d3.select("#container");
       const newPlot = new DotPlotter("container", projectId, "http://localhost:8000/", svg_, container_);
       const newTrain = new TrainSlide(newPlot);
-      const newConfig = getconfig(projectId).then((response) => {
-        setConfig(response.data);
-      });
+      fetchAndUpdateConfigs();
 
       setPlot(newPlot);
       setTrain(newTrain);
@@ -684,6 +686,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
     setSelectedNodes(newSelectedNodes);
   };
+
   useEffect(() => {
     if (plot && selectedNodes) {
       plot.applyCodeFilter(selectedNodes);
@@ -691,9 +694,41 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     }
   }, [selectedNodes, plot]);
 
+  // Function to fetch and update project data
+  const fetchAndUpdateConfigs = async () => {
+    try {
+      const configResponse = (await getconfig(projectId)).data;
+
+      setConfig(configResponse);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  const handleEditConfig = async (config: any) => {
+    try {
+      await updateConfig(config.config_id, config);
+      fetchAndUpdateConfigs();
+      setEditModalOpen(false);
+    } catch (error) {
+      console.error("Error editing project:", error);
+    }
+  };
+
+  const handleEditClick = (config: any) => {
+    setEditData(config);
+    setEditModalOpen(true);
+  };
+
   return (
     <div>
       <header>
+        <EditModal
+          open={editModalOpen}
+          handleClose={() => setEditModalOpen(false)}
+          onEdit={handleEditConfig}
+          config={editData}
+        />
         <Header title="Code View" />
         <div className="float-left">
           <CodeTreeView
@@ -715,12 +750,23 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
           <button id="trainLinesButton">Train Lines</button>
         </div>
         <div className="absolute right-5 bottom-5 ">
-          <Button variant="outlined" className="mr-10" onClick={handleOpen}>
-            Add new Code
-          </Button>
-          <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/codeView`)}>
-            Change View
-          </Button>
+          <ButtonGroup>
+            <Button variant="outlined" className="bg-blue-900 rounded" onClick={handleOpen}>
+              Add new Code
+            </Button>
+            <Button variant="outlined" className="bg-blue-900 rounded" onClick={() => router.push(`/codeView`)}>
+              Change View
+            </Button>
+            <Button
+              variant="outlined"
+              className="bg-blue-900 rounded"
+              onClick={() => {
+                handleEditClick(config);
+              }}
+            >
+              Edit Config
+            </Button>
+          </ButtonGroup>
         </div>
       </header>
       {/* Add other components from CodeView like AddToCodeModal, LoadingModal, etc. here */}
