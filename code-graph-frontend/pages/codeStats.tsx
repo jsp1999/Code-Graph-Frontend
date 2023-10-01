@@ -2,10 +2,26 @@ import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Chart as ChartJS, LinearScale, Title, Tooltip, Legend, PointElement, ArcElement } from "chart.js";
 import { Bubble, Pie } from "react-chartjs-2";
-import { getCodeStats, getProjects } from "@/pages/api/api";
+import { getCodeStats, getProjects, getCodeTree } from "@/pages/api/api";
 import { CodeSegmentsResponse } from "@/pages/api/types";
 
 ChartJS.register(LinearScale, PointElement, Title, Tooltip, Legend, ArcElement);
+
+function findCodePath(tree: any, code_id: any, currentPath = ""): any {
+  for (const key in tree) {
+    const node = tree[key];
+    const newPath = currentPath ? `${currentPath}-${node.name}` : node.name;
+
+    if (node.id === code_id) {
+      return newPath;
+    }
+
+    const subcategories = node.subcategories;
+    const result = findCodePath(subcategories, code_id, newPath);
+    if (result) return result;
+  }
+  return null;
+}
 
 export default function StatsPage() {
   const [projectData, setProjectData] = useState<any>(null);
@@ -18,10 +34,14 @@ export default function StatsPage() {
       let all_project_data = [];
       for (let i = 0; i < project_ids.length; i++) {
         const codeStatsResponse: CodeSegmentsResponse = await getCodeStats(project_ids[i]);
+        const codeTreeResponse = (await getCodeTree(project_ids[i])).data;
+        console.log("codeTreeResponse", codeTreeResponse);
+
         // merge project with stats
         let project_data = {
           project: projects[i],
           codeStats: codeStatsResponse,
+          codeTree: codeTreeResponse,
         };
         all_project_data.push(project_data);
       }
@@ -38,7 +58,6 @@ export default function StatsPage() {
     if (!projectData) return null;
 
     return projectData.map((project: any, index: number) => {
-      const labels = project.codeStats.code_segments_count.codes.map((code: any) => code.text);
       let data: any[] = [];
       let zeroData: any[] = [];
       for (let i = 0; i < project.codeStats.code_segments_count.codes.length; i++) {
@@ -50,6 +69,8 @@ export default function StatsPage() {
           ...project.codeStats.code_segments_count.codes.map((code: any) => code.segment_count),
         );
         let radius = ((code.segment_count - minRadiusOfAllCodes) / (maxRadiusOfAllCodes - minRadiusOfAllCodes)) * 50;
+        let codePath = findCodePath(project.codeTree.codes, code.code_id);
+        code.text = codePath;
         if (code.average_position.x == 0 && code.average_position.y == 0) {
           zeroData.push({
             x: code.average_position.x,
@@ -59,6 +80,7 @@ export default function StatsPage() {
           });
           continue;
         }
+
         let codeData = {
           label: `${code.text} (${code.segment_count})`,
 
@@ -82,8 +104,9 @@ export default function StatsPage() {
         data.push(codeData);
       }
 
+      const labels = project.codeStats.code_segments_count.codes.map((code: any) => code.text);
+
       const bubbleData = {
-        labels: labels,
         datasets: data,
       };
 
