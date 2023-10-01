@@ -163,7 +163,7 @@ export default function Header(props: HeaderProps) {
               <Button
                 variant="outlined"
                 component="label"
-                onClick={() => router.push(`/clusterView`)}
+                onClick={() => router.push(`/plotNeu`)}
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Graph</span>

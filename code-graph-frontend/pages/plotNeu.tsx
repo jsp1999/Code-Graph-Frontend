@@ -565,7 +565,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     // From CodeView component
     const router = useRouter();
     const contextMenuRef = useRef<HTMLDivElement>(null);
-    const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
+    //const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const [rightClickedItem, setRightClickedItem] = useState(0);
@@ -574,7 +574,21 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     const [jsonData, setJsonData] = useState(data);
     const [projectId, setProjectId] = useState(typeof window !== 'undefined' ? parseInt(localStorage.getItem("projectId") ?? "1"): 1);
 
+    const [selectedNodes, setSelectedNodes] = useState<number[]>(() => {
+    if (typeof window === 'undefined') {
+        // We're on the server, just return the default value
+        return [];
+    }
 
+    // When component mounts, fetch the state from localStorage if it exists
+    const storedNodes = localStorage.getItem('selectedNodes');
+    return storedNodes ? JSON.parse(storedNodes) : [];
+});
+
+    useEffect(() => {
+        // Any time selectedNodes changes, save it to localStorage
+        localStorage.setItem('selectedNodes', JSON.stringify(selectedNodes));
+    }, [selectedNodes]);
     useEffect(() => {
         if (canvasRef.current) {
             console.log("Initializing dot plotter...");
@@ -667,6 +681,18 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
                     {plot && <button id="plotTrainButton" onClick={() => plot.setupTrainButton()}>Train</button>}
                     <button id="trainLinesButton">Train Lines</button>
                 </div>
+                <div className="absolute right-5 bottom-5 ">
+        <Button variant="outlined" className="mr-10" onClick={handleOpen}>
+          Add new Code
+        </Button>
+        <Button
+          variant="contained"
+          className="bg-blue-900 rounded"
+          onClick={() => router.push(`/codeView`)}
+        >
+          Change View
+        </Button>
+      </div>
             </header>
             {/* Add other components from CodeView like AddToCodeModal, LoadingModal, etc. here */}
         </div>

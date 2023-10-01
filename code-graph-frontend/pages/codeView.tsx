@@ -13,7 +13,7 @@ import ContextMenu from "@/components/ContextMenu";
 export default function CodeView() {
   const router = useRouter();
 
-  const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
+  //const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const contextMenuRef = useRef<HTMLDivElement>(null);
@@ -22,7 +22,21 @@ export default function CodeView() {
   const [jsonData, setJsonData] = useState(data);
   const [loading, setLoading] = useState(false);
   const [projectId, setProjectId] = useState(typeof window !== 'undefined' ? parseInt(localStorage.getItem("projectId") ?? "1"): 1);
+  const [selectedNodes, setSelectedNodes] = useState<number[]>(() => {
+    if (typeof window === 'undefined') {
+        // We're on the server, just return the default value
+        return [];
+    }
 
+    // When component mounts, fetch the state from localStorage if it exists
+    const storedNodes = localStorage.getItem('selectedNodes');
+    return storedNodes ? JSON.parse(storedNodes) : [];
+});
+
+useEffect(() => {
+    // Any time selectedNodes changes, save it to localStorage
+    localStorage.setItem('selectedNodes', JSON.stringify(selectedNodes));
+}, [selectedNodes]);
   useEffect(() => {
     setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
 
@@ -135,7 +149,7 @@ export default function CodeView() {
         <Button
           variant="contained"
           className="bg-blue-900 rounded"
-          onClick={() => router.push(`/clusterView`)}
+          onClick={() => router.push(`/plotNeu`)}
         >
           Change View
         </Button>
