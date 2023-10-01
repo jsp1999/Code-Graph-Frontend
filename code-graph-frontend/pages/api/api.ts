@@ -37,6 +37,11 @@ export const getconfigs = (): Promise<any> => {
   return axios.get<any>(`${baseURL}/configs/`);
 };
 
+export const getconfig = (config_id: number): Promise<any> => {
+  console.log(`${baseURL}/configs/${config_id}`);
+  return axios.get<any>(`${baseURL}/configs/${config_id}`);
+};
+
 export const updateConfig = (config_id: number, configData: any): Promise<any> => {
   let body = {
     name: configData.name,

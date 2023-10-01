@@ -10,7 +10,7 @@ import LoadingModal from "@/components/LoadingModal";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
 import { useRouter } from "next/router";
-import { getconfigs } from "@/pages/api/api";
+import { getconfig } from "@/pages/api/api";
 
 function hsvToRgb(h, s, v) {
   let r, g, b;
@@ -622,7 +622,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
       const container_ = d3.select("#container");
       const newPlot = new DotPlotter("container", projectId, "http://localhost:8000/", svg_, container_);
       const newTrain = new TrainSlide(newPlot);
-      const newConfig = getconfigs().then((response) => {
+      const newConfig = getconfig(projectId).then((response) => {
         setConfig(response.data);
       });
 
