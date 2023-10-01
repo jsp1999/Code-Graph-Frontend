@@ -641,6 +641,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     getCodeTree(projectId)
       .then((response) => {
         setJsonData(response.data.codes);
+        localStorage.setItem("selectedNodes", JSON.stringify([]));
         setLoading(false);
       })
       .catch((error) => {

@@ -43,6 +43,7 @@ useEffect(() => {
     setLoading(true);
     getCodeTree(projectId)
       .then((response) => {
+        localStorage.setItem("selectedNodes", JSON.stringify([]));
         setJsonData(response.data.codes);
         setLoading(false);
       })
