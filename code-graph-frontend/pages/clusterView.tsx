@@ -3,6 +3,7 @@ import * as React from "react";
 import data from "../src/data.json";
 import new_data from "../src/plot_data.json";
 import annotation_hierachy_mapping from "../src/annotations_hierachy.json";
+import annotationsWithId from "../src/annotationsWithId.json";
 import Header from "@/components/Header";
 import Link from "next/link";
 
@@ -207,7 +208,7 @@ const Page: React.FC = () => {
         <Grid item xs={3}>
           {/* Right column to display additional information */}
           <Paper>
-            <Legend cluster_color={cluster_color}></Legend>
+            <Legend cluster_color={cluster_color} annotation_info = {annotationsWithId}></Legend>
             <NodeInfo nodeData={selectedNodeData} />
           </Paper>
         </Grid>
