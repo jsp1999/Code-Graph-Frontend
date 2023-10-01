@@ -211,6 +211,7 @@ class Dot {
   }
 
   draw(plotter) {
+    console.log("drawing dot...");
     this.circle = plotter.container
       .append("circle")
       .attr("class", "dot")
@@ -541,16 +542,22 @@ class DotPlotter {
         this.toggleTrainButtonState(); // Ensure the button state is reset if there's an error
       });
   }
+
   render(newData) {
     // Existing Dots
+    //this.container.selectAll(".dot").remove();
     console.log("rendering...");
     if (this.filter) {
       console.log("filtering...");
       newData = newData.filter((dot) => this.filter(dot));
-      console.log(newData.length);
+    }
+    else {
+      newData = [];
     }
     newData.forEach((dotData) => {
+      //console.log(dotData);
       let existingDot = this.data.find((d) => d.dotId === dotData.id);
+      //console.log(existingDot);
       if (existingDot) {
         // Update existing dot
         existingDot.x = dotData.reduced_embedding.x;
@@ -567,11 +574,9 @@ class DotPlotter {
           dotData.code,
           this,
         );
-        this.data.push(newDot);
         newDot.draw(this);
       }
     });
-    console.log(this.data.length);
     // Optional: remove dots that don't exist in newData
     this.data = this.data.filter((dot) => {
       let shouldKeep = newData.find((d) => d.id === dot.dotId);
@@ -581,7 +586,7 @@ class DotPlotter {
 
       return shouldKeep;
     });
-    console.log(this.data.length);
+    console.log(this.container.selectAll(".dot"))
   }
 }
 
