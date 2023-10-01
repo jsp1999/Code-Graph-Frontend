@@ -7,22 +7,22 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { useRouter } from "next/router";
 import { Button, ButtonGroup } from "@mui/material";
-import { PiSuitcaseSimpleLight } from "react-icons/pi";
-import { FcScatterPlot } from "react-icons/fc";
-import { HiOutlineAnnotation } from "react-icons/hi";
-import { BsFillDatabaseFill } from "react-icons/bs";
-import { MdOutlineDataset } from "react-icons/md";
-import { AiOutlineBoxPlot } from "react-icons/ai";
-import { GrCluster } from "react-icons/gr";
-import { GiPositionMarker } from "react-icons/gi";
-import { GrConfigure } from "react-icons/gr";
-import { BsChatRightText } from "react-icons/bs";
-import { PiListMagnifyingGlassThin } from "react-icons/pi";
-import { ImStatsBars } from "react-icons/im";
 import { getProjects } from "@/pages/api/api";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
+
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import BuildIcon from "@mui/icons-material/Build";
+import StorageIcon from "@mui/icons-material/Storage";
+import MessageIcon from "@mui/icons-material/Message";
+import ScatterPlotIcon from "@mui/icons-material/ScatterPlot";
+import DatasetIcon from "@mui/icons-material/Dataset";
+import SpeakerNotesIcon from "@mui/icons-material/SpeakerNotes";
+import DataArrayIcon from "@mui/icons-material/DataArray";
+import PlaceIcon from "@mui/icons-material/Place";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
+import SchemaIcon from "@mui/icons-material/Schema";
 
 interface HeaderProps {
   title: string;
@@ -118,7 +118,7 @@ export default function Header(props: HeaderProps) {
               style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
               <span>Projects</span>
-              <PiSuitcaseSimpleLight />
+              <BusinessCenterIcon />
             </Button>
             <Button
               variant="outlined"
@@ -127,7 +127,7 @@ export default function Header(props: HeaderProps) {
               style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
               <span>Configs</span>
-              <GrConfigure />
+              <BuildIcon />
             </Button>
             <Button
               variant="outlined"
@@ -136,7 +136,7 @@ export default function Header(props: HeaderProps) {
               style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
               <span>Databases</span>
-              <BsFillDatabaseFill />
+              <StorageIcon />
             </Button>
           </ButtonGroup>
         </div>
@@ -158,7 +158,7 @@ export default function Header(props: HeaderProps) {
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Codes</span>
-                <HiOutlineAnnotation />
+                <MessageIcon />
               </Button>
               <Button
                 variant="outlined"
@@ -167,7 +167,16 @@ export default function Header(props: HeaderProps) {
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Graph</span>
-                <FcScatterPlot />
+                <ScatterPlotIcon />
+              </Button>
+              <Button
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/clusterView`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Graph</span>
+                <ScatterPlotIcon />
               </Button>
             </ButtonGroup>
             <br />
@@ -185,7 +194,7 @@ export default function Header(props: HeaderProps) {
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Datasets</span>
-                <MdOutlineDataset />
+                <DatasetIcon />
               </Button>
               <Button
                 variant="outlined"
@@ -194,7 +203,7 @@ export default function Header(props: HeaderProps) {
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Sentences</span>
-                <BsChatRightText />
+                <SpeakerNotesIcon />
               </Button>
               <Button
                 variant="outlined"
@@ -203,7 +212,7 @@ export default function Header(props: HeaderProps) {
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Embeddings</span>
-                <AiOutlineBoxPlot />
+                <DataArrayIcon />
               </Button>
               <Button
                 variant="outlined"
@@ -212,7 +221,7 @@ export default function Header(props: HeaderProps) {
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Positions</span>
-                <GiPositionMarker />
+                <PlaceIcon />
               </Button>
               <Button
                 variant="outlined"
@@ -221,7 +230,7 @@ export default function Header(props: HeaderProps) {
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Clusters</span>
-                <GrCluster />
+                <SchemaIcon />
               </Button>
               <Button
                 variant="outlined"
@@ -230,7 +239,7 @@ export default function Header(props: HeaderProps) {
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Plot</span>
-                <PiListMagnifyingGlassThin />
+                <ManageSearchIcon />
               </Button>
             </ButtonGroup>
             <br />
