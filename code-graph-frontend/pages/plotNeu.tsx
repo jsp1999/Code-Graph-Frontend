@@ -1,10 +1,16 @@
-import React, {Component, RefObject, useEffect, useRef, useState} from 'react';
-import * as d3 from 'd3';
-import CodeTreeView from "@/components/CodeTreeView";
-import { getCodeTree } from "@/pages/api/api";
-import Header from "@/components/Header";
-import data from "@/src/NER_Tags.json";
 
+import React, { useRef, useEffect, useState } from 'react';
+import * as d3 from 'd3';
+import data from "../src/NER_Tags.json";
+import { getCodeTree } from "@/pages/api/api";
+import { Button } from "@mui/material";
+import Header from "@/components/Header";
+import CodeTreeView from "@/components/CodeTreeView";
+import AddToCodeModal from "@/components/AddToCodeModal";
+import LoadingModal from "@/components/LoadingModal";
+import CodeItem from "@/components/CodeItem";
+import ContextMenu from "@/components/ContextMenu";
+import { useRouter } from "next/router";
 
 function hsvToRgb(h, s, v) {
   let r, g, b;
@@ -122,7 +128,6 @@ class TrainSlide {
     });
 
     const jsonData = JSON.stringify(formattedData); // Convert the formatted data to JSON
-    console.log(jsonData);
     fetch(this.plot.source + "projects/" + this.plot.projectId + "/dynamic/correction?epochs=10", {
         method: 'POST',
         headers: {
@@ -132,7 +137,6 @@ class TrainSlide {
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data);
         this.plot.update();
     })
     .catch(error => {
@@ -514,7 +518,6 @@ toggleTrainButtonState() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data);
         this.update().then(() => this.trainForEpochs(epochsRemaining - 1));
     })
     .catch(error => {
@@ -524,7 +527,9 @@ toggleTrainButtonState() {
 }
     render(newData) {
         // Existing Dots
-        newData = this.filter ? newData.filter(this.filter) : newData;
+        if (this.filter) {
+            newData = newData.filter(dot => this.filter(dot));
+        }
         newData.forEach(dotData => {
             let existingDot = this.data.find(d => d.dotId === dotData.id);
             if (existingDot) {
@@ -551,80 +556,121 @@ toggleTrainButtonState() {
     }
 }
 
-interface IDotPlotComponentProps {
-    // Define props types here, if any.
-}
-
-interface IDotPlotComponentState {
-    // Define state variable types here, if any.
-}
 
 
+const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
+    const canvasRef = useRef<SVGSVGElement>(null);
+    const [plot, setPlot] = useState<any>();
+    const [train, setTrain] = useState<any>();
+    // From CodeView component
+    const router = useRouter();
+    const contextMenuRef = useRef<HTMLDivElement>(null);
+    const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
+    const [showContextMenu, setShowContextMenu] = useState(false);
+    const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+    const [rightClickedItem, setRightClickedItem] = useState(0);
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [jsonData, setJsonData] = useState(data);
+    const [projectId, setProjectId] = useState(typeof window !== 'undefined' ? parseInt(localStorage.getItem("projectId") ?? "1"): 1);
 
-  const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
+
+    useEffect(() => {
+        if (canvasRef.current) {
+            console.log("Initializing dot plotter...");
+            const svg_ = d3.select(canvasRef.current);
+            const container_ = d3.select('#container');
+            const newPlot = new DotPlotter('container', 1, "http://localhost:8000/", svg_, container_);
+            const newTrain = new TrainSlide(newPlot);
+
+            setPlot(newPlot);
+            setTrain(newTrain);
+
+            newPlot.update().then(() => newPlot.homeView());
+        } else {
+            console.log("Error: canvas ref is null");
+        }
+        setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
+
+        setLoading(true);
+        getCodeTree(projectId)
+            .then((response) => {
+                setJsonData(response.data.codes);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+            });
+    }, []);
+
+      const handleOpen = () => setOpen(true);
+  const handleAddModalClose = () => {
+    setOpen(false);
+    setLoading(true);
+    getCodeTree(projectId)
+      .then((response) => {
+        setJsonData(response.data.codes);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const { clientX, clientY } = e;
+    setContextMenuPosition({ x: clientX, y: clientY });
+    setShowContextMenu(true);
+  };
+
+  const handleContextMenuAction = (action: string) => {
+    if (action === "unselect") {
+      selectedNodes.splice(selectedNodes.indexOf(rightClickedItem), 1);
+    }
+    if (action === "add to category") {
+      handleOpen();
+    }
+    setShowContextMenu(false);
+  };
+
+  const handleRightClick = (e: React.MouseEvent, value: number) => {
+    handleContextMenu(e);
+    setRightClickedItem(value);
+  };
+
+    const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
     setSelectedNodes(newSelectedNodes);
   };
-class DotPlotComponent extends Component<IDotPlotComponentProps, IDotPlotComponentState> {
-
-    canvasRef: RefObject<SVGSVGElement>;
-    constructor(props: IDotPlotComponentProps) {
-        super(props);
-        this.state = {
-            // Initialize state variables here.
-        };
-
-        // Refs
-        this.canvasRef = React.createRef();
-
-
+    useEffect(() => {
+    if (plot && selectedNodes) {
+        plot.applyCodeFilter(selectedNodes);
+        plot.update();
     }
+}, [selectedNodes, plot]);
 
-    componentDidMount() {
-        // Class instantiation
-        if (this.canvasRef.current) {
-            console.log("Initializing dot plotter...")
-            const svg_ = d3.select(this.canvasRef.current);
-            const container_ = d3.select('#container');
-            this.plot = new DotPlotter('container', 1, "http://localhost:8000/", svg_, container_); // Consider passing these as props
-            this.train = new TrainSlide(this.plot);
-            this.plot.update().then(() => this.plot.homeView());
-        }
-        else {
-            console.log("Error: canvas ref is null")
-        }
-        // Any additional setup you need goes here
-    }
-
-    componentDidUpdate() {
-        // Handle state/prop changes and update the D3 visualizations accordingly.
-    }
-
-    render() {
-      return (
-          <div>
-              <header>
-                  <Header title="Code View" />
-                  <div className="float-left">
-                      <CodeTreeView
-                          taxonomyData={data} // for now, we're using the static data import
-                          contextMenuRef={null} // placeholder, since we haven't integrated the full logic
-                          selectedNodes={[]} // placeholder
-                          updateSelectedNodes={() => {}} // placeholder
-                      />
-                  </div>
-                  <div>
-                      <svg id="canvas" ref={this.canvasRef} width="800" height="600">
-                          <g id="container"></g>
-                      </svg>
-                      <button id="plotTrainButton" onClick={() => this.plot.setupTrainButton()}>Train</button>
-                      <button id="trainLinesButton">Train Lines</button>
-                      {/* Other components or features you want to render */}
-                  </div>
-              </header>
-          </div>
-      );
-  }
-
+    return (
+        <div>
+            <header>
+                <Header title="Code View" />
+                <div className="float-left">
+                    <CodeTreeView
+                        taxonomyData={jsonData}
+                        contextMenuRef={contextMenuRef}
+                        selectedNodes={selectedNodes}
+                        updateSelectedNodes={handleUpdateSelectedNodes}
+                    />
+                </div>
+                <div>
+                    <svg id="canvas" ref={canvasRef} width="800" height="600">
+                        <g id="container"></g>
+                    </svg>
+                    {plot && <button id="plotTrainButton" onClick={() => plot.setupTrainButton()}>Train</button>}
+                    <button id="trainLinesButton">Train Lines</button>
+                </div>
+            </header>
+            {/* Add other components from CodeView like AddToCodeModal, LoadingModal, etc. here */}
+        </div>
+    );
 }
 
 export default DotPlotComponent;
