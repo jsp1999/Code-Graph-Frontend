@@ -602,15 +602,15 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const [rightClickedItem, setRightClickedItem] = useState(0);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [jsonData, setJsonData] = useState(data);
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
   );
   const [editModalOpen, setEditModalOpen] = useState(false);
-
   const [config, setConfig] = useState<any>();
   const [editData, setEditData] = useState<any>();
+
+  const [loading, setLoading] = useState(false);
 
   const [selectedNodes, setSelectedNodes] = useState<number[]>(() => {
     if (typeof window === "undefined") {
@@ -629,6 +629,8 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   }, [selectedNodes]);
 
   useEffect(() => {
+    setLoading(true);
+
     if (canvasRef.current) {
       console.log("Initializing dot plotter...");
       const svg_ = d3.select(canvasRef.current);
@@ -640,13 +642,15 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
       setPlot(newPlot);
       setTrain(newTrain);
 
-      newPlot.generateColors().then(() => newPlot.update()).then(() => newPlot.homeView());
+      newPlot
+        .generateColors()
+        .then(() => newPlot.update())
+        .then(() => newPlot.homeView());
     } else {
       console.log("Error: canvas ref is null");
     }
     setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
 
-    setLoading(true);
     getCodeTree(projectId)
       .then((response) => {
         localStorage.setItem("selectedNodes", JSON.stringify([]));
@@ -659,6 +663,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
+    setLoading(false);
   }, []);
 
   const handleOpen = () => setOpen(true);
@@ -751,6 +756,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
           onEdit={handleEditConfig}
           config={editData}
         />
+        <LoadingModal open={loading} />;
         <Header title="Code View" />
         <div className="float-left">
           <CodeTreeView
