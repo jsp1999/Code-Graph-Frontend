@@ -351,7 +351,7 @@ class Line {
 }
 
 class DotPlotter {
-    constructor(containerId, projectId, source) {
+    constructor(containerId, projectId, source, svg, container) {
         this.containerId = containerId;
         this.source = source;
         this.projectId = projectId;
@@ -359,14 +359,9 @@ class DotPlotter {
         this.lines = [];
         this.selected = [];
         this.generateColors();
-
-
-    }
-    setup_after() {
-        //this.svg = d3.select('#canvas');
-        //this.container = d3.select('#container');
+        this.svg = svg;
+        this.container = container;
         this.point_r = 2.5;
-
         this.svg.append("defs").append("marker")
                                         .attr("id", "arrowhead")
                                         .attr("viewBox", "0 -5 10 10")
@@ -399,19 +394,8 @@ class DotPlotter {
             });
 
         this.svg.call(this.zoom);
-        this.update().then(() => {
-                this.homeView();
-                //this.interval = setInterval(() => this.update(), 10 * 300);
-            }
-        );
-        //this.setupTrainButton();
     }
-    /*
-    setupTrainButton() {
-        document.getElementById("plotTrainButton")
-            .addEventListener("click", () => this.trainForEpochs(10));
 
-    }*/
     setupTrainButton() {
     const trainButton = document.getElementById("plotTrainButton");
     trainButton.addEventListener("click", () => {
@@ -470,9 +454,6 @@ toggleTrainButtonState() {
 
     }
 
-    train_clusters(){
-
-    }
 
     fetchData() {
     console.log("fetching data...")
@@ -521,17 +502,7 @@ toggleTrainButtonState() {
         this.setFilter(filterFunc);
         this.update().then(() => this.homeView());
     }
-    /*
-    trainForEpochs(epochs) {
-    fetch(this.source + "projects/" + this.projectId + "/dynamic/cluster?epochs=" + epochs, {
-        method: 'POST'
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        this.update();
-    });
-}*/
+
     trainForEpochs(epochsRemaining) {
     if (this.stopTraining || epochsRemaining <= 0) {
         this.toggleTrainButtonState();
@@ -605,19 +576,21 @@ class DotPlotComponent extends Component<IDotPlotComponentProps, IDotPlotCompone
         // Refs
         this.canvasRef = React.createRef();
 
-        // Class instantiation
-        this.plot = new DotPlotter('container', 1, "http://localhost:8000/"); // Consider passing these as props
-        this.train = new TrainSlide(this.plot);
+
     }
 
     componentDidMount() {
+        // Class instantiation
         if (this.canvasRef.current) {
-            this.plot.svg = d3.select(this.canvasRef.current);
-            this.plot.container = d3.select('#container');
-            this.plot.setup_after();
-            this.plot.update().then(() => {
-                this.plot.homeView();
-            });
+            console.log("Initializing dot plotter...")
+            const svg_ = d3.select(this.canvasRef.current);
+            const container_ = d3.select('#container');
+            this.plot = new DotPlotter('container', 1, "http://localhost:8000/", svg_, container_); // Consider passing these as props
+            this.train = new TrainSlide(this.plot);
+            this.plot.update().then(() => this.plot.homeView());
+        }
+        else {
+            console.log("Error: canvas ref is null")
         }
         // Any additional setup you need goes here
     }
