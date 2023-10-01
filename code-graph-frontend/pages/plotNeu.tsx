@@ -206,6 +206,9 @@ class Dot {
     this.tooltip = null; // for tooltip
     this.circle = null; // for the circle representation
     this.plot = plot;
+    if (!this.plot.color_mapper) {
+      this.plot.color_mapper = newColorScale;
+    }
     this.color = plot.color_mapper(this.code);
     this.plot.data.push(this);
   }

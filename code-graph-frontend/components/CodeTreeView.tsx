@@ -36,6 +36,7 @@ const CodeTreeView: React.FC<CodeTreeViewProps> = ({
     return null;
   }
 
+
   return (
     <TreeItem
       key={node.id}
@@ -60,26 +61,48 @@ const CodeTreeView: React.FC<CodeTreeViewProps> = ({
   );
 };
 
-  const handleNodeSelect = (event: React.ChangeEvent<{}>, node: number) => {
-    event.stopPropagation();
-
-    // Check if the node is already selected
-    const isSelected = selectedNodes.includes(node);
-
-    // Create a new array with the updated selection
-    let newSelectedNodes: number[];
-
-    if (isSelected) {
-      // If the node is already selected, remove it from the selectedNodes array
-      newSelectedNodes = selectedNodes.filter((selectedNode) => selectedNode !== node);
-    } else {
-      // If the node is not selected, add it to the selectedNodes array
-      newSelectedNodes = [...selectedNodes, node];
+const getAllChildIds = (node: undefined): number[] => {
+  if (!node) return [];
+  let ids = [node.id];
+  for (let subcategoryKey in node.subcategories) {
+    ids.push(node.subcategories[subcategoryKey].id);
+    ids = ids.concat(getAllChildIds(node.subcategories[subcategoryKey]));
+  }
+  return ids;
+};
+const findNodeById = (nodeId: number, data: Record<string, Category>): Category | undefined => {
+  for (let key in data) {
+    if (data[key].id === nodeId) {
+      return data[key];
     }
+    const child = findNodeById(nodeId, data[key].subcategories);
+    if (child) {
+      return child;
+    }
+  }
+};
+const handleNodeSelect = (event: React.ChangeEvent<{}>, nodeId: number) => {
+  event.stopPropagation();
 
-    // Update the selectedNodes state using the callback function
-    updateSelectedNodes(newSelectedNodes);
-  };
+  const node = findNodeById(nodeId, taxonomyData);
+  if (!node) return;
+
+  const relatedIds = getAllChildIds(node);
+
+  const isSelected = selectedNodes.includes(nodeId);
+
+  let newSelectedNodes: number[];
+
+  if (isSelected) {
+    // Remove all related IDs from selectedNodes
+    newSelectedNodes = selectedNodes.filter((selectedNode) => !relatedIds.includes(selectedNode));
+  } else {
+    // Add all related IDs to selectedNodes, but ensure no duplicates
+    newSelectedNodes = Array.from(new Set([...selectedNodes, ...relatedIds]));
+  }
+
+  updateSelectedNodes(newSelectedNodes);
+};
 
   return (
     <div className="w-fit m-12 border p-5">
