@@ -385,7 +385,6 @@ class DotPlotter {
     this.data = [];
     this.lines = [];
     this.selected = [];
-    this.generateColors();
     this.svg = svg;
     this.container = container;
     this.point_r = 2.5;
@@ -544,8 +543,11 @@ class DotPlotter {
   }
   render(newData) {
     // Existing Dots
+    console.log("rendering...");
     if (this.filter) {
+      console.log("filtering...");
       newData = newData.filter((dot) => this.filter(dot));
+      console.log(newData.length);
     }
     newData.forEach((dotData) => {
       let existingDot = this.data.find((d) => d.dotId === dotData.id);
@@ -569,15 +571,17 @@ class DotPlotter {
         newDot.draw(this);
       }
     });
-
+    console.log(this.data.length);
     // Optional: remove dots that don't exist in newData
     this.data = this.data.filter((dot) => {
       let shouldKeep = newData.find((d) => d.id === dot.dotId);
       if (!shouldKeep && dot.circle) {
         dot.circle.remove();
       }
+
       return shouldKeep;
     });
+    console.log(this.data.length);
   }
 }
 
@@ -631,7 +635,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
       setPlot(newPlot);
       setTrain(newTrain);
 
-      newPlot.update().then(() => newPlot.homeView());
+      newPlot.generateColors().then(() => newPlot.update()).then(() => newPlot.homeView());
     } else {
       console.log("Error: canvas ref is null");
     }
@@ -640,8 +644,11 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     setLoading(true);
     getCodeTree(projectId)
       .then((response) => {
-        setJsonData(response.data.codes);
         localStorage.setItem("selectedNodes", JSON.stringify([]));
+        console.log("resetting selected nodes");
+        console.log(selectedNodes);
+        console.log(localStorage.getItem("selectedNodes"));
+        setJsonData(response.data.codes);
         setLoading(false);
       })
       .catch((error) => {
