@@ -15,8 +15,9 @@ class CodeDotPlotter {
     private containerId: string;
     private filter: any;
     private selectedNodes: number[];
+    private addToCategory: () => void;
 
-    constructor(containerId: string, projectId: number, source: any, svg: any, container: any, selectedNodes: number[]) {
+    constructor(containerId: string, projectId: number, source: any, svg: any, container: any, selectedNodes: number[], addToCategory: () => void) {
         this.containerId = containerId;
         this.source = source;
         this.projectId = projectId;
@@ -26,6 +27,7 @@ class CodeDotPlotter {
         this.container = container;
         this.point_r = 5;
         this.selectedNodes = selectedNodes;
+        this.addToCategory = addToCategory;
 
 
        // window.addEventListener('beforeunload', this.handleBeforeUnload);
@@ -162,6 +164,7 @@ class CodeDotPlotter {
                     dotData.average_position.y,
                     dotData.text,
                     this,
+                    () => this.addToCategory,
                 );
                 newDot.draw(this);
             }
@@ -171,5 +174,5 @@ class CodeDotPlotter {
         console.log(this.data.length);
     }
 
-};
+}
 export default CodeDotPlotter;

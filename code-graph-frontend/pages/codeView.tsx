@@ -7,11 +7,10 @@ import CodeTreeView from "@/components/CodeTreeView";
 import {getCodeTree, getconfig, refreshEntries} from "@/pages/api/api";
 import { useRouter } from "next/router";
 import LoadingModal from "@/components/LoadingModal";
-import CodeItem from "@/components/CodeItem";
-import ContextMenu from "@/components/ContextMenu";
 import * as d3 from "d3";
 import CodeDotPlotter from "@/components/CodeDotPlotter";
 import AddToCodeModal from "@/components/AddToCodeModal";
+import MergeModal from "@/components/MergeModal";
 
 export default function CodeView() {
   const router = useRouter();
@@ -20,11 +19,9 @@ export default function CodeView() {
   const canvasRef = useRef<SVGSVGElement>(null);
   const [plot, setPlot] = useState<any>();
   const [config, setConfig] = useState<any>();
-  const [showContextMenu, setShowContextMenu] = useState(false);
-  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
-  const contextMenuRef = useRef<HTMLDivElement>(null);
-  const [rightClickedItem, setRightClickedItem] = useState(0);
+  const [rightClickedItemId, setRightClickedItemId] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [openMergeModal, setOpenMergeModal] = useState(false);
   const [openAddToCodeModal, setOpenAddToCodeModal] = useState(false);
   const [jsonData, setJsonData] = useState(data);
   const [loading, setLoading] = useState(false);
@@ -52,7 +49,7 @@ export default function CodeView() {
       console.log("Initializing dot plotter...");
       const svg_ = d3.select(canvasRef.current);
       const container_ = d3.select("#container");
-      const newPlot = new CodeDotPlotter("container", projectId, "http://localhost:8000/", svg_, container_, selectedNodes);
+      const newPlot = new CodeDotPlotter("container", projectId, "http://localhost:8000/", svg_, container_, selectedNodes, handleOpen);
       fetchAndUpdateConfigs();
 
       setPlot(newPlot);
@@ -102,46 +99,19 @@ export default function CodeView() {
         });
   };
 
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const { clientX, clientY } = e;
-    setContextMenuPosition({ x: clientX, y: clientY });
-    setShowContextMenu(true);
+  const handleMergeModalClose = () => {
+    setOpenMergeModal(false);
+    setLoading(true);
+    getCodeTree(projectId)
+        .then((response) => {
+          setJsonData(response.data.codes);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
   };
 
-  const handleContextMenuAction = (action: string) => {
-    if (action === "unselect") {
-      selectedNodes.splice(selectedNodes.indexOf(rightClickedItem), 1);
-    }
-    if (action === "add to category") {
-      handleOpen();
-    }
-    setShowContextMenu(false);
-  };
-
-  {/*const handleRightClick = (e: React.MouseEvent, value: number) => {
-    handleContextMenu(e);
-    setRightClickedItem(value);
-  };*/}
-
-  const handleRightClickDot = (contextMenuPosition: any, rightClickedItem: any) => {
-    setContextMenuPosition(contextMenuPosition);
-    setRightClickedItem(rightClickedItem);
-    setShowContextMenu(true);
-  };
-
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (contextMenuRef.current && !contextMenuRef.current.contains(event.target as Node)) {
-        setShowContextMenu(false);
-      }
-    };
-
-    document.addEventListener("click", handleOutsideClick);
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, []);
 
   const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
     setSelectedNodes(newSelectedNodes);
@@ -178,13 +148,13 @@ export default function CodeView() {
     <div>
       <Header title="Code View" />
       <AddCodeModal open={openAddModal} handleClose={handleAddModalClose} projectId={projectId} />
-      <AddToCodeModal open={openAddToCodeModal} handleClose={handleAddToCodeModalClose} projectId={projectId} codeId={2} />
+      <AddToCodeModal open={openAddToCodeModal} handleClose={handleAddToCodeModalClose} projectId={projectId} codeId={rightClickedItemId} />
       <LoadingModal open={loading} />
+      <MergeModal open={openMergeModal} handleClose={handleMergeModalClose} projectId={projectId} setLoading={() => setLoading(!loading)}/>
 
       <div className="float-left">
         <CodeTreeView
           taxonomyData={jsonData}
-          contextMenuRef={contextMenuRef}
           selectedNodes={selectedNodes}
           updateSelectedNodes={handleUpdateSelectedNodes}
         />
@@ -197,31 +167,10 @@ export default function CodeView() {
         </svg>
       </div>
 
-      {/*<div className="grid grid-cols-5 gap-10 w-[50vw] h-[50vh] float-right mt-40 mr-40">
-        {selectedNodes.length > 0 &&
-          selectedNodes.map((value, index) => (
-            <div
-              className="w-24"
-              key={index}
-              onContextMenu={(e: React.MouseEvent) => {
-                handleContextMenu(e);
-                setRightClickedItem(value);
-              }}
-              ref={contextMenuRef}
-            >
-              <CodeItem id={value} projectId={projectId} />
-              {showContextMenu && (
-                <ContextMenu
-                  contextMenuPosition={contextMenuPosition}
-                  handleContextMenuAction={handleContextMenuAction}
-                  contextMenuItems={["unselect", "add to category"]}
-                />
-              )}
-            </div>
-          ))}
-      </div>*/}
-
       <div className="absolute right-5 bottom-5 ">
+        <Button variant="outlined" className="mr-10" onClick={() => setOpenMergeModal(true)}>
+          Merge Codes
+        </Button>
         <Button variant="outlined" className="mr-10" onClick={() => setOpenAddModal(true)}>
           Add new Code
         </Button>
