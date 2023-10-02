@@ -2,7 +2,7 @@
 import React, { useRef, useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import * as d3 from "d3";
 import { Button } from "@mui/material";
-import ItemList from '@/components/ItemList';
+import ItemList from "@/components/ItemList";
 import itemList from "@/components/ItemList";
 function hsvToRgb(h, s, v) {
   let r, g, b;
@@ -213,7 +213,7 @@ class Dot {
       .attr("cx", this.x)
       .attr("cy", this.y)
       .attr("r", this.plot.point_r)
-        .attr("data-dotId", this.dotId)
+      .attr("data-dotId", this.dotId)
       .attr("fill", this.color) // Add fill color
       .on("mouseover", (event) => {
         this.showTooltip(plotter.svg);
@@ -221,7 +221,7 @@ class Dot {
       .on("mouseout", (event) => {
         this.hideTooltip();
       });
-    if(this.plot.is_dynamic){
+    if (this.plot.is_dynamic) {
       this.setDragBehavior(plotter);
     }
   }
@@ -379,7 +379,16 @@ class Line {
 }
 
 class DotPlot {
-  constructor(containerId, projectId, source, svg, container, train_button, is_dynamic=false, list_update_callback=null) {
+  constructor(
+    containerId,
+    projectId,
+    source,
+    svg,
+    container,
+    train_button,
+    is_dynamic = false,
+    list_update_callback = null,
+  ) {
     this.containerId = containerId;
     this.is_dynamic = is_dynamic;
     this.train_button = train_button;
@@ -493,23 +502,21 @@ class DotPlot {
 
   fetchData() {
     console.log("fetching data...");
-    if (this.fetched_data)
-    {
+    if (this.fetched_data) {
       console.log("already fetched data...");
       return Promise.resolve(this.fetched_data);
-    }
-    else {
+    } else {
       const endpoint = this.source + "projects/" + this.projectId + "/plots/?all=true";
       return fetch(endpoint)
-          .then((response) => response.json())
-          .then((data) => {
-            this.fetched_data = data["data"];
-            return data["data"];
-          })
-          .catch((error) => {
-            console.error("Error fetching plot data:", error);
-            throw error;
-          });
+        .then((response) => response.json())
+        .then((data) => {
+          this.fetched_data = data["data"];
+          return data["data"];
+        })
+        .catch((error) => {
+          console.error("Error fetching plot data:", error);
+          throw error;
+        });
     }
   }
 
@@ -565,7 +572,7 @@ class DotPlot {
       });
   }
 
-  getList(){
+  getList() {
     return this.lines;
   }
   render(newData) {
@@ -575,8 +582,7 @@ class DotPlot {
     if (this.filter) {
       console.log("filtering...");
       newData = newData.filter((dot) => this.filter(dot));
-    }
-    else {
+    } else {
       newData = [];
     }
 
@@ -611,108 +617,123 @@ class DotPlot {
       }
       const validDotIds = newData.map((d) => d.id);
       // Directly select all dots in the SVG
-const allDotsInSVG = this.container.selectAll(".dot");
+      const allDotsInSVG = this.container.selectAll(".dot");
 
-  // Remove the dots whose IDs are not in validDotIds
-  allDotsInSVG.each(function() {
-      const dot = d3.select(this);
-      const dotId = parseInt(dot.attr("data-dotId")); // Assuming you've stored the dotId as a data attribute
+      // Remove the dots whose IDs are not in validDotIds
+      allDotsInSVG.each(function () {
+        const dot = d3.select(this);
+        const dotId = parseInt(dot.attr("data-dotId")); // Assuming you've stored the dotId as a data attribute
 
-      if (!validDotIds.includes(dotId)) {
+        if (!validDotIds.includes(dotId)) {
           dot.remove();
-      }
-  });
+        }
+      });
 
       return shouldKeep;
     });
-    console.log(this.container.selectAll(".dot"))
+    console.log(this.container.selectAll(".dot"));
   }
 }
 interface DotPlotProps {
-    projectId: number;
-    source: string;
-    is_dynamic?: boolean; // Assuming this prop can be optional
+  projectId: number;
+  source: string;
+  is_dynamic?: boolean; // Assuming this prop can be optional
 }
 
 // This is the interface for the functions you're exposing.
 export interface DotPlotCompHandles {
-    setPlotFilter: (filterValue: any) => void;
+  setPlotFilter: (filterValue: any) => void;
 }
 
 const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) => {
-    const { projectId, source, is_dynamic } = props;
+  const { projectId, source, is_dynamic } = props;
 
-    const canvasRef = useRef<SVGSVGElement>(null);
-    const trainButtonRef = useRef<HTMLButtonElement>(null);
-    const [items, setItems] = useState<Item[]>([]);
+  const canvasRef = useRef<SVGSVGElement>(null);
+  const trainButtonRef = useRef<HTMLButtonElement>(null);
+  const [items, setItems] = useState<Item[]>([]);
 
-    const [plot, setPlot] = useState<any>();
-    const [train, setTrain] = useState<any>();
-const handleDataUpdate = () => {
-  console.log("handle data update...");
-  console.log(plot);
-  console.log(plot?.getList());
-        setPlotItems(plot?.getList() || []);
-    };
-    useImperativeHandle(ref, () => ({
-        setPlotFilter: (filterValue: any) => {
-            if (plot) {
-                plot.applyCodeFilter(filterValue);
-            }
-        }
-    }));
-
-
-
+  const [plot, setPlot] = useState<any>();
+  const [train, setTrain] = useState<any>();
+  const handleDataUpdate = () => {
+    console.log("handle data update...");
+    console.log(plot);
+    console.log(plot?.getList());
+    setPlotItems(plot?.getList() || []);
+  };
+  useImperativeHandle(ref, () => ({
+    setPlotFilter: (filterValue: any) => {
+      if (plot) {
+        plot.applyCodeFilter(filterValue);
+      }
+    },
+  }));
 
   const handleDeleteItem = (item) => {
     item.remove();
     handleDataUpdate();
   };
-const [plotItems, setPlotItems] = useState<any[]>([]);
+  const [plotItems, setPlotItems] = useState<any[]>([]);
 
-    useEffect(() => {
-        if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
-            const svg_ = d3.select(canvasRef.current);
-            const container_ = d3.select("#container");
-            const newPlot = new DotPlot("container", projectId, source, svg_, container_, trainButtonRef, is_dynamic, handleDataUpdate);
-            const newTrain = new TrainSlide(newPlot);
-            setPlot(newPlot);
-            setTrain(newTrain);
+  useEffect(() => {
+    if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
+      const svg_ = d3.select(canvasRef.current);
+      const container_ = d3.select("#container");
+      const newPlot = new DotPlot(
+        "container",
+        projectId,
+        source,
+        svg_,
+        container_,
+        trainButtonRef,
+        is_dynamic,
+        handleDataUpdate,
+      );
+      const newTrain = new TrainSlide(newPlot);
+      setPlot(newPlot);
+      setTrain(newTrain);
 
-            // Call generateColors and update as usual
-            newPlot.generateColors().then(() => newPlot.update()).then(() => {
-                // After updating, set the fetched data to the state
-                setPlotItems(newPlot.getList());  // Assuming list is the correct variable name
-                newPlot.homeView();
-            });
-        }
-    }, [projectId, source, is_dynamic]);
+      // Call generateColors and update as usual
+      newPlot
+        .generateColors()
+        .then(() => newPlot.update())
+        .then(() => {
+          // After updating, set the fetched data to the state
+          setPlotItems(newPlot.getList()); // Assuming list is the correct variable name
+          newPlot.homeView();
+        });
+    }
+  }, [projectId, source, is_dynamic]);
 
-    // Update the rendering part to utilize the fetched plotItems instead of the dummy items
-    return (
-        <div className="flex">
-            <div className="dynamicSvgContainer">
-                {/* Use the fetched plotItems instead of dummy items */}
-                <svg id="canvas" ref={canvasRef} width="100%" height="100%">
-                    <g id="container"></g>
-                </svg>
-                {is_dynamic && (
-                    <Button
-                        variant="contained"
-                        style={{ right: "20px", bottom: "20px" }}
-                        className="bg-blue-900 rounded absolute right-5 bottom-5"
-                        ref={trainButtonRef}
-                    >
-                        Train
-                    </Button>
-                )}
-          </div>
-                <div className="itemListContainer">
-            <ItemList items={plotItems} onDelete={handleDeleteItem} onTrain={() => { /* your training function here */ }} />
-        </div>
-        </div>
-    );
+  // Update the rendering part to utilize the fetched plotItems instead of the dummy items
+  return (
+    <div className="flex">
+      <div className="dynamicSvgContainer">
+        {/* Use the fetched plotItems instead of dummy items */}
+        <svg id="canvas" ref={canvasRef} width="100%" height="100%">
+          <g id="container"></g>
+        </svg>
+        {is_dynamic && (
+          <Button
+            variant="contained"
+            style={{ right: "20px", bottom: "20px" }}
+            className="bg-blue-900 rounded absolute right-5 bottom-5"
+            ref={trainButtonRef}
+          >
+            Train
+          </Button>
+        )}
+      </div>
+      <div className="itemListContainer">
+        <ItemList
+          items={plotItems}
+          onDelete={handleDeleteItem}
+          onTrain={() => {
+            /* your training function here */
+          }}
+        />
+      </div>
+    </div>
+  );
 });
 
 export default DotPlotComp;

@@ -111,11 +111,11 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     setSelectedNodes(newSelectedNodes);
   };
 
-useEffect(() => {
+  useEffect(() => {
     if (dotPlotRef.current && selectedNodes) {
-        dotPlotRef.current.setPlotFilter(selectedNodes);
+      dotPlotRef.current.setPlotFilter(selectedNodes);
     }
-}, [selectedNodes]);
+  }, [selectedNodes]);
 
   // Function to fetch and update project data
   const fetchAndUpdateConfigs = async () => {
@@ -155,14 +155,14 @@ useEffect(() => {
   return (
     <div>
       <Header title="Code View" />
-        <EditModal
-          open={editModalOpen}
-          handleClose={() => setEditModalOpen(false)}
-          onEdit={handleEditConfig}
-          config={editData}
-        />
-        <LoadingModal open={loading} />
-      <div className = "flex">
+      <EditModal
+        open={editModalOpen}
+        handleClose={() => setEditModalOpen(false)}
+        onEdit={handleEditConfig}
+        config={editData}
+      />
+      <LoadingModal open={loading} />
+      <div className="flex">
         <div className="float-left">
           <CodeTreeView
             taxonomyData={jsonData}
@@ -171,41 +171,36 @@ useEffect(() => {
             updateSelectedNodes={handleUpdateSelectedNodes}
           />
         </div>
-        <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic = {1} />
-        </div>
-        <div className="absolute right-5 bottom-5 ">
-          <ButtonGroup>
-            <Button variant="outlined" className="bg-blue-900 rounded" onClick={handleOpen}>
-              Add new Code
-            </Button>
-            <Button
-              variant="outlined"
-              className="bg-blue-900 rounded"
-              onClick={() => {
-                handleEditClick(config);
-              }}
-            >
-              Edit Config
-            </Button>
-            <Button
-              variant="outlined"
-              className="bg-blue-900 rounded"
-              onClick={() => {
-                handleRefresh();
-              }}
-            >
-              Refresh
-            </Button>
-          </ButtonGroup>
+        <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic={1} />
+      </div>
+      <div className="absolute right-5 bottom-5 ">
+        <ButtonGroup>
+          <Button variant="outlined" className="bg-blue-900 rounded" onClick={handleOpen}>
+            Add new Code
+          </Button>
           <Button
-          variant="contained"
-          className="bg-blue-900 rounded"
-          onClick={() => router.push(`/codeView`)}
-        >
+            variant="outlined"
+            className="bg-blue-900 rounded"
+            onClick={() => {
+              handleEditClick(config);
+            }}
+          >
+            Edit Config
+          </Button>
+          <Button
+            variant="outlined"
+            className="bg-blue-900 rounded"
+            onClick={() => {
+              handleRefresh();
+            }}
+          >
+            Refresh
+          </Button>
+        </ButtonGroup>
+        <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/codeView`)}>
           Change View
         </Button>
-
-        </div>
+      </div>
       {/* Add other components from CodeView like AddToCodeModal, LoadingModal, etc. here */}
     </div>
   );
