@@ -35,19 +35,20 @@ class CodeDotPlotter {
             .style("position", "absolute")
             .style("display", "none");
 
-        // Add "Add to Category" option to the context menu
-        this.contextMenu.append("div")
-            .text("Add to Category")
-            .on("click", () => {
-                this.addToCategory();
-                this.contextMenu.style("display", "none");
-            });
+       // window.addEventListener('beforeunload', this.handleBeforeUnload);
 
         this.container.selectAll(".dot")
             .on("contextmenu", (event: any, dotData: any) => {
                 event.preventDefault();
                 console.log("Right-click on dot:", dotData);
                 this.showContextMenu(event.pageX, event.pageY, dotData);
+            });
+
+        this.contextMenu.append("div")
+            .text("Add to Category")
+            .on("click", () => {
+                this.addToCategory();
+                this.contextMenu.style("display", "none");
             });
 
 
@@ -69,6 +70,11 @@ class CodeDotPlotter {
 
         this.svg.call(this.zoom);
     }
+
+    private handleBeforeUnload = (event: Event) => {
+        this.data = [];
+        window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    };
 
     private showContextMenu(x: number, y: number, dotData: any) {
         console.log("showContextMenu called with x:", x, "y:", y);
@@ -137,8 +143,19 @@ class CodeDotPlotter {
                 }
             })
             .catch((error) => {
+                if (error.response) {
+                    // The request was made, but the server responded with an error status code
+                    console.error("Error response data:", error.response.data);
+                    console.error("Error response status:", error.response.status);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    console.error("No response received. The request was made but no response was received.");
+                } else {
+                    // Something happened in setting up the request that triggered an error
+                    console.error("Error setting up the request:", error.message);
+                }
                 console.error("Error fetching code stats data:", error);
-                throw error;
+                throw error; // Rethrow the error if needed
             });
     }
     update() {
@@ -185,6 +202,8 @@ class CodeDotPlotter {
                 newDot.draw(this);
             }
         });
+
+        console.log("Actual data:", this.data)
         console.log(this.data.length);
     }
 
