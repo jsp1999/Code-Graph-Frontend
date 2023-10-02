@@ -193,6 +193,7 @@ class Dot {
     this.segment = segment;
     this.sentence = sentence;
     this.code = code;
+    this.codeText = findCodePath(plot.tree, code);
     this.line = null;
     this.tooltip = null; // for tooltip
     this.circle = null; // for the circle representation
@@ -212,6 +213,7 @@ class Dot {
       .attr("cx", this.x)
       .attr("cy", this.y)
       .attr("r", this.plot.point_r)
+        .attr("data-dotId", this.dotId)
       .attr("fill", this.color) // Add fill color
       .on("mouseover", (event) => {
         this.showTooltip(plotter.svg);
@@ -304,6 +306,7 @@ class Line {
     this.dot = dot;
     dot.line = this;
     dot.plot.lines.push(this);
+    this.dot.plot.list_update_callback();
   }
   updateStart(x, y) {
     this.start.x = x;
@@ -327,6 +330,7 @@ class Line {
     if (this.element) {
       this.element.remove();
     }
+    this.dot.plot.list_update_callback();
   }
   draw(plotter) {
     const creationZoomScale = d3.zoomTransform(this.dot.plot.svg.node()).k;
@@ -375,10 +379,11 @@ class Line {
 }
 
 class DotPlot {
-  constructor(containerId, projectId, source, svg, container, train_button, is_dynamic=false) {
+  constructor(containerId, projectId, source, svg, container, train_button, is_dynamic=false, list_update_callback=null) {
     this.containerId = containerId;
     this.is_dynamic = is_dynamic;
     this.train_button = train_button;
+    this.list_update_callback = list_update_callback;
     this.source = source;
     this.projectId = projectId;
     this.data = [];
@@ -551,6 +556,9 @@ class DotPlot {
       });
   }
 
+  getList(){
+    return this.lines;
+  }
   render(newData) {
     // Existing Dots
     //this.container.selectAll(".dot").remove();
@@ -592,6 +600,19 @@ class DotPlot {
       if (!shouldKeep && dot.circle) {
         dot.circle.remove();
       }
+      const validDotIds = newData.map((d) => d.id);
+      // Directly select all dots in the SVG
+const allDotsInSVG = this.container.selectAll(".dot");
+
+  // Remove the dots whose IDs are not in validDotIds
+  allDotsInSVG.each(function() {
+      const dot = d3.select(this);
+      const dotId = parseInt(dot.attr("data-dotId")); // Assuming you've stored the dotId as a data attribute
+
+      if (!validDotIds.includes(dotId)) {
+          dot.remove();
+      }
+  });
 
       return shouldKeep;
     });
@@ -618,7 +639,12 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
 
     const [plot, setPlot] = useState<any>();
     const [train, setTrain] = useState<any>();
-
+const handleDataUpdate = () => {
+  console.log("handle data update...");
+  console.log(plot);
+  console.log(plot?.getList());
+        setPlotItems(plot?.getList() || []);
+    };
     useImperativeHandle(ref, () => ({
         setPlotFilter: (filterValue: any) => {
             if (plot) {
@@ -627,50 +653,57 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
         }
     }));
 
+
+
+
+  const handleDeleteItem = (item) => {
+    item.remove();
+    handleDataUpdate();
+  };
+const [plotItems, setPlotItems] = useState<any[]>([]);
+
     useEffect(() => {
         if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
             const svg_ = d3.select(canvasRef.current);
             const container_ = d3.select("#container");
-            const newPlot = new DotPlot("container", projectId, source, svg_, container_, trainButtonRef, is_dynamic);
+            const newPlot = new DotPlot("container", projectId, source, svg_, container_, trainButtonRef, is_dynamic, handleDataUpdate);
             const newTrain = new TrainSlide(newPlot);
             setPlot(newPlot);
             setTrain(newTrain);
-            newPlot.generateColors().then(() => newPlot.update()).then(() => newPlot.homeView());
+
+            // Call generateColors and update as usual
+            newPlot.generateColors().then(() => newPlot.update()).then(() => {
+                // After updating, set the fetched data to the state
+                setPlotItems(newPlot.getList());  // Assuming list is the correct variable name
+                newPlot.homeView();
+            });
         }
-    }, [projectId, source, is_dynamic]);  // Added is_dynamic to dependency array
+    }, [projectId, source, is_dynamic]);
 
-
-
-  const handleDeleteItem = (id: number) => {
-    setItems(prevItems => prevItems.filter(item => item.id !== id));
-  };
-
-  return (
-      <div className="flex">
-        <div className="dynamicSvgContainer">
-            {/* Here's the ItemList above the button */}
-
-
-            <svg id="canvas" ref={canvasRef} width="100%" height="100%" class="canvas-efi">
-                <g id="container"></g>
-            </svg>
-
-            {is_dynamic && (
-                <Button
-                    variant="contained"
-                    style={{ right: "20px", bottom: "20px" }}
-                    className="bg-blue-900 rounded absolute right-5 bottom-5"
-                    ref={trainButtonRef}
-                >
-                    Train
-                </Button>
-            )}
-        </div>
+    // Update the rendering part to utilize the fetched plotItems instead of the dummy items
+    return (
+        <div className="flex">
+            <div className="dynamicSvgContainer">
+                {/* Use the fetched plotItems instead of dummy items */}
+                <svg id="canvas" ref={canvasRef} width="100%" height="100%">
+                    <g id="container"></g>
+                </svg>
+                {is_dynamic && (
+                    <Button
+                        variant="contained"
+                        style={{ right: "20px", bottom: "20px" }}
+                        className="bg-blue-900 rounded absolute right-5 bottom-5"
+                        ref={trainButtonRef}
+                    >
+                        Train
+                    </Button>
+                )}
+          </div>
                 <div className="itemListContainer">
-            <ItemList items={items} onDelete={handleDeleteItem} onTrain={() => { /* your training function here */ }} />
+            <ItemList items={plotItems} onDelete={handleDeleteItem} onTrain={() => { /* your training function here */ }} />
         </div>
-    </div>
-);
+        </div>
+    );
 });
 
 export default DotPlotComp;
