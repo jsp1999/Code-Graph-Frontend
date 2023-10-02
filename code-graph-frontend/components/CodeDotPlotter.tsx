@@ -171,9 +171,11 @@ class CodeDotPlotter {
   }
     homeView() {
         console.log("home view...");
+        console.log("data", this.data)
         const xExtent = d3.extent(this.data, (d) => d.x);
         const yExtent = d3.extent(this.data, (d) => d.y);
-
+        console.log("xExtent", xExtent)
+        console.log("yExtent", yExtent)
         // Calculate width and height of the bounding box
         const dataWidth = xExtent[1] - xExtent[0];
         const dataHeight = yExtent[1] - yExtent[0];
@@ -279,26 +281,28 @@ class CodeDotPlotter {
 
 
     newData.forEach((dotData: any) => {
-      let existingDot = this.data.find((d) => d.dotId === dotData.code_id);
-      if (existingDot) {
-        existingDot.x = dotData.average_position.x;
-        existingDot.y = dotData.average_position.y;
-        existingDot.code = dotData.text;
-      } else {
-        let radius =
-          (dotData.segment_count - this.minRadiusOfAllCodes) / (this.maxRadiusOfAllCodes - this.minRadiusOfAllCodes);
-        let newDot = new CodeDot(
-          dotData.code_id,
-          dotData.average_position.x,
-          dotData.average_position.y,
-          dotData.text,
-          this,
-          () => this.addToCategory,
-          radius,
-        );
+      if (dotData.segment_count !== 0) {
+        let existingDot = this.data.find((d) => d.dotId === dotData.code_id);
+        if (existingDot) {
+          existingDot.x = dotData.average_position.x;
+          existingDot.y = dotData.average_position.y;
+          existingDot.code = dotData.text;
+        } else {
+          let radius =
+              (dotData.segment_count - this.minRadiusOfAllCodes) / (this.maxRadiusOfAllCodes - this.minRadiusOfAllCodes);
+          let newDot = new CodeDot(
+              dotData.code_id,
+              dotData.average_position.x,
+              dotData.average_position.y,
+              dotData.text,
+              this,
+              () => this.addToCategory,
+              radius,
+          );
 
-        console.log("radius", radius);
-        newDot.draw(this);
+          console.log("radius", radius);
+          newDot.draw(this);
+        }
       }
     });
     console.log("Actual data:", this.data);
