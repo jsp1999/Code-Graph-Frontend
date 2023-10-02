@@ -5,7 +5,7 @@ import { getCodeTree } from "@/pages/api/api";
 import { Button, ButtonGroup } from "@mui/material";
 import Header from "@/components/Header";
 import CodeTreeView from "@/components/CodeTreeView";
-import AddToCodeModal from "@/components/AddToCodeModal";
+import AddCodeModal from "@/components/AddCodeModal";
 import LoadingModal from "@/components/LoadingModal";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";

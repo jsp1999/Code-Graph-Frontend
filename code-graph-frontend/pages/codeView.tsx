@@ -2,7 +2,7 @@ import data from "../src/NER_Tags.json";
 import React, { useEffect, useRef, useState } from "react";
 import Header from "@/components/Header";
 import { Button } from "@mui/material";
-import AddToCodeModal from "@/components/AddToCodeModal";
+import AddCodeModal from "@/components/AddCodeModal";
 import CodeTreeView from "@/components/CodeTreeView";
 import {getCodeTree, getconfig, refreshEntries} from "@/pages/api/api";
 import { useRouter } from "next/router";
@@ -11,6 +11,7 @@ import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
 import * as d3 from "d3";
 import CodeDotPlotter from "@/components/CodeDotPlotter";
+import AddToCodeModal from "@/components/AddToCodeModal";
 
 export default function CodeView() {
   const router = useRouter();
@@ -23,7 +24,8 @@ export default function CodeView() {
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const [rightClickedItem, setRightClickedItem] = useState(0);
-  const [open, setOpen] = useState(false);
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openAddToCodeModal, setOpenAddToCodeModal] = useState(false);
   const [jsonData, setJsonData] = useState(data);
   const [loading, setLoading] = useState(false);
   const [projectId, setProjectId] = useState(typeof window !== 'undefined' ? parseInt(localStorage.getItem("projectId") ?? "1"): 1);
@@ -43,14 +45,14 @@ export default function CodeView() {
     // Any time selectedNodes changes, save it to localStorage
       localStorage.setItem('selectedNodes', JSON.stringify(selectedNodes));
   }, [selectedNodes]);
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => setOpenAddToCodeModal(true);
 
   useEffect(() => {
     if (canvasRef.current) {
       console.log("Initializing dot plotter...");
       const svg_ = d3.select(canvasRef.current);
       const container_ = d3.select("#container");
-      const newPlot = new CodeDotPlotter("container", projectId, "http://localhost:8000/", svg_, container_, selectedNodes, handleOpen);
+      const newPlot = new CodeDotPlotter("container", projectId, "http://localhost:8000/", svg_, container_, selectedNodes);
       fetchAndUpdateConfigs();
 
       setPlot(newPlot);
@@ -75,7 +77,7 @@ export default function CodeView() {
   }, []);
 
   const handleAddModalClose = () => {
-    setOpen(false);
+    setOpenAddModal(false);
     setLoading(true);
     getCodeTree(projectId)
       .then((response) => {
@@ -86,6 +88,20 @@ export default function CodeView() {
         console.error("Error fetching data:", error);
       });
   };
+
+  const handleAddToCodeModalClose = () => {
+    setOpenAddToCodeModal(false);
+    setLoading(true);
+    getCodeTree(projectId)
+        .then((response) => {
+          setJsonData(response.data.codes);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+  };
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     const { clientX, clientY } = e;
@@ -161,7 +177,8 @@ export default function CodeView() {
   return (
     <div>
       <Header title="Code View" />
-      <AddToCodeModal open={open} handleClose={handleAddModalClose} projectId={projectId} />
+      <AddCodeModal open={openAddModal} handleClose={handleAddModalClose} projectId={projectId} />
+      <AddToCodeModal open={openAddToCodeModal} handleClose={handleAddToCodeModalClose} projectId={projectId} codeId={2} />
       <LoadingModal open={loading} />
 
       <div className="float-left">
@@ -205,7 +222,7 @@ export default function CodeView() {
       </div>*/}
 
       <div className="absolute right-5 bottom-5 ">
-        <Button variant="outlined" className="mr-10" onClick={handleOpen}>
+        <Button variant="outlined" className="mr-10" onClick={() => setOpenAddModal(true)}>
           Add new Code
         </Button>
         <Button
