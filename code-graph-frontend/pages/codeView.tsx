@@ -228,7 +228,7 @@ export default function CodeView() {
         <Button
           variant="contained"
           className="bg-blue-900 rounded"
-          onClick={() => router.push(`/plotNeu`)}
+          onClick={() => router.push(`/plotNeu_Comp`)}
         >
           Change View
         </Button>

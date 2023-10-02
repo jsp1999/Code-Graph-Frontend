@@ -1,4 +1,4 @@
-import DotPlotComponent from "@/pages/plotNeu";
+
 import * as d3 from "d3";
 
 class CodeDot {

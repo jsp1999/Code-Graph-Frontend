@@ -383,6 +383,7 @@ class DotPlot {
     this.containerId = containerId;
     this.is_dynamic = is_dynamic;
     this.train_button = train_button;
+    this.fetched_data = null;
     this.list_update_callback = list_update_callback;
     this.source = source;
     this.projectId = projectId;
@@ -492,16 +493,24 @@ class DotPlot {
 
   fetchData() {
     console.log("fetching data...");
-    const endpoint = this.source + "projects/" + this.projectId + "/plots/?all=true";
-    return fetch(endpoint)
-      .then((response) => response.json())
-      .then((data) => {
-        return data["data"];
-      })
-      .catch((error) => {
-        console.error("Error fetching plot data:", error);
-        throw error;
-      });
+    if (this.fetched_data)
+    {
+      console.log("already fetched data...");
+      return this.fetched_data;
+    }
+    else {
+      const endpoint = this.source + "projects/" + this.projectId + "/plots/?all=true";
+      return fetch(endpoint)
+          .then((response) => response.json())
+          .then((data) => {
+            this.fetched_data = data["data"];
+            return data["data"];
+          })
+          .catch((error) => {
+            console.error("Error fetching plot data:", error);
+            throw error;
+          });
+    }
   }
 
   generateColors() {
