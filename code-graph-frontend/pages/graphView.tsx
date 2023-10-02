@@ -56,6 +56,9 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   useEffect(() => {
     setLoading(true);
     setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
+    if (config === undefined) {
+      fetchAndUpdateConfigs();
+    }
 
     getCodeTree(projectId)
       .then((response) => {
