@@ -231,7 +231,7 @@ export default function EditModal(props: EditModalProps) {
 
   useEffect(() => {
     setIsDynamicModel(formData?.config?.model_type === "dynamic" || props?.config?.config?.model_type === "dynamic");
-  }, [formData, props.config.config]);
+  }, [formData, props?.config?.config]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
