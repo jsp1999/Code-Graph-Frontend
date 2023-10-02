@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { Button } from "@mui/material";
 import AddCodeModal from "@/components/AddCodeModal";
 import CodeTreeView from "@/components/CodeTreeView";
-import { getCodeTree, getconfig, refreshEntries } from "@/pages/api/api";
+import { getCodeTree } from "@/pages/api/api";
 import { useRouter } from "next/router";
 import LoadingModal from "@/components/LoadingModal";
 import * as d3 from "d3";
@@ -18,7 +18,6 @@ export default function CodeView() {
   //const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
   const canvasRef = useRef<SVGSVGElement>(null);
   const [plot, setPlot] = useState<any>();
-  const [config, setConfig] = useState<any>();
   const [rightClickedItemId, setRightClickedItemId] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openMergeModal, setOpenMergeModal] = useState(false);
@@ -59,7 +58,6 @@ export default function CodeView() {
         selectedNodes,
         handleOpen,
       );
-      fetchAndUpdateConfigs();
 
       setPlot(newPlot);
 
@@ -131,25 +129,6 @@ export default function CodeView() {
       plot.update().then(() => plot.homeView());
     }
   }, [selectedNodes, plot]);
-
-  const fetchAndUpdateConfigs = async () => {
-    try {
-      const configResponse = (await getconfig(projectId)).data;
-
-      setConfig(configResponse);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  };
-
-  const handleRefresh = async () => {
-    try {
-      await refreshEntries(projectId);
-      fetchAndUpdateConfigs();
-    } catch (error) {
-      console.error("Error refreshing entries:", error);
-    }
-  };
 
   return (
     <div>
