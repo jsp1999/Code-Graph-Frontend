@@ -69,12 +69,12 @@ class CodeDot {
       .attr("cx", this.x)
       .attr("cy", this.y)
       .attr("r", this.radius)
-      .attr("fill", this.color);
+      .attr("fill", d3.color(this.color).copy({ opacity: 0.5 }));
 
     this.label = plotter.container
       .append("text")
       .attr("class", "dot-label")
-      .attr("font-size", "0.015px")
+      .attr("font-size", "0.07px")
       .attr("x", this.x) // Adjust the x-coordinate for label placement
       .attr("y", this.y - 0.01) // Adjust the y-coordinate for label placement
       .text(this.code); //

@@ -148,6 +148,7 @@ export default function CodeView() {
         projectId={projectId}
         setLoading={() => setLoading(!loading)}
       />
+      <div className="flex">
 
       <div className="float-left">
         <CodeTreeView
@@ -157,11 +158,13 @@ export default function CodeView() {
         />
       </div>
 
-      <div>
-        <svg id="canvas" ref={canvasRef} width="800" height="600">
+      <div className="dynamicSvgContainer">
+        {/* Use the fetched plotItems instead of dummy items */}
+        <svg id="canvas" ref={canvasRef} width="100%" height="100%">
           <g id="container"></g>
         </svg>
       </div>
+        </div>
 
       <div className="absolute right-5 bottom-5 ">
         <Button variant="outlined" className="mr-10" onClick={() => setOpenMergeModal(true)}>

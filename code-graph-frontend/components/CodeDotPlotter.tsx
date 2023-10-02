@@ -179,9 +179,8 @@ class CodeDotPlotter {
         const dataHeight = yExtent[1] - yExtent[0];
 
         // Calculate the viewport's width and height
-        const width = +this.svg.attr("width");
-        const height = +this.svg.attr("height");
-
+        const svgElem = this.svg.node(); // Assuming svg is a D3 selection. If it's a raw DOM element, you don't need .node().
+        const { width, height } = svgElem.getBoundingClientRect();
         // Calculate the scaling factor
         const kx = width / dataWidth;
         const ky = height / dataHeight;
