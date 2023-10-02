@@ -28,6 +28,7 @@ class CodeDotPlotter {
         this.point_r = 5;
         this.selectedNodes = selectedNodes;
         this.addToCategory = addToCategory;
+        this.fetched_data = null;
 
 
        // window.addEventListener('beforeunload', this.handleBeforeUnload);
@@ -101,29 +102,37 @@ class CodeDotPlotter {
     }
     fetchData() {
         console.log("fetching data...");
-        return getCodeStats(this.projectId)
-            .then(async (codeStats) => {
-                console.log("Received codeStats response:", codeStats);
-                if (codeStats) {
-                    console.log("Code Stats Codes:", codeStats.code_segments_count.codes);
-                    return codeStats.code_segments_count.codes;
-                }
-            })
-            .catch((error) => {
-                if (error.response) {
-                    // The request was made, but the server responded with an error status code
-                    console.error("Error response data:", error.response.data);
-                    console.error("Error response status:", error.response.status);
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    console.error("No response received. The request was made but no response was received.");
-                } else {
-                    // Something happened in setting up the request that triggered an error
-                    console.error("Error setting up the request:", error.message);
-                }
-                console.error("Error fetching code stats data:", error);
-                throw error; // Rethrow the error if needed
-            });
+        if (this.fetched_data)
+        {
+          console.log("already fetched data...");
+          return Promise.resolve(this.fetched_data);
+        }
+        else {
+            return getCodeStats(this.projectId)
+                .then(async (codeStats) => {
+                    console.log("Received codeStats response:", codeStats);
+                    if (codeStats) {
+                        console.log("Code Stats Codes:", codeStats.code_segments_count.codes);
+                        this.fetched_data = codeStats.code_segments_count.codes;
+                        return codeStats.code_segments_count.codes;
+                    }
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        // The request was made, but the server responded with an error status code
+                        console.error("Error response data:", error.response.data);
+                        console.error("Error response status:", error.response.status);
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        console.error("No response received. The request was made but no response was received.");
+                    } else {
+                        // Something happened in setting up the request that triggered an error
+                        console.error("Error setting up the request:", error.message);
+                    }
+                    console.error("Error fetching code stats data:", error);
+                    throw error; // Rethrow the error if needed
+                });
+        }
     }
     update() {
         return this.fetchData().then((newData: any) => {
