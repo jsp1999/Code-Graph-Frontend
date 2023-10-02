@@ -252,181 +252,183 @@ export default function EditModal(props: EditModalProps) {
   return (
     <Modal open={props.open} onClose={setClosed}>
       <div className="w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10vh] grid-cols-1 text-center">
-        <p>Edit Config</p>
-        <p>Config ID: {props?.config?.config_id}</p>
-        <TextField
-          name="name"
-          label="Config Name"
-          value={formData?.name || props?.config?.name}
-          onChange={handleInputChange}
-          variant="outlined"
-          className="mb-2"
-          fullWidth
-        />
-        <TextField
-          name="project_name"
-          label="Project Name"
-          value={props?.config?.project_name}
-          variant="outlined"
-          className="mb-3"
-          fullWidth
-        />
-        <Box sx={{ minWidth: 120 }}>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Model Type</InputLabel>
-            <Select
-              name="model_type"
-              label="Model Type"
-              value={formData?.config?.model_type || props?.config?.config?.model_type}
-              variant="outlined"
-              className="mb-2"
-              fullWidth
-              onChange={handleSelectChange}
-              sx={{ textAlign: "left" }}
-            >
-              <MenuItem value={"static"}>static</MenuItem>
-              <MenuItem value={"dynamic"}>dynamic</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-        {/* all config properties */}
-        <p>Embedding config</p>
-        <TextField
-          name="config.embedding_config.model_name"
-          label="embedding_config"
-          value={props?.config?.config?.embedding_config?.model_name}
-          variant="outlined"
-          className="mb-3"
-          fullWidth
-        />
-        <TextField
-          name="config.embedding_config.args.pretrained_model_name_or_path"
-          label="pretrained_model_name_or_path"
-          value={
-            formData?.config?.embedding_config?.args?.pretrained_model_name_or_path ||
-            props?.config?.config?.embedding_config?.args?.pretrained_model_name_or_path
-          }
-          onChange={handleInputChange}
-          variant="outlined"
-          className="mb-2"
-          fullWidth
-        />
-        <p>Reduction config</p>
-        <TextField
-          name="config.reduction_config.model_name"
-          label="reduction_config"
-          value={props?.config?.config?.reduction_config?.model_name}
-          variant="outlined"
-          className="mb-3"
-          fullWidth
-        />
-        <TextField
-          name="config.reduction_config.args.n_neighbors"
-          label="n_neighbors"
-          value={
-            formData?.config?.reduction_config?.args?.n_neighbors ||
-            props?.config?.config?.reduction_config?.args?.n_neighbors
-          }
-          onChange={handleInputChange}
-          variant="outlined"
-          className="mb-2"
-          fullWidth
-        />
-        {!isDynamicModel && (
-          <div>
-            <TextField
-              name="config.reduction_config.args.n_components"
-              label="n_components"
-              value={
-                formData?.config?.reduction_config?.args?.n_components ||
-                props?.config?.config?.reduction_config?.args?.n_components
-              }
-              onChange={handleInputChange}
-              variant="outlined"
-              className="mb-2"
-              fullWidth
-            />
-            <TextField
-              name="config.reduction_config.args.metric"
-              label="metric"
-              value={
-                formData?.config?.reduction_config?.args?.metric ||
-                props?.config?.config?.reduction_config?.args?.metric
-              }
-              onChange={handleInputChange}
-              variant="outlined"
-              className="mb-2"
-              fullWidth
-            />
-            <TextField
-              name="config.reduction_config.args.random_state"
-              label="random_state"
-              value={
-                formData?.config?.reduction_config?.args?.random_state ||
-                props?.config?.config?.reduction_config?.args?.random_state
-              }
-              onChange={handleInputChange}
-              variant="outlined"
-              className="mb-2"
-              fullWidth
-            />
-            <TextField
-              name="config.reduction_config.args.n_jobs"
-              label="n_jobs"
-              value={
-                formData?.config?.reduction_config?.args?.n_jobs ||
-                props?.config?.config?.reduction_config?.args?.n_jobs
-              }
-              onChange={handleInputChange}
-              variant="outlined"
-              className="mb-2"
-              fullWidth
-            />
-          </div>
-        )}
-        <p>Cluster config</p>
-        <TextField
-          name="config.cluster_config.model_name"
-          label="cluster_config"
-          value={props?.config?.config?.cluster_config?.model_name}
-          variant="outlined"
-          className="mb-3"
-          fullWidth
-        />
-        <TextField
-          name="config.cluster_config.args.min_cluster_size"
-          label="min_cluster_size"
-          value={
-            formData?.config?.cluster_config?.args?.min_cluster_size ||
-            props?.config?.config?.cluster_config?.args?.min_cluster_size
-          }
-          onChange={handleInputChange}
-          variant="outlined"
-          className="mb-2"
-          fullWidth
-        />
-        <TextField
-          name="config.cluster_config.args.metric"
-          label="metric"
-          value={props?.config?.config?.cluster_config?.args?.metric}
-          variant="outlined"
-          className="mb-3"
-          fullWidth
-        />
-        <TextField
-          name="config.cluster_config.args.cluster_selection_method"
-          label="cluster_selection_method"
-          value={props?.config?.config?.cluster_config?.args?.cluster_selection_method}
-          variant="outlined"
-          className="mb-3"
-          fullWidth
-        />
-        <Button variant="contained" className="my-5" component="label" onClick={handleSave}>
-          Save
-        </Button>
-        <Button variant="contained" className="my-5" component="label" onClick={setClosed}>
-          Cancel
-        </Button>
+        <div className="overflow-y-auto max-h-[70vh]">
+          <p>Edit Config</p>
+          <p>Config ID: {props?.config?.config_id}</p>
+          <TextField
+            name="name"
+            label="Config Name"
+            value={formData?.name || props?.config?.name}
+            onChange={handleInputChange}
+            variant="outlined"
+            className="mb-2"
+            fullWidth
+          />
+          <TextField
+            name="project_name"
+            label="Project Name"
+            value={props?.config?.project_name}
+            variant="outlined"
+            className="mb-3"
+            fullWidth
+          />
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Model Type</InputLabel>
+              <Select
+                name="model_type"
+                label="Model Type"
+                value={formData?.config?.model_type || props?.config?.config?.model_type}
+                variant="outlined"
+                className="mb-2"
+                fullWidth
+                onChange={handleSelectChange}
+                sx={{ textAlign: "left" }}
+              >
+                <MenuItem value={"static"}>static</MenuItem>
+                <MenuItem value={"dynamic"}>dynamic</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          {/* all config properties */}
+          <p>Embedding config</p>
+          <TextField
+            name="config.embedding_config.model_name"
+            label="embedding_config"
+            value={props?.config?.config?.embedding_config?.model_name}
+            variant="outlined"
+            className="mb-3"
+            fullWidth
+          />
+          <TextField
+            name="config.embedding_config.args.pretrained_model_name_or_path"
+            label="pretrained_model_name_or_path"
+            value={
+              formData?.config?.embedding_config?.args?.pretrained_model_name_or_path ||
+              props?.config?.config?.embedding_config?.args?.pretrained_model_name_or_path
+            }
+            onChange={handleInputChange}
+            variant="outlined"
+            className="mb-2"
+            fullWidth
+          />
+          <p>Reduction config</p>
+          <TextField
+            name="config.reduction_config.model_name"
+            label="reduction_config"
+            value={props?.config?.config?.reduction_config?.model_name}
+            variant="outlined"
+            className="mb-3"
+            fullWidth
+          />
+          <TextField
+            name="config.reduction_config.args.n_neighbors"
+            label="n_neighbors"
+            value={
+              formData?.config?.reduction_config?.args?.n_neighbors ||
+              props?.config?.config?.reduction_config?.args?.n_neighbors
+            }
+            onChange={handleInputChange}
+            variant="outlined"
+            className="mb-2"
+            fullWidth
+          />
+          {!isDynamicModel && (
+            <div>
+              <TextField
+                name="config.reduction_config.args.n_components"
+                label="n_components"
+                value={
+                  formData?.config?.reduction_config?.args?.n_components ||
+                  props?.config?.config?.reduction_config?.args?.n_components
+                }
+                onChange={handleInputChange}
+                variant="outlined"
+                className="mb-2"
+                fullWidth
+              />
+              <TextField
+                name="config.reduction_config.args.metric"
+                label="metric"
+                value={
+                  formData?.config?.reduction_config?.args?.metric ||
+                  props?.config?.config?.reduction_config?.args?.metric
+                }
+                onChange={handleInputChange}
+                variant="outlined"
+                className="mb-2"
+                fullWidth
+              />
+              <TextField
+                name="config.reduction_config.args.random_state"
+                label="random_state"
+                value={
+                  formData?.config?.reduction_config?.args?.random_state ||
+                  props?.config?.config?.reduction_config?.args?.random_state
+                }
+                onChange={handleInputChange}
+                variant="outlined"
+                className="mb-2"
+                fullWidth
+              />
+              <TextField
+                name="config.reduction_config.args.n_jobs"
+                label="n_jobs"
+                value={
+                  formData?.config?.reduction_config?.args?.n_jobs ||
+                  props?.config?.config?.reduction_config?.args?.n_jobs
+                }
+                onChange={handleInputChange}
+                variant="outlined"
+                className="mb-2"
+                fullWidth
+              />
+            </div>
+          )}
+          <p>Cluster config</p>
+          <TextField
+            name="config.cluster_config.model_name"
+            label="cluster_config"
+            value={props?.config?.config?.cluster_config?.model_name}
+            variant="outlined"
+            className="mb-3"
+            fullWidth
+          />
+          <TextField
+            name="config.cluster_config.args.min_cluster_size"
+            label="min_cluster_size"
+            value={
+              formData?.config?.cluster_config?.args?.min_cluster_size ||
+              props?.config?.config?.cluster_config?.args?.min_cluster_size
+            }
+            onChange={handleInputChange}
+            variant="outlined"
+            className="mb-2"
+            fullWidth
+          />
+          <TextField
+            name="config.cluster_config.args.metric"
+            label="metric"
+            value={props?.config?.config?.cluster_config?.args?.metric}
+            variant="outlined"
+            className="mb-3"
+            fullWidth
+          />
+          <TextField
+            name="config.cluster_config.args.cluster_selection_method"
+            label="cluster_selection_method"
+            value={props?.config?.config?.cluster_config?.args?.cluster_selection_method}
+            variant="outlined"
+            className="mb-3"
+            fullWidth
+          />
+          <Button variant="contained" className="my-5" component="label" onClick={handleSave}>
+            Save
+          </Button>
+          <Button variant="contained" className="my-5" component="label" onClick={setClosed}>
+            Cancel
+          </Button>
+        </div>
       </div>
     </Modal>
   );
