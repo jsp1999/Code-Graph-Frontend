@@ -177,6 +177,8 @@ export default function databasesPage() {
       setDeleteAllModalOpen(false);
     } catch (error) {
       console.error("Error deleting database:", error);
+    } finally {
+      window.location.reload();
     }
   };
 
