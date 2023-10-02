@@ -1,28 +1,43 @@
+
 import * as d3 from "d3";
 
+
+function newColorScale(code_id) {
+  return idToColorMap[code_id] || "#808080"; // Fallback to gray
+}
 class CodeDot {
-  private dotId: number;
-  private x: number;
-  private y: number;
-  private code: string;
-  private circle: null | d3.Selection<SVGCircleElement, any, any, any>;
-  private radius: number;
-  private plot: any;
-  private color: any;
-  private label: null | d3.Selection<SVGTextElement, any, any, any>;
-  private addToCategory: () => void;
-  constructor(dotId: number, x: number, y: number, code: string, plot: any, addToCategory: () => void, radius: number) {
-    this.dotId = dotId;
-    this.x = x;
-    this.y = y;
-    this.code = code;
-    this.circle = null;
-    this.label = null;
-    this.plot = plot;
-    this.color = "black";
-    this.plot.data.push(this);
-    this.radius = radius;
-    this.addToCategory = addToCategory;
+    private dotId: number;
+    private x: number;
+    private y: number;
+    private code: string;
+    private circle: null | d3.Selection<SVGCircleElement, any, any, any>;
+    private plot: any;
+    private radius: number;
+    private color: any;
+    private label: null | d3.Selection<SVGTextElement, any, any, any>;
+    private addToCategory: () => void;
+    constructor(dotId: number, x: number, y: number, code: string, plot: any, addToCategory: () => void, radius: number) {
+        this.dotId = dotId;
+        this.x = x;
+        this.y = y;
+        this.code = code;
+        this.circle = null;
+        this.label = null;
+        this.plot = plot;
+        if (!this.plot.color_mapper) {
+            console.log("No color mapper")
+            console.log(this.plot.color_mapper)
+            console.log(this.plot)
+            this.color =  "#808080";
+        }
+        else{
+            console.log("Color mapper")
+            this.color = plot.color_mapper(this.dotId);
+        }
+        this.radius = radius;
+
+        this.plot.data.push(this);
+        this.addToCategory = addToCategory;
 
     if (this.x === 0 && this.y === 0) {
       this.x = Math.random() * 100;

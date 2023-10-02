@@ -61,7 +61,7 @@ export default function CodeView() {
 
       setPlot(newPlot);
 
-      newPlot.update().then(() => newPlot.homeView());
+      newPlot.generateColors().then(()=>newPlot.update()).then(() => newPlot.homeView());
     } else {
       console.log("Error: canvas ref is null");
     }
@@ -126,7 +126,7 @@ export default function CodeView() {
   useEffect(() => {
     if (plot && selectedNodes) {
       plot.applyCodesFilter(selectedNodes);
-      plot.update().then(() => plot.homeView());
+      plot.generateColors().then(()=>plot.update()).then(() => plot.homeView());
     }
   }, [selectedNodes, plot]);
 

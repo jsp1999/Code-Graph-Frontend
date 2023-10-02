@@ -3,6 +3,94 @@ import { ZoomBehavior, ZoomedElementBaseType } from "d3";
 import CodeDot from "@/components/CodeDot";
 import { getCodeStats } from "@/pages/api/api";
 
+function hsvToRgb(h, s, v) {
+  let r, g, b;
+  let i = Math.floor(h * 6);
+  let f = h * 6 - i;
+  let p = v * (1 - s);
+  let q = v * (1 - f * s);
+  let t = v * (1 - (1 - f) * s);
+  switch (i % 6) {
+    case 0:
+      (r = v), (g = t), (b = p);
+      break;
+    case 1:
+      (r = q), (g = v), (b = p);
+      break;
+    case 2:
+      (r = p), (g = v), (b = t);
+      break;
+    case 3:
+      (r = p), (g = q), (b = v);
+      break;
+    case 4:
+      (r = t), (g = p), (b = v);
+      break;
+    case 5:
+      (r = v), (g = p), (b = q);
+      break;
+  }
+  return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
+}
+
+const idToColorMap = {};
+function newColorScale(code_id) {
+  return idToColorMap[code_id] || "#808080"; // Fallback to gray
+}
+function assignColors(
+  codes,
+  hueOffset = 0,
+  saturation = 100,
+  value = 100,
+  depth = 0,
+  hueStep = 20,
+  satStep = 5,
+  valStep = 10,
+) {
+  let hue = hueOffset;
+  let sat = saturation;
+  let val = value;
+
+  // Larger hue step for root categories
+  if (depth === 0) {
+    hueStep = 360 / Object.keys(codes).length;
+  }
+
+  for (const id in codes) {
+    const category = codes[id];
+
+    // Set the hue, making sure it's cycled within the 0-359 range
+    const newHue = hue % 360;
+    sat = sat % 100; // Keep saturation within 0-100 range
+    sat = Math.max(60, sat);
+
+    const color = hsvToRgb(hue / 380, sat / 100, val / 100);
+
+    category.color = color;
+    idToColorMap[id] = color;
+
+    if (Object.keys(category.subcategories).length > 0) {
+      // Increment hue and saturation for the next level, but reduce the step to keep colors close
+      assignColors(category.subcategories, hue + hueStep, sat + satStep, value, depth + 1, hueStep, satStep, valStep);
+    }
+
+    // Increment hue and saturation for each category to make them distinct
+    hue += hueStep;
+    sat += satStep;
+    val += valStep;
+
+    val = (val % 60) + 20; // Keep value within 0-100 range
+
+    // Cycle saturation back to 30 if it reaches 100, to ensure variety while avoiding very low saturation
+    if (sat >= 100) {
+      sat = 60;
+    }
+    if (sat <= 60) {
+      sat = 100;
+    }
+  }
+}
+
 class CodeDotPlotter {
   private container: any;
   private zoom: ZoomBehavior<ZoomedElementBaseType, unknown>;
@@ -47,7 +135,8 @@ class CodeDotPlotter {
       dot.remove();
     });
 
-    // window.addEventListener('beforeunload', this.handleBeforeUnload);
+
+       // window.addEventListener('beforeunload', this.handleBeforeUnload);
 
     this.zoom = d3
       .zoom()
@@ -57,38 +146,54 @@ class CodeDotPlotter {
       });
 
     this.svg.call(this.zoom);
-  }
+        this.generateColors();
+    }
 
   private handleBeforeUnload = (event: Event) => {
     this.data = [];
     window.removeEventListener("beforeunload", this.handleBeforeUnload);
   };
 
-  homeView() {
-    console.log("home view...");
-    const xExtent = d3.extent(this.data, (d) => d.x);
-    const yExtent = d3.extent(this.data, (d) => d.y);
-
-    // Calculate width and height of the bounding box
-    const dataWidth = xExtent[1] - xExtent[0];
-    const dataHeight = yExtent[1] - yExtent[0];
-
-    // Calculate the viewport's width and height
-    const width = +this.svg.attr("width");
-    const height = +this.svg.attr("height");
-
-    // Calculate the scaling factor
-    const kx = width / dataWidth;
-    const ky = height / dataHeight;
-    const k = 0.95 * Math.min(kx, ky); // 0.95 is for a little
-
-    // Calculate the translation to center the bounding box in the viewport
-    const tx = (width - k * (xExtent[1] + xExtent[0])) / 2;
-    const ty = (height - k * (yExtent[1] + yExtent[0])) / 2;
-
-    // Apply the zoom transform
-    this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
+      generateColors() {
+    console.log("generating colors...");
+    const endpoint = this.source + "projects/" + this.projectId + "/codes/tree";
+    return fetch(endpoint)
+      .then((response) => response.json())
+      .then((data) => {
+        this.tree = data.codes;
+        assignColors(data.codes);
+        this.color_mapper = newColorScale;
+      })
+      .catch((error) => {
+        console.error("Error fetching plot data:", error);
+        throw error;
+      });
   }
+    homeView() {
+        console.log("home view...");
+        const xExtent = d3.extent(this.data, (d) => d.x);
+        const yExtent = d3.extent(this.data, (d) => d.y);
+
+        // Calculate width and height of the bounding box
+        const dataWidth = xExtent[1] - xExtent[0];
+        const dataHeight = yExtent[1] - yExtent[0];
+
+        // Calculate the viewport's width and height
+        const width = +this.svg.attr("width");
+        const height = +this.svg.attr("height");
+
+        // Calculate the scaling factor
+        const kx = width / dataWidth;
+        const ky = height / dataHeight;
+        const k = 0.95 * Math.min(kx, ky); // 0.95 is for a little
+
+        // Calculate the translation to center the bounding box in the viewport
+        const tx = (width - k * (xExtent[1] + xExtent[0])) / 2;
+        const ty = (height - k * (yExtent[1] + yExtent[0])) / 2;
+
+        // Apply the zoom transform
+        this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
+    }
 
   applyCodesFilter(codes: any) {
     function createCodeFilter(codes: any) {
@@ -163,14 +268,14 @@ class CodeDotPlotter {
     } else {
       newData = [];
     }
-    /*
+/*
         if (this.selectedNodes.length > 0) {
             console.log("Codes are selected", this.selectedNodes)
             newData = newData.filter((dot: any) => this.selectedNodes.includes(dot.code_id));
             console.log("Data after selection", newData);
         }
 */
-    console.log("Actual data:", this.data);
+
 
     newData.forEach((dotData: any) => {
       let existingDot = this.data.find((d) => d.dotId === dotData.code_id);
