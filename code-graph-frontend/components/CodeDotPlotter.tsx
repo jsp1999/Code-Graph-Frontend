@@ -205,13 +205,14 @@ class CodeDotPlotter {
     console.log("Selected codes:", this.selectedNodes);
     const filterFunc = createCodeFilter(codes);
     this.setFilter(filterFunc);
-    this.update().then(() => this.homeView());
+    //this.update().then(() => this.homeView());
   }
 
   setFilter(filterFunc: any) {
     this.filter = filterFunc;
-    this.update();
+    //this.update();
   }
+
   fetchData() {
     console.log("fetching data...");
     if (this.fetched_data) {
@@ -250,6 +251,7 @@ class CodeDotPlotter {
         });
     }
   }
+
   update() {
     return this.fetchData().then((newData: any) => {
       if (newData) {
