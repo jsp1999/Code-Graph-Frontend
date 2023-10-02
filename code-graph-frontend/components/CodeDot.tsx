@@ -45,16 +45,19 @@ class CodeDot {
 
         this.circle?.on("contextmenu", (event, d) => {
             event.preventDefault();
+            const circleNode = this.circle?.node();
+            if (!circleNode) {
+                return;
+            }
 
-            const [x, y] = [this.x, this.y];
+            const circleRect = circleNode.getBoundingClientRect();
             d3.select(".custom-context-menu").remove();
-
             const contextMenu = d3.select("body")
                 .append("div")
                 .attr("class", "custom-context-menu")
                 .style("position", "absolute")
-                .style("left", x + "px")
-                .style("top", y + "px");
+                .style("left", circleRect.left + 10 + "px")
+                .style("top", circleRect.top - 10 + "px");
 
             // Add menu options
             contextMenu.append("div")
