@@ -29,6 +29,12 @@ class CodeDotPlotter {
         this.selectedNodes = selectedNodes;
         this.addToCategory = addToCategory;
         this.fetched_data = null;
+        const allDotsInSVG = this.container.selectAll(".dot");
+          allDotsInSVG.each(function () {
+              console.log("removing erranious dots");
+            const dot = d3.select(this);
+            dot.remove();
+          });
 
 
        // window.addEventListener('beforeunload', this.handleBeforeUnload);
@@ -86,7 +92,7 @@ class CodeDotPlotter {
      applyCodesFilter(codes:any) {
         function createCodeFilter(codes: any) {
             return function (dot: any) {
-                return codes.includes(dot.code);
+                return codes.includes(dot.code_id);
             };
         }
         this.selectedNodes = codes;
@@ -144,21 +150,20 @@ class CodeDotPlotter {
     render(newData: any) {
         console.log("rendering...");
         console.log("newdata", newData);
-
+        if (this.filter) {
+      console.log("filtering...");
+      newData = newData.filter((dot) => this.filter(dot));
+    } else {
+      newData = [];
+    }
+/*
         if (this.selectedNodes.length > 0) {
             console.log("Codes are selected", this.selectedNodes)
             newData = newData.filter((dot: any) => this.selectedNodes.includes(dot.code_id));
             console.log("Data after selection", newData);
         }
-
-        this.data = this.data.filter((dot) => {
-            let shouldKeep = newData.find((d: any) => d.code_id === dot.dotId);
-            if (!shouldKeep && dot.circle) {
-                dot.circle.remove();
-                dot.label.remove();
-            }
-            return shouldKeep;
-        });
+*/
+console.log("Actual data:", this.data);
 
         newData.forEach((dotData: any) => {
             let existingDot = this.data.find((d) => d.dotId === dotData.code_id);
@@ -178,8 +183,17 @@ class CodeDotPlotter {
                 newDot.draw(this);
             }
         });
+        console.log("Actual data:", this.data);
+                this.data = this.data.filter((dot) => {
+            let shouldKeep = newData.find((d: any) => d.code_id === dot.dotId);
+            if (!shouldKeep && dot.circle) {
+                dot.circle.remove();
+                dot.label.remove();
+            }
+            return shouldKeep;
+        });
 
-        console.log("Actual data:", this.data)
+        console.log("Actual data:", this.data);
         console.log(this.data.length);
     }
 

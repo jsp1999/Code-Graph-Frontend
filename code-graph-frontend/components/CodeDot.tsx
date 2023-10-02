@@ -28,6 +28,14 @@ class CodeDot {
             this.y = Math.random() * 100;
         }
     }
+    remove() {
+        if (this.circle) {
+            this.circle.remove();
+        }
+        if (this.label) {
+            this.label.remove();
+        }
+    }
     draw(plotter: any) {
         this.circle = plotter.container
             .append("circle")
