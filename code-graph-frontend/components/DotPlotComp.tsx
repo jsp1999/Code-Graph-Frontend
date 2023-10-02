@@ -496,7 +496,7 @@ class DotPlot {
     if (this.fetched_data)
     {
       console.log("already fetched data...");
-      return this.fetched_data;
+      return Promise.resolve(this.fetched_data);
     }
     else {
       const endpoint = this.source + "projects/" + this.projectId + "/plots/?all=true";
