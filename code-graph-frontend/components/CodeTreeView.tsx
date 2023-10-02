@@ -11,14 +11,12 @@ interface Category {
 
 interface CodeTreeViewProps {
   taxonomyData: Record<string, Category>;
-  contextMenuRef: React.RefObject<HTMLDivElement>;
   selectedNodes: number[]; // New prop for selected nodes
   updateSelectedNodes: (newSelectedNodes: number[]) => void;
 }
 
 const CodeTreeView: React.FC<CodeTreeViewProps> = ({
   taxonomyData,
-  contextMenuRef,
   selectedNodes,
   updateSelectedNodes,
 }) => {

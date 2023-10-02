@@ -10,7 +10,8 @@ class CodeDot {
     private plot: any;
     private color: any;
     private label: null | d3.Selection<SVGTextElement, any, any, any>;
-    constructor(dotId: number, x: number, y: number, code: string, plot: any) {
+    private addToCategory: () => void;
+    constructor(dotId: number, x: number, y: number, code: string, plot: any, addToCategory: () => void) {
         this.dotId = dotId;
         this.x = x;
         this.y = y;
@@ -20,6 +21,7 @@ class CodeDot {
         this.plot = plot;
         this.color = "black";
         this.plot.data.push(this);
+        this.addToCategory = addToCategory;
 
         if (this.x === 0 && this.y === 0) {
             this.x = Math.random() * 100;
@@ -64,6 +66,7 @@ class CodeDot {
                 .text("Add to category")
                 .on("click", () => {
                     console.log("Option 1 selected");
+                    this.addToCategory();
                     contextMenu.remove();
                 });
 

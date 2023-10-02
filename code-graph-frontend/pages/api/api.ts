@@ -123,6 +123,17 @@ export const uploadAdvancedDataset = (
 
 // Codes
 
+export const mergeCodes = (project_id: number, codes: number[], codeName: string): Promise<any> => {
+  const body = {
+    list_of_codes: codes,
+    new_code_name: codeName,
+  };
+
+  console.log(`${baseURL}/projects/${project_id}/codes/merge \n`, body);
+  return axios.post<any>(`${baseURL}/projects/${project_id}/codes/merge`, body);
+};
+
+
 export const extractCodes = (project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/codes/extract`);
   return axios.get<any>(`${baseURL}/projects/${project_id}/codes/extract`);
