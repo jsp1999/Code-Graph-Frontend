@@ -2,6 +2,8 @@
 import React, { useRef, useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import * as d3 from "d3";
 import { Button } from "@mui/material";
+import ItemList from '@/components/ItemList';
+import itemList from "@/components/ItemList";
 function hsvToRgb(h, s, v) {
   let r, g, b;
   let i = Math.floor(h * 6);
@@ -423,6 +425,7 @@ class DotPlot {
     this.setupTrainButton();
     this.svg.call(this.zoom);
   }
+
   setupTrainButton() {
     const trainButton = this.train_button.current;
     if (!trainButton) return;
@@ -611,6 +614,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
 
     const canvasRef = useRef<SVGSVGElement>(null);
     const trainButtonRef = useRef<HTMLButtonElement>(null);
+    const [items, setItems] = useState<Item[]>([]);
 
     const [plot, setPlot] = useState<any>();
     const [train, setTrain] = useState<any>();
@@ -635,11 +639,22 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
         }
     }, [projectId, source, is_dynamic]);  // Added is_dynamic to dependency array
 
-    return (
+
+
+  const handleDeleteItem = (id: number) => {
+    setItems(prevItems => prevItems.filter(item => item.id !== id));
+  };
+
+  return (
+      <div className="flex">
         <div className="dynamicSvgContainer">
+            {/* Here's the ItemList above the button */}
+
+
             <svg id="canvas" ref={canvasRef} width="100%" height="100%">
                 <g id="container"></g>
             </svg>
+
             {is_dynamic && (
                 <Button
                     variant="contained"
@@ -651,7 +666,11 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
                 </Button>
             )}
         </div>
-    );
+                <div className="itemListContainer">
+            <ItemList items={items} onDelete={handleDeleteItem} onTrain={() => { /* your training function here */ }} />
+        </div>
+    </div>
+);
 });
 
 export default DotPlotComp;

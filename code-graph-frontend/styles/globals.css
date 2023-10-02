@@ -93,6 +93,7 @@ tfoot th {
   max-width: 100%;
   max-height: 100%;
   overflow: hidden;
+
 }
 #canvas {
   position: absolute;
@@ -100,4 +101,20 @@ tfoot th {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+
+
+.flex {
+    display: flex;
+    width: 100%;
+}
+
+.dynamicSvgContainer {
+    flex-grow: 1; /* This ensures the SVG container takes up all available space */
+}
+
+.itemListContainer {
+    width: 250px; /* Adjust this value to your needs */
+    background-color: white;
 }
