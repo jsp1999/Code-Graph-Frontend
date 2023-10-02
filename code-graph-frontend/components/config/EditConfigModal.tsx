@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
 import { Button, Modal, TextField } from "@mui/material";
 
 import Box from "@mui/material/Box";
@@ -46,7 +47,7 @@ interface EditModalProps {
   open: boolean;
   handleClose: () => void;
   config: Config;
-  onEdit: (project: Config) => Promise<any>;
+  onEdit: (config: Config) => Promise<any>;
 }
 
 function updateJsonWithPath(json: any, path: string, value: any): any {
@@ -222,6 +223,10 @@ export default function EditModal(props: EditModalProps) {
 
     setClosed();
   };
+
+  useEffect(() => {
+    setIsDynamicModel(props?.config?.config?.model_type === "dynamic");
+  });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
