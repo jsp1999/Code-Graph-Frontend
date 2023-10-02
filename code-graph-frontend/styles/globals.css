@@ -95,7 +95,7 @@ tfoot th {
   overflow: hidden;
 
 }
-#canvas {
+.canvas-efi {
   position: absolute;
   top: 0;
   left: 0;

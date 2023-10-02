@@ -651,7 +651,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
             {/* Here's the ItemList above the button */}
 
 
-            <svg id="canvas" ref={canvasRef} width="100%" height="100%">
+            <svg id="canvas" ref={canvasRef} width="100%" height="100%" class="canvas-efi">
                 <g id="container"></g>
             </svg>
 
