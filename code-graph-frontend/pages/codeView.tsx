@@ -45,6 +45,8 @@ export default function CodeView() {
   const handleOpen = () => setOpenAddToCodeModal(true);
 
   useEffect(() => {
+    setLoading(true);
+
     if (canvasRef.current) {
       console.log("Initializing dot plotter...");
       const svg_ = d3.select(canvasRef.current);
@@ -68,7 +70,6 @@ export default function CodeView() {
 
     setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
 
-    setLoading(true);
     getCodeTree(projectId)
       .then((response) => {
         localStorage.setItem("selectedNodes", JSON.stringify([]));
