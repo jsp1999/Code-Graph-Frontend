@@ -52,7 +52,7 @@ export default function CodeView() {
       console.log("Initializing dot plotter...");
       const svg_ = d3.select(canvasRef.current);
       const container_ = d3.select("#container");
-      const newPlot = new CodeDotPlotter("container", projectId, "http://localhost:8000/", svg_, container_, selectedNodes, handleOpen);
+      const newPlot = new CodeDotPlotter("container", projectId, "http://localhost:8000/", svg_, container_, selectedNodes);
       fetchAndUpdateConfigs();
 
       setPlot(newPlot);

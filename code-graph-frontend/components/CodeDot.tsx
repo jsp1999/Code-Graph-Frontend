@@ -1,4 +1,5 @@
 import DotPlotComponent from "@/pages/plotNeu";
+import * as d3 from "d3";
 
 class CodeDot {
     private dotId: number;
@@ -40,8 +41,40 @@ class CodeDot {
             .attr("font-size", "0.015px")
             .attr("x", this.x) // Adjust the x-coordinate for label placement
             .attr("y", this.y - 0.01) // Adjust the y-coordinate for label placement
-            .text(this.code); // Use this.code as the label text
+            .text(this.code); //
 
+        this.circle?.on("contextmenu", (event, d) => {
+            event.preventDefault();
+
+            const [x, y] = [this.x, this.y];
+            d3.select(".custom-context-menu").remove();
+
+            const contextMenu = d3.select("body")
+                .append("div")
+                .attr("class", "custom-context-menu")
+                .style("position", "absolute")
+                .style("left", x + "px")
+                .style("top", y + "px");
+
+            // Add menu options
+            contextMenu.append("div")
+                .text("Add to category")
+                .on("click", () => {
+                    console.log("Option 1 selected");
+                    contextMenu.remove();
+                });
+
+            contextMenu.append("div")
+                .text("Option 2")
+                .on("click", () => {
+                    contextMenu.remove();
+                });
+
+            // Close the context menu when clicking elsewhere
+            d3.select("body").on("click.custom-context-menu", () => {
+                contextMenu.remove();
+            });
+        });
     }
 
 

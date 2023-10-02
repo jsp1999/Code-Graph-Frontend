@@ -15,10 +15,8 @@ class CodeDotPlotter {
     private containerId: string;
     private filter: any;
     private selectedNodes: number[];
-    private contextMenu: d3.Selection<any, any, any, any>;
-    handleOpen: () => void;
 
-    constructor(containerId: string, projectId: number, source: any, svg: any, container: any, selectedNodes: number[], handleOpen: () => void) {
+    constructor(containerId: string, projectId: number, source: any, svg: any, container: any, selectedNodes: number[]) {
         this.containerId = containerId;
         this.source = source;
         this.projectId = projectId;
@@ -28,29 +26,9 @@ class CodeDotPlotter {
         this.container = container;
         this.point_r = 5;
         this.selectedNodes = selectedNodes;
-        this.handleOpen = handleOpen;
 
-        this.contextMenu = d3.select("body").append("div")
-            .attr("class", "context-menu")
-            .style("position", "absolute")
-            .style("display", "none");
 
        // window.addEventListener('beforeunload', this.handleBeforeUnload);
-
-        this.container.selectAll(".dot")
-            .on("contextmenu", (event: any, dotData: any) => {
-                event.preventDefault();
-                console.log("Right-click on dot:", dotData);
-                this.showContextMenu(event.pageX, event.pageY, dotData);
-            });
-
-        this.contextMenu.append("div")
-            .text("Add to Category")
-            .on("click", () => {
-                this.addToCategory();
-                this.contextMenu.style("display", "none");
-            });
-
 
         this.zoom = d3
             .zoom()
@@ -75,19 +53,6 @@ class CodeDotPlotter {
         this.data = [];
         window.removeEventListener('beforeunload', this.handleBeforeUnload);
     };
-
-    private showContextMenu(x: number, y: number, dotData: any) {
-        console.log("showContextMenu called with x:", x, "y:", y);
-        this.contextMenu.style("left", x + "px")
-            .style("top", y + "px")
-            .style("display", "block");
-
-        this.selected = [dotData];
-    }
-
-    private addToCategory() {
-        this.handleOpen();
-    }
 
     homeView() {
         console.log("home view...");
@@ -198,7 +163,6 @@ class CodeDotPlotter {
                     dotData.text,
                     this,
                 );
-                this.data.push(newDot);
                 newDot.draw(this);
             }
         });
