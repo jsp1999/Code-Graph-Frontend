@@ -143,6 +143,10 @@ class CodeDotPlotter {
       .scaleExtent([0.01, 1000])
       .on("zoom", (event) => {
         this.container.attr("transform", event.transform);
+        const scale = event.transform.k;
+        const labels = this.container.selectAll("text");
+        console.log(labels)
+        labels.attr("font-size", 14 / scale);
       });
 
     this.svg.call(this.zoom);
