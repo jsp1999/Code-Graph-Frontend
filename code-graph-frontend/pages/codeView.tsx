@@ -4,16 +4,21 @@ import Header from "@/components/Header";
 import { Button } from "@mui/material";
 import AddToCodeModal from "@/components/AddToCodeModal";
 import CodeTreeView from "@/components/CodeTreeView";
-import { getCodeTree } from "@/pages/api/api";
+import {getCodeTree, getconfig, refreshEntries} from "@/pages/api/api";
 import { useRouter } from "next/router";
 import LoadingModal from "@/components/LoadingModal";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
+import * as d3 from "d3";
+import CodeDotPlotter from "@/components/CodeDotPlotter";
 
 export default function CodeView() {
   const router = useRouter();
 
   //const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
+  const canvasRef = useRef<SVGSVGElement>(null);
+  const [plot, setPlot] = useState<any>();
+  const [config, setConfig] = useState<any>();
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const contextMenuRef = useRef<HTMLDivElement>(null);
@@ -33,11 +38,28 @@ export default function CodeView() {
     return storedNodes ? JSON.parse(storedNodes) : [];
 });
 
-useEffect(() => {
-    // Any time selectedNodes changes, save it to localStorage
-    localStorage.setItem('selectedNodes', JSON.stringify(selectedNodes));
-}, [selectedNodes]);
+
   useEffect(() => {
+    // Any time selectedNodes changes, save it to localStorage
+      localStorage.setItem('selectedNodes', JSON.stringify(selectedNodes));
+  }, [selectedNodes]);
+  const handleOpen = () => setOpen(true);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      console.log("Initializing dot plotter...");
+      const svg_ = d3.select(canvasRef.current);
+      const container_ = d3.select("#container");
+      const newPlot = new CodeDotPlotter("container", projectId, "http://localhost:8000/", svg_, container_, selectedNodes, handleOpen);
+      fetchAndUpdateConfigs();
+
+      setPlot(newPlot);
+
+      newPlot.update().then(() => newPlot.homeView());
+    } else {
+      console.log("Error: canvas ref is null");
+    }
+
     setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
 
     setLoading(true);
@@ -52,7 +74,6 @@ useEffect(() => {
       });
   }, []);
 
-  const handleOpen = () => setOpen(true);
   const handleAddModalClose = () => {
     setOpen(false);
     setLoading(true);
@@ -82,9 +103,15 @@ useEffect(() => {
     setShowContextMenu(false);
   };
 
-  const handleRightClick = (e: React.MouseEvent, value: number) => {
+  {/*const handleRightClick = (e: React.MouseEvent, value: number) => {
     handleContextMenu(e);
     setRightClickedItem(value);
+  };*/}
+
+  const handleRightClickDot = (contextMenuPosition: any, rightClickedItem: any) => {
+    setContextMenuPosition(contextMenuPosition);
+    setRightClickedItem(rightClickedItem);
+    setShowContextMenu(true);
   };
 
   useEffect(() => {
@@ -104,6 +131,33 @@ useEffect(() => {
     setSelectedNodes(newSelectedNodes);
   };
 
+  useEffect(() => {
+    if (plot && selectedNodes) {
+      plot.applyCodesFilter(selectedNodes);
+      plot.update().then(() => plot.homeView());
+    }
+  }, [selectedNodes, plot]);
+
+  const fetchAndUpdateConfigs = async () => {
+    try {
+      const configResponse = (await getconfig(projectId)).data;
+
+      setConfig(configResponse);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  const handleRefresh = async () => {
+    try {
+      await refreshEntries(projectId);
+      fetchAndUpdateConfigs();
+    } catch (error) {
+      console.error("Error refreshing entries:", error);
+    }
+  };
+
+
   return (
     <div>
       <Header title="Code View" />
@@ -119,7 +173,14 @@ useEffect(() => {
         />
       </div>
 
-      <div className="grid grid-cols-5 gap-10 w-[50vw] h-[50vh] float-right mt-40 mr-40">
+      <div>
+        <svg id="canvas" ref={canvasRef} width="800" height="600">
+          <g id="container">
+          </g>
+        </svg>
+      </div>
+
+      {/*<div className="grid grid-cols-5 gap-10 w-[50vw] h-[50vh] float-right mt-40 mr-40">
         {selectedNodes.length > 0 &&
           selectedNodes.map((value, index) => (
             <div
@@ -141,7 +202,7 @@ useEffect(() => {
               )}
             </div>
           ))}
-      </div>
+      </div>*/}
 
       <div className="absolute right-5 bottom-5 ">
         <Button variant="outlined" className="mr-10" onClick={handleOpen}>
