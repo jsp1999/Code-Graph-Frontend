@@ -15,11 +15,11 @@ interface ItemListProps {
 }
 
 const ItemList: React.FC<ItemListProps> = ({ items, onDelete, onTrain }) => {
-  if (!items.length) return null;
+  //if (!items.length) return null;
 
   return (
     <div>
-      <h1>Movements</h1>
+      <h1>Arrows</h1>
       <List>
         {items.map((item) => (
           <ListItem key={item.id}>

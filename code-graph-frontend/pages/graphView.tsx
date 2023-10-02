@@ -154,7 +154,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
 
   return (
     <div>
-      <Header title="Code View" />
+      <Header title="Graph View" />
       <EditModal
         open={editModalOpen}
         handleClose={() => setEditModalOpen(false)}

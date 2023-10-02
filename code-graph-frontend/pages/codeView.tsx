@@ -190,7 +190,7 @@ export default function CodeView() {
         <Button variant="outlined" className="mr-10" onClick={() => setOpenAddModal(true)}>
           Add new Code
         </Button>
-        <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/plotNeu_Comp`)}>
+        <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/graphView`)}>
           Change View
         </Button>
       </div>

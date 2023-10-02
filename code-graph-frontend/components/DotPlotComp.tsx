@@ -206,13 +206,14 @@ class Dot {
   }
 
   draw(plotter) {
+    const creationZoomScale = d3.zoomTransform(this.plot.svg.node()).k;
     console.log("drawing dot...");
     this.circle = plotter.container
       .append("circle")
       .attr("class", "dot")
       .attr("cx", this.x)
       .attr("cy", this.y)
-      .attr("r", this.plot.point_r)
+      .attr("r", this.plot.point_r/creationZoomScale)
       .attr("data-dotId", this.dotId)
       .attr("fill", this.color) // Add fill color
       .on("mouseover", (event) => {
@@ -341,7 +342,7 @@ class Line {
       .attr("x2", this.end_x)
       .attr("y2", this.end_y)
       .attr("stroke", this.dot.color) // or whatever style you want
-      .attr("stroke-width", this.dot.plot.point_r / creationZoomScale)
+      .attr("stroke-width", (this.dot.plot.point_r/2) / creationZoomScale)
       .attr("marker-end", "url(#arrowhead)");
 
     this.hitbox = plotter.container
@@ -429,7 +430,7 @@ class DotPlot {
         const dots = this.container.selectAll(".dot");
         const lines = this.container.selectAll("line");
         const hitbox = this.container.selectAll("circle");
-        lines.attr("stroke-width", this.point_r / scale);
+        lines.attr("stroke-width", (this.point_r/2) / scale);
         hitbox.attr("r", this.point_r / scale);
         if (scale > 1.5) {
           dots.attr("r", this.point_r / scale); // If original radius is this.point_r
