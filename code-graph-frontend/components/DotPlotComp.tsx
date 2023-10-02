@@ -403,7 +403,7 @@ class DotPlot {
     console.log(this.svg);
     this.container = container;
     console.log(this.container);
-    this.point_r = 2.5;
+    this.point_r = 5.5;
     this.svg
       .append("defs")
       .append("marker")
