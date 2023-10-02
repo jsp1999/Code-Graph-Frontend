@@ -1,18 +1,7 @@
-import React, { useRef, useEffect, useState } from "react";
+// DotPlotComp.tsx
+import React, { useRef, useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import * as d3 from "d3";
-import data from "../src/NER_Tags.json";
-import { getCodeTree } from "@/pages/api/api";
-import { Button, ButtonGroup } from "@mui/material";
-import Header from "@/components/Header";
-import CodeTreeView from "@/components/CodeTreeView";
-import AddCodeModal from "@/components/AddCodeModal";
-import LoadingModal from "@/components/LoadingModal";
-import CodeItem from "@/components/CodeItem";
-import ContextMenu from "@/components/ContextMenu";
-import { useRouter } from "next/router";
-import { getconfig, updateConfig, refreshEntries } from "@/pages/api/api";
-import EditModal from "@/components/config/EditConfigModal";
-
+import { Button } from "@mui/material";
 function hsvToRgb(h, s, v) {
   let r, g, b;
   let i = Math.floor(h * 6);
@@ -228,7 +217,9 @@ class Dot {
       .on("mouseout", (event) => {
         this.hideTooltip();
       });
-    this.setDragBehavior(plotter);
+    if(this.plot.is_dynamic){
+      this.setDragBehavior(plotter);
+    }
   }
 
   move() {
@@ -381,16 +372,20 @@ class Line {
   }
 }
 
-class DotPlotter {
-  constructor(containerId, projectId, source, svg, container) {
+class DotPlot {
+  constructor(containerId, projectId, source, svg, container, train_button, is_dynamic=false) {
     this.containerId = containerId;
+    this.is_dynamic = is_dynamic;
+    this.train_button = train_button;
     this.source = source;
     this.projectId = projectId;
     this.data = [];
     this.lines = [];
     this.selected = [];
     this.svg = svg;
+    console.log(this.svg);
     this.container = container;
+    console.log(this.container);
     this.point_r = 2.5;
     this.svg
       .append("defs")
@@ -425,12 +420,12 @@ class DotPlotter {
           dots.attr("r", this.point_r);
         }
       });
-
+    this.setupTrainButton();
     this.svg.call(this.zoom);
   }
-
   setupTrainButton() {
-    const trainButton = document.getElementById("plotTrainButton");
+    const trainButton = this.train_button.current;
+    if (!trainButton) return;
     trainButton.addEventListener("click", () => {
       if (trainButton.textContent === "Train") {
         this.toggleTrainButtonState();
@@ -440,8 +435,10 @@ class DotPlotter {
       }
     });
   }
+
   toggleTrainButtonState() {
-    const trainButton = document.getElementById("plotTrainButton");
+    const trainButton = this.train_button.current;
+    if (!trainButton) return;
     if (trainButton.textContent === "Train") {
       trainButton.textContent = "Stop";
       this.stopTraining = false;
@@ -464,9 +461,14 @@ class DotPlotter {
     const dataHeight = yExtent[1] - yExtent[0];
 
     // Calculate the viewport's width and height
-    const width = +this.svg.attr("width");
-    const height = +this.svg.attr("height");
-
+    const svgElem = this.svg.node(); // Assuming svg is a D3 selection. If it's a raw DOM element, you don't need .node().
+    const { width, height } = svgElem.getBoundingClientRect();
+    //const width = 400;
+    //const height = 400;
+    //const width = +this.svg.attr("width");
+    //const height = +this.svg.attr("height");
+    console.log(width);
+    console.log(height);
     // Calculate the scaling factor
     const kx = width / dataWidth;
     const ky = height / dataHeight;
@@ -593,229 +595,63 @@ class DotPlotter {
     console.log(this.container.selectAll(".dot"))
   }
 }
+interface DotPlotProps {
+    projectId: number;
+    source: string;
+    is_dynamic?: boolean; // Assuming this prop can be optional
+}
 
-const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
-  const canvasRef = useRef<SVGSVGElement>(null);
-  const [plot, setPlot] = useState<any>();
-  const [train, setTrain] = useState<any>();
-  // From CodeView component
-  const router = useRouter();
-  const contextMenuRef = useRef<HTMLDivElement>(null);
-  //const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
-  const [showContextMenu, setShowContextMenu] = useState(false);
-  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
-  const [rightClickedItem, setRightClickedItem] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [jsonData, setJsonData] = useState(data);
-  const [projectId, setProjectId] = useState(
-    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
-  );
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [config, setConfig] = useState<any>();
-  const [editData, setEditData] = useState<any>();
+// This is the interface for the functions you're exposing.
+export interface DotPlotCompHandles {
+    setPlotFilter: (filterValue: any) => void;
+}
 
-  const [loading, setLoading] = useState(false);
+const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) => {
+    const { projectId, source, is_dynamic } = props;
 
-  const [selectedNodes, setSelectedNodes] = useState<number[]>(() => {
-    if (typeof window === "undefined") {
-      // We're on the server, just return the default value
-      return [];
-    }
+    const canvasRef = useRef<SVGSVGElement>(null);
+    const trainButtonRef = useRef<HTMLButtonElement>(null);
 
-    // When component mounts, fetch the state from localStorage if it exists
-    const storedNodes = localStorage.getItem("selectedNodes");
-    return storedNodes ? JSON.parse(storedNodes) : [];
-  });
+    const [plot, setPlot] = useState<any>();
+    const [train, setTrain] = useState<any>();
 
-  useEffect(() => {
-    // Any time selectedNodes changes, save it to localStorage
-    localStorage.setItem("selectedNodes", JSON.stringify(selectedNodes));
-  }, [selectedNodes]);
+    useImperativeHandle(ref, () => ({
+        setPlotFilter: (filterValue: any) => {
+            if (plot) {
+                plot.applyCodeFilter(filterValue);
+            }
+        }
+    }));
 
-  useEffect(() => {
-    setLoading(true);
+    useEffect(() => {
+        if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
+            const svg_ = d3.select(canvasRef.current);
+            const container_ = d3.select("#container");
+            const newPlot = new DotPlot("container", projectId, source, svg_, container_, trainButtonRef, is_dynamic);
+            const newTrain = new TrainSlide(newPlot);
+            setPlot(newPlot);
+            setTrain(newTrain);
+            newPlot.generateColors().then(() => newPlot.update()).then(() => newPlot.homeView());
+        }
+    }, [projectId, source, is_dynamic]);  // Added is_dynamic to dependency array
 
-    if (canvasRef.current) {
-      console.log("Initializing dot plotter...");
-      const svg_ = d3.select(canvasRef.current);
-      const container_ = d3.select("#container");
-      const newPlot = new DotPlotter("container", projectId, "http://localhost:8000/", svg_, container_);
-      const newTrain = new TrainSlide(newPlot);
-      fetchAndUpdateConfigs();
-
-      setPlot(newPlot);
-      setTrain(newTrain);
-
-      newPlot
-        .generateColors()
-        .then(() => newPlot.update())
-        .then(() => newPlot.homeView());
-    } else {
-      console.log("Error: canvas ref is null");
-    }
-    setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
-
-    getCodeTree(projectId)
-      .then((response) => {
-        localStorage.setItem("selectedNodes", JSON.stringify([]));
-        console.log("resetting selected nodes");
-        console.log(selectedNodes);
-        console.log(localStorage.getItem("selectedNodes"));
-        setJsonData(response.data.codes);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-    setLoading(false);
-  }, []);
-
-  const handleOpen = () => setOpen(true);
-  const handleAddModalClose = () => {
-    setOpen(false);
-    setLoading(true);
-    getCodeTree(projectId)
-      .then((response) => {
-        setJsonData(response.data.codes);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  };
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const { clientX, clientY } = e;
-    setContextMenuPosition({ x: clientX, y: clientY });
-    setShowContextMenu(true);
-  };
-
-  const handleContextMenuAction = (action: string) => {
-    if (action === "unselect") {
-      selectedNodes.splice(selectedNodes.indexOf(rightClickedItem), 1);
-    }
-    if (action === "add to category") {
-      handleOpen();
-    }
-    setShowContextMenu(false);
-  };
-
-  const handleRightClick = (e: React.MouseEvent, value: number) => {
-    handleContextMenu(e);
-    setRightClickedItem(value);
-  };
-
-  const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
-    setSelectedNodes(newSelectedNodes);
-  };
-
-  useEffect(() => {
-    if (plot && selectedNodes) {
-      plot.applyCodeFilter(selectedNodes);
-      plot.update();
-    }
-  }, [selectedNodes, plot]);
-
-  // Function to fetch and update project data
-  const fetchAndUpdateConfigs = async () => {
-    try {
-      const configResponse = (await getconfig(projectId)).data;
-
-      setConfig(configResponse);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  };
-
-  const handleEditConfig = async (config: any) => {
-    try {
-      await updateConfig(config.config_id, config);
-      fetchAndUpdateConfigs();
-      setEditModalOpen(false);
-    } catch (error) {
-      console.error("Error editing project:", error);
-    }
-  };
-
-  const handleEditClick = (config: any) => {
-    setEditData(config);
-    setEditModalOpen(true);
-  };
-
-  const handleRefresh = async () => {
-    try {
-      await refreshEntries(projectId);
-      fetchAndUpdateConfigs();
-    } catch (error) {
-      console.error("Error refreshing entries:", error);
-    }
-  };
-
-  return (
-    <div>
-      <Header title="Code View" />
-        <EditModal
-          open={editModalOpen}
-          handleClose={() => setEditModalOpen(false)}
-          onEdit={handleEditConfig}
-          config={editData}
-        />
-        <LoadingModal open={loading} />
-        <div className="float-left">
-          <CodeTreeView
-            taxonomyData={jsonData}
-            contextMenuRef={contextMenuRef}
-            selectedNodes={selectedNodes}
-            updateSelectedNodes={handleUpdateSelectedNodes}
-          />
+    return (
+        <div className="dynamicSvgContainer">
+            <svg id="canvas" ref={canvasRef} width="100%" height="100%">
+                <g id="container"></g>
+            </svg>
+            {is_dynamic && (
+                <Button
+                    variant="contained"
+                    style={{ right: "20px", bottom: "20px" }}
+                    className="bg-blue-900 rounded absolute right-5 bottom-5"
+                    ref={trainButtonRef}
+                >
+                    Train
+                </Button>
+            )}
         </div>
-        <div>
-          <svg id="canvas" ref={canvasRef} width="800" height="600">
-            <g id="container"></g>
-          </svg>
-          {plot && (
-            <button id="plotTrainButton" onClick={() => plot.setupTrainButton()}>
-              Train
-            </button>
-          )}
-          <button id="trainLinesButton">Train Lines</button>
-        </div>
-        <div className="absolute right-5 bottom-5 ">
-          <ButtonGroup>
-            <Button variant="outlined" className="bg-blue-900 rounded" onClick={handleOpen}>
-              Add new Code
-            </Button>
-            <Button
-              variant="outlined"
-              className="bg-blue-900 rounded"
-              onClick={() => {
-                handleEditClick(config);
-              }}
-            >
-              Edit Config
-            </Button>
-            <Button
-              variant="outlined"
-              className="bg-blue-900 rounded"
-              onClick={() => {
-                handleRefresh();
-              }}
-            >
-              Refresh
-            </Button>
-          </ButtonGroup>
-          <Button
-          variant="contained"
-          className="bg-blue-900 rounded"
-          onClick={() => router.push(`/codeView`)}
-        >
-          Change View
-        </Button>
+    );
+});
 
-        </div>
-      {/* Add other components from CodeView like AddToCodeModal, LoadingModal, etc. here */}
-    </div>
-  );
-};
-
-export default DotPlotComponent;
+export default DotPlotComp;
