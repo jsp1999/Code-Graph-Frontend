@@ -216,6 +216,11 @@ export default function EditModal(props: EditModalProps) {
     ) {
       oldFormData.config.cluster_config.args.min_cluster_size = formData.config.cluster_config.args.min_cluster_size;
     }
+    if (isDynamicModel) {
+      oldFormData.config.reduction_config.model_name = "dynamic_umap";
+    } else {
+      oldFormData.config.reduction_config.model_name = "umap";
+    }
 
     setFormData(oldFormData);
 
@@ -226,7 +231,7 @@ export default function EditModal(props: EditModalProps) {
 
   useEffect(() => {
     setIsDynamicModel(formData?.config?.model_type === "dynamic" || props?.config?.config?.model_type === "dynamic");
-  });
+  }, [formData, props.config.config]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -239,12 +244,12 @@ export default function EditModal(props: EditModalProps) {
     switch (name) {
       case "model_type":
         setFormData({ ...formData, config: { ...formData.config, model_type: value } });
+        console.log(value);
+        console.log(value === "dynamic");
         setIsDynamicModel(value === "dynamic");
-
         break;
       default:
         setFormData({ ...formData, name: value });
-
         break;
     }
   };
@@ -313,28 +318,55 @@ export default function EditModal(props: EditModalProps) {
             fullWidth
           />
           <p>Reduction config</p>
-          <TextField
-            name="config.reduction_config.model_name"
-            label="reduction_config"
-            value={props?.config?.config?.reduction_config?.model_name}
-            variant="outlined"
-            className="mb-3"
-            fullWidth
-          />
-          <TextField
-            name="config.reduction_config.args.n_neighbors"
-            label="n_neighbors"
-            value={
-              formData?.config?.reduction_config?.args?.n_neighbors ||
-              props?.config?.config?.reduction_config?.args?.n_neighbors
-            }
-            onChange={handleInputChange}
-            variant="outlined"
-            className="mb-2"
-            fullWidth
-          />
-          {!isDynamicModel && (
+          {isDynamicModel ? (
+            // Render fields for dynamic model
             <div>
+              <TextField
+                name="config.reduction_config.model_name"
+                label="reduction_config"
+                value="dynamic_umap"
+                variant="outlined"
+                className="mb-3"
+                fullWidth
+                disabled
+              />
+              <TextField
+                name="config.reduction_config.args.n_neighbors"
+                label="n_neighbors"
+                value={
+                  formData?.config?.reduction_config?.args?.n_neighbors ||
+                  props?.config?.config?.reduction_config?.args?.n_neighbors
+                }
+                onChange={handleInputChange}
+                variant="outlined"
+                className="mb-2"
+                fullWidth
+              />
+            </div>
+          ) : (
+            // Render fields for static model
+            <div>
+              <TextField
+                name="config.reduction_config.model_name"
+                label="reduction_config"
+                value="umap"
+                variant="outlined"
+                className="mb-3"
+                fullWidth
+                disabled
+              />
+              <TextField
+                name="config.reduction_config.args.n_neighbors"
+                label="n_neighbors"
+                value={
+                  formData?.config?.reduction_config?.args?.n_neighbors ||
+                  props?.config?.config?.reduction_config?.args?.n_neighbors
+                }
+                onChange={handleInputChange}
+                variant="outlined"
+                className="mb-2"
+                fullWidth
+              />
               <TextField
                 name="config.reduction_config.args.n_components"
                 label="n_components"
