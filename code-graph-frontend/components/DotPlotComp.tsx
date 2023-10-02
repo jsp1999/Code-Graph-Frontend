@@ -255,9 +255,9 @@ class Dot {
       .append("div")
       .text("Segment: " + this.segment)
       .append("div")
-      .text("Sentence: " + this.sentence)
+      .text("Code: " + findCodePath(this.plot.tree, this.code))
       .append("div")
-      .text("Code: " + findCodePath(this.plot.tree, this.code));
+      .text("Sentence: " + this.sentence);
   }
 
   hideTooltip() {
@@ -287,6 +287,22 @@ class Dot {
   dragMove(event) {
     if (this.line) {
       this.line.updateEnd(event.x, event.y);
+    }
+  }
+
+  remove() {
+    console.log("remove dot...");
+    if (this.line) {
+      this.line.remove();
+    }
+    if (this.plot.data.includes(this)) {
+      this.plot.data = arrayRemove(this.plot.data, this);
+    }
+    if (this.circle) {
+      this.circle.remove();
+    }
+    if (this.tooltip) {
+      this.tooltip.remove();
     }
   }
 
@@ -390,6 +406,7 @@ class DotPlot {
     is_dynamic = false,
     list_update_callback = null,
   ) {
+
     this.containerId = containerId;
     this.is_dynamic = is_dynamic;
     this.train_button = train_button;
@@ -421,6 +438,11 @@ class DotPlot {
       .attr("fill", "#999")
       .style("stroke", "none");
 
+    const allDotsInSVG = this.container.selectAll(".dot");
+      allDotsInSVG.each(function () {
+        const dot = d3.select(this);
+        dot.remove();
+      });
     this.zoom = d3
       .zoom()
       .scaleExtent([0.01, 1000]) // Adjust as per your requirements
@@ -614,8 +636,9 @@ class DotPlot {
     this.data = this.data.filter((dot) => {
       let shouldKeep = newData.find((d) => d.id === dot.dotId);
       if (!shouldKeep && dot.circle) {
-        dot.circle.remove();
+        dot.remove();
       }
+      /*
       const validDotIds = newData.map((d) => d.id);
       // Directly select all dots in the SVG
       const allDotsInSVG = this.container.selectAll(".dot");
@@ -629,7 +652,7 @@ class DotPlot {
           dot.remove();
         }
       });
-
+*/
       return shouldKeep;
     });
     console.log(this.container.selectAll(".dot"));
