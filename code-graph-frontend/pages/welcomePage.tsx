@@ -28,8 +28,7 @@ export default function WelcomePage() {
             component="label"
             className="my-5"
             onClick={() => {
-              uploadTestDataset();
-              window.location.reload();
+              uploadTestDataset().then(() => window.location.reload());
             }}
           >
             Try it out

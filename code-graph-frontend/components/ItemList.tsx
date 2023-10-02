@@ -24,8 +24,8 @@ const ItemList: React.FC<ItemListProps> = ({ items, onDelete, onTrain }) => {
         {items.map((item) => (
           <ListItem key={item.id}>
             <div>
-              Segment: {item.segmentText} | Code: {item.codeText}
-              <IconButton onClick={() => onDelete(item.id)}>
+              Segment: {item.dot.segment} | Code: {item.dot.codeText}
+              <IconButton onClick={() => onDelete(item)}>
                 <DeleteIcon />
               </IconButton>
             </div>
