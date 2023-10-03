@@ -10,7 +10,7 @@ import LoadingModal from "@/components/LoadingModal";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
 import { useRouter } from "next/router";
-import { getconfig, updateConfig, refreshEntries } from "@/pages/api/api";
+import { getconfig, updateConfig, recalculateEntries } from "@/pages/api/api";
 import EditModal from "@/components/config/EditConfigModal";
 import DotPlotComp from "@/components/DotPlotComp";
 
@@ -153,12 +153,12 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     setEditModalOpen(true);
   };
 
-  const handleRefresh = async () => {
+  const handleRecalculate = async () => {
     try {
-      await refreshEntries(projectId);
+      await recalculateEntries(projectId);
       fetchAndUpdateConfigs();
     } catch (error) {
-      console.error("Error refreshing entries:", error);
+      console.error("Error recalculate entries:", error);
     }
   };
 
@@ -202,10 +202,10 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
             variant="outlined"
             className="bg-blue-900 rounded"
             onClick={() => {
-              handleRefresh();
+              handleRecalculate();
             }}
           >
-            Refresh
+            Recalculate
           </Button>
         </ButtonGroup>
         <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/codeView`)}>

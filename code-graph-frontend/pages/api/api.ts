@@ -133,7 +133,6 @@ export const mergeCodes = (project_id: number, codes: number[], codeName: string
   return axios.post<any>(`${baseURL}/projects/${project_id}/codes/merge`, body);
 };
 
-
 export const extractCodes = (project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/codes/extract`);
   return axios.get<any>(`${baseURL}/projects/${project_id}/codes/extract`);
@@ -180,16 +179,23 @@ export const updateCodeRoute = (
 };
 
 export const addCodeToParent = (id: number, projectId: number, topLevelCodeId: number): Promise<any> => {
-  return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&parent_id=${topLevelCodeId}`)
-}
+  return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&parent_id=${topLevelCodeId}`);
+};
 
-export const renameCode = (id: number, codeName: string, projectId: number, topLevelCodeId: number | null,): Promise<any> => {
+export const renameCode = (
+  id: number,
+  codeName: string,
+  projectId: number,
+  topLevelCodeId: number | null,
+): Promise<any> => {
   if (topLevelCodeId == null) {
-    return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&code_name=${codeName}`)
+    return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&code_name=${codeName}`);
   } else {
-    return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&code_name=${codeName}&parent_id=${topLevelCodeId}`)
+    return axios.put<any>(
+      `${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&code_name=${codeName}&parent_id=${topLevelCodeId}`,
+    );
   }
-}
+};
 
 export const deleteCodeRoute = (id: number, project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/codes/${id}`);
@@ -373,9 +379,9 @@ export const searchSegment = (project_id: number, search_segment_query: string, 
   );
 };
 
-export const refreshEntries = (project_id: number): Promise<any> => {
-  console.log(`${baseURL}/projects/${project_id}/plots/refreshEntries/`);
-  return axios.get<any>(`${baseURL}/projects/${project_id}/plots/refreshEntries/`);
+export const recalculateEntries = (project_id: number): Promise<any> => {
+  console.log(`${baseURL}/projects/${project_id}/plots/recalculate/`);
+  return axios.get<any>(`${baseURL}/projects/${project_id}/plots/recalculate/`);
 };
 
 // export to files
