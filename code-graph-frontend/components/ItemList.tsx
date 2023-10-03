@@ -7,7 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 interface ItemListProps {
   items: [];
   onDelete: (item) => void;
-  onTrain: () => void;
+  onTrain: (plot) => void;
 }
 
 function rgbToRgba(rgbString, alpha = 1) {
@@ -63,7 +63,7 @@ useEffect(() => {
       ))}
     </List>
 
-    <button onClick={onTrain}>
+    <button onClick={() => onTrain(items[0].dot.plot)}>
       Train
     </button>
   </div>
