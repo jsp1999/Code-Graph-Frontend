@@ -48,6 +48,8 @@ export default function CodeView() {
   }, [selectedNodes]);
   const handleOpen = () => setOpenAddToCodeModal(true);
   const handleRightClick = (id: number) => setRightClickedItemId(id);
+  const handleOpenRename = () => setOpenRenameModal(true);
+    const handleOpenDelete = () => setOpenConfirmModal(true);
 
   useEffect(() => {
     setLoading(true);
@@ -65,6 +67,8 @@ export default function CodeView() {
         selectedNodes,
         handleOpen,
           handleRightClick,
+          handleOpenDelete,
+          handleOpenRename,
       );
 
       setPlot(newPlot);
@@ -159,6 +163,7 @@ export default function CodeView() {
     if (plot && selectedNodes) {
       console.log("Applying codes filter")
       plot.applyCodesFilter(selectedNodes);
+      plot.generateColors().then(()=>plot.update()).then(() => plot.homeView());
     }
   }, [selectedNodes, plot]);
 
