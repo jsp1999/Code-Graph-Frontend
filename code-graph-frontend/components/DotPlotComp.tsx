@@ -1,4 +1,5 @@
 // DotPlotComp.tsx
+
 import React, { useRef, useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import * as d3 from "d3";
 import { Button } from "@mui/material";
@@ -234,28 +235,51 @@ class Dot {
       this.setDragBehavior(plotter);
     }
   }
+
+
   showContextMenu(event, plotter) {
   // Remove any existing context menus
   d3.selectAll(".custom-context-menu").remove();
   this.hideTooltip();
+
   const currentTransform = d3.zoomTransform(plotter.svg.node());
   const scale = currentTransform.k;
 
   const adjustedX = (event.layerX - currentTransform.x) / currentTransform.k;
   const adjustedY = (event.layerY - currentTransform.y) / currentTransform.k;
 
-  const options = ["Delete", "Add to other code"];
+  const options = [
+    { name: "Delete", type: "option" },
+    { name: "Add to other code", type: "option"}
+  ];
 
-  const rectHeight = 30 / scale;  // Adjust size based on zoom scale
-  const rectWidth = 150 / scale;  // Adjust size based on zoom scale
+  const rectHeight = 30 / scale;
+  const rectWidth = 150 / scale;
 
   const contextMenu = plotter.container.append("g")
     .attr("class", "custom-context-menu")
     .attr("transform", `translate(${adjustedX}, ${adjustedY})`);
 
-  contextMenu.selectAll("rect")
-    .data(options)
+  // Handle option type
+  contextMenu.selectAll("g.option")
+    .data(options.filter(d => d.type === "option"))
     .enter()
+    .append("g")
+    .attr("class", "option")
+    .on("click", d => {
+      d = d.target.__data__;
+      console.log("Clicked on option:", d.name)
+      if (d.name === "Delete") {
+        // call the backend at DELETE /projects/:project_id/plots/segment/:segment_id with project id beeing the plotter.projectId and segment_id beeing the dot.dotId
+        fetch(this.plot.source + "projects/" + this.plot.projectId + "/plots/segment/" + this.dotId, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json", // Specify that we're sending JSON data
+            },
+        }).then(() => plotter.forceUpdate())
+
+      }
+    })
     .append("rect")
     .attr("x", 0)
     .attr("y", (d, i) => i * rectHeight)
@@ -263,19 +287,44 @@ class Dot {
     .attr("height", rectHeight)
     .style("fill", "#eee");
 
-  contextMenu.selectAll("text")
-    .data(options)
-    .enter()
+  contextMenu.selectAll("g.option")
     .append("text")
     .attr("x", 10 / scale)
     .attr("y", (d, i) => (i * rectHeight) + 20 / scale)
     .attr("font-size", `${12 / scale}px`)
+    .text(d => d.name);
+
+  // Handle dropdown type
+  const dropdownGroup = contextMenu.selectAll("g.dropdown")
+    .data(options.filter(d => d.type === "dropdown"))
+    .enter()
+    .append("g")
+    .attr("class", "dropdown")
+    .attr("transform", (d, i) => `translate(0, ${i * rectHeight})`);
+
+  const dropdown = dropdownGroup.append("foreignObject")
+    .attr("x", rectWidth - 60/scale)
+    .attr("y", 0)
+    .attr("width", 60/scale)
+    .attr("height", rectHeight);
+
+  dropdown.append("xhtml:select")
+    .on("change", function(d) {
+      const selectedValue = this.value;
+      console.log("Dropdown selected:", selectedValue);
+      // Handle the selected value
+    })
+    .selectAll("option")
+    .data(d => d.values)
+    .enter()
+    .append("xhtml:option")
+    .attr("value", d => d)
     .text(d => d);
 
   // Add an event listener to hide the menu when clicking elsewhere
   d3.select("body").on("click", () => {
     contextMenu.remove();
-  });
+  }, false);
 }
 
   move() {
