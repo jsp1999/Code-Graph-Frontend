@@ -314,6 +314,10 @@ class Dot {
     this.circle.call(drag);
   }
 
+  removeDragBehavior() {
+    this.circle.on(".drag", null);
+  }
+
   dragStart(plotter, event) {
     if (this.line) {
       this.line.remove();
@@ -386,6 +390,8 @@ class Line {
     this.dot.plot.list_update_callback(this.dot.plot);
   }
   draw(plotter) {
+    console.log("Drawing line");
+    console.log("drawing line plotter", plotter);
     const creationZoomScale = d3.zoomTransform(this.dot.plot.svg.node()).k;
     this.element = plotter.container
       .append("line")
@@ -507,7 +513,11 @@ class DotPlot {
 
   setupTrainButton() {
     const trainButton = this.train_button.current;
-    if (!trainButton) return;
+    if (!trainButton){
+      console.log("train button not found");
+      console.log("aborting...");
+      return;
+    }
     trainButton.addEventListener("click", () => {
       if (trainButton.textContent === "Train") {
         this.toggleTrainButtonState();
@@ -753,6 +763,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
   const [is_dynamic, set_dynamic] = useState(props.is_dynamic);
   const [rightClickedItemId, setRightClickedItemId] = useState();
 const pendingFilterRef = useRef<any>(null);
+const pendingButtonRef = useRef<any>(null);
   const canvasRef = useRef<SVGSVGElement>(null);
   const trainButtonRef = useRef<HTMLButtonElement>(null);
   const [items, setItems] = useState<Item[]>([]);
@@ -783,17 +794,41 @@ const isInitializedRef = useRef(false);
       console.log("modelType", modelType)
       if (plot) {
         if (modelType == "dynamic") {
+          console.log("setting dynamic to true")
           plot.is_dynamic = true;
           set_dynamic(true);
+          console.log("plot", plot);
+          plot?.forceUpdate().then(() => plot.homeView());
           plot.train_button = trainButtonRef;
-          plot.setupTrainButton();
-        } else {
+          if (plot.train_button) {
+            console.log("train button", plot.train_button);
+            plot.setupTrainButton();
+          } else {
+            console.log("train button not found");
+            pendingButtonRef.current = true;
+          }
+
+          for (const dot of plot.data) {
+            dot.setDragBehavior(plot);
+          }
+        }
+
+
+         else {
+          console.log("setting dynamic to false");
           plot.is_dynamic = false;
           set_dynamic(false);
           plot.train_button = null;
-        }
-        console.log("plot", plot);
+          for (const dot of plot.data) {
+            dot.removeDragBehavior();
+          }
+          for (const line of plot.lines) {
+            line.remove();
+          }
+          console.log("plot", plot);
         plot?.forceUpdate().then(() => plot.homeView());
+        }
+
       }
       else{
         console.log("plot is null; queuing the model type");
@@ -802,6 +837,18 @@ const isInitializedRef = useRef(false);
       console.log("is_dynamic: ", is_dynamic)
     }
 }));
+  useEffect(() => {
+    console.log("AAAAAAAAAAAAAAAHHHHHHHHH")
+    if (trainButtonRef.current) {
+        // Your logic to connect the button.
+        if (plot && plot.is_dynamic) {
+          console.log("setting up train button")
+            console.log("train button", trainButtonRef.current);
+            plot.train_button = trainButtonRef.current;
+            plot.setupTrainButton();
+        }
+    }
+}, [trainButtonRef.current]);
 
   useEffect(() => {
   if (plot && pendingFilterRef.current) {
@@ -810,6 +857,17 @@ const isInitializedRef = useRef(false);
   }
 }, [plot]);
 
+  useEffect(() => {
+    console.log("trying to set button")
+    console.log("trainButtonRef", trainButtonRef)
+    console.log("pendingButtonRef", pendingButtonRef)
+    console.log(plot)
+    if (plot && trainButtonRef.current) {
+        plot.train_button = trainButtonRef;
+        plot.setupTrainButton();
+        pendingButtonRef.current = null; // Clear the pending filter
+    }
+  }, [trainButtonRef.current, pendingButtonRef.current]);
   const handleDeleteItem = (item) => {
     item.remove();
   };

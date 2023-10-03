@@ -24,17 +24,7 @@ function rgbToRgba(rgbString, alpha = 1) {
 
 const ItemList: React.FC<ItemListProps> = ({ items, onDelete, onTrain }) => {
   //if (!items.length) return null;
-    console.log("ItemList re rendered")
-    console.log(items)
-useEffect(() => {
-    console.log("ItemList re rendered")
-    console.log(items)
-}, []);
 
-useEffect(() => {
-    console.log("ItemList has been updated")
-    console.log(items)
-}, [items]);
   return (
   <div className="container-list">
     <h1>Arrows</h1>
