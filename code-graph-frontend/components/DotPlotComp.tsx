@@ -237,14 +237,21 @@ class Dot {
   showContextMenu(event, plotter) {
   // Remove any existing context menus
   d3.selectAll(".custom-context-menu").remove();
+  this.hideTooltip();
+  const currentTransform = d3.zoomTransform(plotter.svg.node());
+  const scale = currentTransform.k;
+
+  const adjustedX = (event.layerX - currentTransform.x) / currentTransform.k;
+  const adjustedY = (event.layerY - currentTransform.y) / currentTransform.k;
+
+  const options = ["Delete", "Add to other code"];
+
+  const rectHeight = 30 / scale;  // Adjust size based on zoom scale
+  const rectWidth = 150 / scale;  // Adjust size based on zoom scale
 
   const contextMenu = plotter.container.append("g")
     .attr("class", "custom-context-menu")
-    .attr("transform", `translate(${event.clientX}, ${event.clientY})`);
-
-  const options = ["Delete", "Add to other code"];
-  const rectHeight = 30;
-  const rectWidth = 150;
+    .attr("transform", `translate(${adjustedX}, ${adjustedY})`);
 
   contextMenu.selectAll("rect")
     .data(options)
@@ -254,21 +261,15 @@ class Dot {
     .attr("y", (d, i) => i * rectHeight)
     .attr("width", rectWidth)
     .attr("height", rectHeight)
-    .style("fill", "#eee")
-    .on("click", (d) => {
-      if (d === "Delete") {
-        // handle delete
-      } else if (d === "Add to other code") {
-        // display dropdown or handle other logic
-      }
-    });
+    .style("fill", "#eee");
 
   contextMenu.selectAll("text")
     .data(options)
     .enter()
     .append("text")
-    .attr("x", 10)
-    .attr("y", (d, i) => (i * rectHeight) + 20)
+    .attr("x", 10 / scale)
+    .attr("y", (d, i) => (i * rectHeight) + 20 / scale)
+    .attr("font-size", `${12 / scale}px`)
     .text(d => d);
 
   // Add an event listener to hide the menu when clicking elsewhere
