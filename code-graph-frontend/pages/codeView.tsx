@@ -11,6 +11,8 @@ import * as d3 from "d3";
 import CodeDotPlotter from "@/components/CodeDotPlotter";
 import AddToCodeModal from "@/components/AddToCodeModal";
 import MergeModal from "@/components/MergeModal";
+import ConfirmModal from "@/components/ConfirmModal";
+import RenameModal from "@/components/RenameModal";
 
 export default function CodeView() {
   const router = useRouter();
@@ -22,6 +24,8 @@ export default function CodeView() {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openMergeModal, setOpenMergeModal] = useState(false);
   const [openAddToCodeModal, setOpenAddToCodeModal] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [openRenameModal, setOpenRenameModal] = useState(false);
   const [jsonData, setJsonData] = useState(data);
   const [loading, setLoading] = useState(false);
   const [projectId, setProjectId] = useState(
@@ -120,7 +124,33 @@ export default function CodeView() {
       });
   };
 
-  const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
+    const handleConfirmModalClose = () => {
+        setOpenConfirmModal(false);
+        setLoading(true);
+        getCodeTree(projectId)
+            .then((response) => {
+                setJsonData(response.data.codes);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+            });
+    };
+
+    const handleRenameModalClose = () => {
+        setOpenRenameModal(false);
+        setLoading(true);
+        getCodeTree(projectId)
+            .then((response) => {
+                setJsonData(response.data.codes);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+            });
+    };
+
+    const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
     setSelectedNodes(newSelectedNodes);
   };
 
@@ -148,6 +178,8 @@ export default function CodeView() {
         projectId={projectId}
         setLoading={() => setLoading(!loading)}
       />
+        <ConfirmModal open={openConfirmModal} handleClose={handleConfirmModalClose} projectId={projectId} codeId={rightClickedItemId} />
+        <RenameModal open={openRenameModal} handleClose={handleRenameModalClose} projectId={projectId} codeId={rightClickedItemId} />
       <div className="flex">
 
       <div className="float-left">

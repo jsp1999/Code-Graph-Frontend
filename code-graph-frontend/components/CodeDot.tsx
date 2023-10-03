@@ -97,23 +97,29 @@ class CodeDot {
         .style("top", circleRect.top - 10 + "px");
 
       // Add menu options
-      contextMenu
-        .append("div")
-        .text("Add to category")
-        .on("click", () => {
-          console.log("Option 1 selected");
-          this.addToCategory();
-          contextMenu.remove();
-        });
+        contextMenu
+            .append("div")
+            .text("Rename")
+            .on("click", () => {
+                contextMenu.remove();
+            });
 
-      contextMenu
+        contextMenu
         .append("div")
-        .text("Option 2")
+        .text("Delete")
         .on("click", () => {
           contextMenu.remove();
         });
 
-      // Close the context menu when clicking elsewhere
+        contextMenu
+            .append("div")
+            .text("Add to Top-Level Code")
+            .on("click", () => {
+                this.addToCategory();
+                contextMenu.remove();
+            });
+
+        // Close the context menu when clicking elsewhere
       d3.select("body").on("click.custom-context-menu", () => {
         contextMenu.remove();
       });
