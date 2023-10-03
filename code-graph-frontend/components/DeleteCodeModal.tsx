@@ -63,7 +63,7 @@ export default function DeleteCodeModal(props: DeleteCodeModalProps) {
                 <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10rem]">
                     <div className="mt-5 w-fit mx-auto">
                         <FormControl component="fieldset">
-                            <FormLabel component="legend">Add to Code</FormLabel>
+                            <FormLabel component="legend">Delete Code</FormLabel>
                             <div className="overflow-auto h-[25vw]">
                                 <TextField
                                     className="w-[25rem]"
