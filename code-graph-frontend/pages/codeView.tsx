@@ -14,7 +14,7 @@ import MergeModal from "@/components/MergeModal";
 import ConfirmModal from "@/components/ConfirmModal";
 import RenameModal from "@/components/RenameModal";
 import DeleteCodeModal from "@/components/DeleteCodeModal";
-import SearchCodeOccurrencesModal from "@/components/codeView/SearchCodeOccurrences";
+import SearchCodeOccurrencesModal from "@/components/codeView/searchCodeOccurrences";
 
 export default function CodeView() {
   const router = useRouter();
