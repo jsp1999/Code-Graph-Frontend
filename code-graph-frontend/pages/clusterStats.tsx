@@ -76,7 +76,7 @@ export default function StatsPage() {
 
       return (
         <div key={index} >
-          <h3 className="w-fit x-auto text-2xl">{project.project.project_name}</h3>
+          <h3 className="w-fit mx-auto text-3xl underline my-5">{project.project.project_name}</h3>
           <Doughnut data={pieData} options={options} />
         </div>
       );
@@ -86,7 +86,7 @@ export default function StatsPage() {
   return (
     <div>
       <Header title="Cluster Stats" />
-      <div className="pie-container">{renderPieClusterCharts()}</div>
+      <div className="pie-container w-[50%] mx-auto mb-12">{renderPieClusterCharts()}</div>
     </div>
   );
 }
