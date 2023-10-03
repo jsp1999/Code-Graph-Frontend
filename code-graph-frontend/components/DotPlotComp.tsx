@@ -464,6 +464,7 @@ class DotPlot {
     this.lines = [];
     this.selected = [];
     this.svg = svg;
+    this.button_is_set = false;
     this.container = container;
     this.point_r = 5.5;
     this.addToCode = addToCode;
@@ -518,6 +519,7 @@ class DotPlot {
       console.log("aborting...");
       return;
     }
+    this.button_is_set = true;
     trainButton.addEventListener("click", () => {
       if (trainButton.textContent === "Train") {
         this.toggleTrainButtonState();
@@ -800,6 +802,9 @@ const isInitializedRef = useRef(false);
           set_dynamic(true);
           console.log("plot", plot);
           plot?.forceUpdate().then(() => plot.homeView());
+            plot.train_button = trainButtonRef;
+
+            plot.setupTrainButton();
           for (const dot of plot.data) {
             dot.setDragBehavior(plot);
           }
@@ -837,6 +842,7 @@ const isInitializedRef = useRef(false);
     pendingFilterRef.current = null; // Clear the pending filter
   }
 }, [plot]);
+
   useEffect(() => {
     console.log("AAAAAAAAAAAAAAAHHHHHHHHH")
     if (trainButtonRef.current) {
@@ -861,40 +867,43 @@ const isInitializedRef = useRef(false);
 
 
   useEffect(() => {
-     if (!isInitializedRef.current) {
-    if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
-      console.log("source: ", source)
-      console.log("projectID: ", projectId)
-      console.log("is_dynamic: ", is_dynamic)
-      const svg_ = d3.select(canvasRef.current);
-      const container_ = d3.select("#container");
-      const newPlot = new DotPlot(
-        "container",
-        projectId,
-        source,
-        svg_,
-        container_,
-        trainButtonRef,
-        is_dynamic,
-        handleDataUpdate,
-          handleOpen,
-          handleRightClick,
-      );
-      setPlot(newPlot);
+    console.log("is_dynamic: ", is_dynamic);
+    console.log("isInitializedRef.current: ", isInitializedRef.current);
+    console.log("Entered UseEffect");
+     if (!isInitializedRef.current) {//} && is_dynamic != undefined) {
+        if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
+          console.log("source: ", source)
+          console.log("projectID: ", projectId)
+          console.log("is_dynamic: ", is_dynamic)
+          const svg_ = d3.select(canvasRef.current);
+          const container_ = d3.select("#container");
+          const newPlot = new DotPlot(
+            "container",
+            projectId,
+            source,
+            svg_,
+            container_,
+            trainButtonRef,
+            is_dynamic,
+            handleDataUpdate,
+              handleOpen,
+              handleRightClick,
+          );
+          setPlot(newPlot);
 
-      // Call generateColors and update as usual
-      /*
-      newPlot
-        .generateColors()
-        .then(() => newPlot.update())
-        .then(() => {
-          // After updating, set the fetched data to the state
-          setPlotItems(newPlot.getList()); // Assuming list is the correct variable name
-          newPlot.homeView();
-        });
-       */
-      isInitializedRef.current = true;
-    }
+          // Call generateColors and update as usual
+          /*
+          newPlot
+            .generateColors()
+            .then(() => newPlot.update())
+            .then(() => {
+              // After updating, set the fetched data to the state
+              setPlotItems(newPlot.getList()); // Assuming list is the correct variable name
+              newPlot.homeView();
+            });
+           */
+          isInitializedRef.current = true;
+        }
 
     }
   }, [projectId, source, is_dynamic]);
@@ -921,6 +930,19 @@ const isInitializedRef = useRef(false);
             style={{ right: "20px", bottom: "20px" }}
             className="bg-blue-900 rounded absolute right-5 bottom-5"
             ref={trainButtonRef}
+            onClick={() => {
+              console.log("wanting to train plot");
+              console.log("plot: ", plot);
+              console.log("button_set", plot?.button_is_set);
+              if (!plot?.button_is_set) {
+                plot.train_button = trainButtonRef;
+                plot?.setupTrainButton();
+                plot?.toggleTrainButtonState();
+                plot?.trainForEpochs(10);
+              }
+              //plot?.trainForEpochs(10);
+              //plot?.setupTrainButton();
+            }}
           >
             Train
           </Button>

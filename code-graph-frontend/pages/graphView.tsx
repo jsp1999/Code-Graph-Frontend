@@ -145,8 +145,13 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
       fetchAndUpdateConfigs();
       setEditModalOpen(false);
       setLoading(false);
+
     } catch (error) {
       console.error("Error editing project:", error);
+    }
+    finally
+    {
+      window.location.reload();
     }
   };
 
@@ -170,7 +175,8 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
       setLoading(false);
     }
   };
-
+  console.log("config_above", config);
+  console.log("config_above_return", config? (config.config.model_type === "dynamic"): undefined);
   return (
     <div>
       <Header title="Graph View" />
@@ -192,7 +198,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
             updateSelectedNodes={handleUpdateSelectedNodes}
           />
         </div>
-          <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic={false} />
+          <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic={config? (config.config.model_type === "dynamic"): undefined} />
       </div>
       <div className="absolute right-5 bottom-5 ">
           <Button
