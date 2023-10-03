@@ -131,12 +131,14 @@ class TrainSlide {
 
   trainLines() {
     // Transform lines data into the desired format
-    const formattedData = this.plot.lines.map((line) => {
+    console.log("training lines...");
+    const formattedData = this.lines.map((line) => {
       return {
         id: line.dot.dotId,
         pos: [line.end_x, line.end_y],
       };
     });
+    console.log("formattedData", formattedData)
 
     const jsonData = JSON.stringify(formattedData); // Convert the formatted data to JSON
     fetch(this.plot.source + "projects/" + this.plot.projectId + "/dynamic/correction?epochs=10", {
@@ -148,7 +150,7 @@ class TrainSlide {
     })
       .then((response) => response.json())
       .then((data) => {
-        this.plot.update();
+        this.plot.forceUpdate();
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -475,6 +477,32 @@ class DotPlot {
       }
     });
   }
+  trainLines() {
+    // Transform lines data into the desired format
+    const formattedData = this.lines.map((line) => {
+      return {
+        id: line.dot.dotId,
+        pos: [line.end_x, line.end_y],
+      };
+    });
+    const jsonData = JSON.stringify(formattedData); // Convert the formatted data to JSON
+    fetch(this.source + "projects/" + this.projectId + "/dynamic/correction?epochs=10", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Specify that we're sending JSON data
+      },
+      body: jsonData, // Attach the JSON data to the request body
+    })
+    .then((response) => response.json())
+    .then(() => {
+      this.forceUpdate();
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+
+  }
+
 
   toggleTrainButtonState() {
     const trainButton = this.train_button.current;
@@ -763,8 +791,9 @@ const isInitializedRef = useRef(false);
         <ItemList
           items={plotItems}
           onDelete={handleDeleteItem}
-          onTrain={() => {
-            /* your training function here */
+          onTrain={(plot) => {
+            console.log("wanting to train lines, plot: ", plot);
+            plot.trainLines();
           }}
         />
       </div>
