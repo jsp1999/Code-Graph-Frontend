@@ -53,7 +53,8 @@ const ItemList: React.FC<ItemListProps> = ({ items, onDelete, onTrain }) => {
       ))}
     </List>
 
-    <button onClick={() => onTrain(items[0].dot.plot)}>
+    <button onClick={() => { if (items.length > 0){
+      onTrain(items[0].dot.plot)}}}>
       Train
     </button>
   </div>

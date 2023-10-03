@@ -799,15 +799,6 @@ const isInitializedRef = useRef(false);
           set_dynamic(true);
           console.log("plot", plot);
           plot?.forceUpdate().then(() => plot.homeView());
-          plot.train_button = trainButtonRef;
-          if (plot.train_button) {
-            console.log("train button", plot.train_button);
-            plot.setupTrainButton();
-          } else {
-            console.log("train button not found");
-            pendingButtonRef.current = true;
-          }
-
           for (const dot of plot.data) {
             dot.setDragBehavior(plot);
           }
@@ -843,31 +834,16 @@ const isInitializedRef = useRef(false);
         // Your logic to connect the button.
         if (plot && plot.is_dynamic) {
           console.log("setting up train button")
-            console.log("train button", trainButtonRef.current);
-            plot.train_button = trainButtonRef.current;
+            console.log("train button", trainButtonRef);
+            plot.train_button = trainButtonRef;
             plot.setupTrainButton();
         }
     }
-}, [trainButtonRef.current]);
-
-  useEffect(() => {
-  if (plot && pendingFilterRef.current) {
-    plot.applyCodeFilter(pendingFilterRef.current);
-    pendingFilterRef.current = null; // Clear the pending filter
-  }
-}, [plot]);
-
-  useEffect(() => {
-    console.log("trying to set button")
-    console.log("trainButtonRef", trainButtonRef)
-    console.log("pendingButtonRef", pendingButtonRef)
-    console.log(plot)
-    if (plot && trainButtonRef.current) {
-        plot.train_button = trainButtonRef;
-        plot.setupTrainButton();
-        pendingButtonRef.current = null; // Clear the pending filter
+    else{
+        console.log("train button not found");
     }
-  }, [trainButtonRef.current, pendingButtonRef.current]);
+}, [trainButtonRef]);
+
   const handleDeleteItem = (item) => {
     item.remove();
   };
