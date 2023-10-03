@@ -166,7 +166,7 @@ export default function StatsPage() {
       const pieOptions = {};
 
       return (
-        <div key={index} className="chart-container">
+        <div key={index} className="chart-container w-fit mx-auto">
           <h3 className="text-xl text-black">{`${project.project.project_id} - ${project.project.project_name}`}</h3>
           <h3>{project.project.project_name}</h3>
           <div style={{ width: "900px" }}>
@@ -180,8 +180,8 @@ export default function StatsPage() {
   return (
     <div>
       <Header title="Code Stats" />
-      <div className="bubble-container w-fit mx-auto my-16">{renderBubbleCharts()}</div>
-      <div className="pie-container w-fit mx-auto my-16">{renderPieCodeCharts()}</div>
+      <div className="bubble-container">{renderBubbleCharts()}</div>
+      <div className="pie-container">{renderPieCodeCharts()}</div>
     </div>
   );
 }

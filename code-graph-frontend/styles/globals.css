@@ -78,8 +78,9 @@ tfoot th {
 
 .chart-container {
   overflow: auto;
-  border: 10px solid #433d3d;
+  border: 1px solid #474747;
 }
+
 .tooltip {
   position: absolute;
   background-color: white;
