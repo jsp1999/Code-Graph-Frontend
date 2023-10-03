@@ -182,16 +182,17 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
             updateSelectedNodes={handleUpdateSelectedNodes}
           />
         </div>
-        <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic={false} />
+        <div className="border">
+          <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic={false} />
+        </div>
       </div>
       <div className="absolute right-5 bottom-5 ">
-        <ButtonGroup>
-          <Button variant="outlined" className="bg-blue-900 rounded" onClick={handleOpen}>
+          <Button variant="outlined" className="mr-10" onClick={handleOpen}>
             Add new Code
           </Button>
           <Button
             variant="outlined"
-            className="bg-blue-900 rounded"
+            className="mr-10"
             onClick={() => {
               handleEditClick(config);
             }}
@@ -200,14 +201,13 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
           </Button>
           <Button
             variant="outlined"
-            className="bg-blue-900 rounded"
+            className="mr-10"
             onClick={() => {
               handleRefresh();
             }}
           >
             Refresh
           </Button>
-        </ButtonGroup>
         <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/codeView`)}>
           Change View
         </Button>

@@ -73,17 +73,16 @@ export default function Header(props: HeaderProps) {
         <div className="p-4 w-64">
           <div className="mt-5">
             <h2 className="text-2xl text-black">Project {projectId}</h2>
-            {/* Für jeden bereich bsp. Projects ein eigenes accordion */}
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <p>{projects.find((project) => project.project_id == projectId)?.project_name}</p>
+                <p className="w-fit mx-auto">{projects.find((project) => project.project_id == projectId)?.project_name}</p>
               </AccordionSummary>
-              {/* Styling noch anpassen und eigene sachen drüber mappen */}
               {projects.map((project) => (
-                <div key={project.project_id}>
+                <div key={project.project_id} className="w-fit mx-auto my-1">
                   {project.project_name}
                   {project.project_id != projectId && (
                     <button
+                        className="ml-1"
                       onClick={() => {
                         localStorage.setItem("projectId", project.project_id.toString());
                         localStorage.setItem("selectedNodes", JSON.stringify([]));
@@ -268,15 +267,12 @@ export default function Header(props: HeaderProps) {
           </div>
         </div>
       </Drawer>
-      <span
-        style={{
-          cursor: "pointer",
-          marginLeft: "auto",
-        }}
+      <button
+        className="ml-auto mr-5"
         onClick={() => router.push("/")}
       >
         CodeGraph
-      </span>
+      </button>
     </header>
   );
 }

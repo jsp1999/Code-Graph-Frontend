@@ -158,10 +158,10 @@ export default function DatabasesPage() {
       {/* Pagination controls */}
 
       <div className="flex justify-center mt-4">
-        <Button variant="outlined" onClick={prevPage} disabled={currentPage === 0}>
+        <Button variant="outlined" className="mx-1" onClick={prevPage} disabled={currentPage === 0}>
           Previous Page
         </Button>
-        <Button variant="outlined" onClick={nextPage} disabled={currentPage === Math.ceil(totalCount / pageSize) - 1}>
+        <Button variant="outlined" className="mx-1" onClick={nextPage} disabled={currentPage === Math.ceil(totalCount / pageSize) - 1}>
           Next Page
         </Button>
         <select value={pageSize} onChange={(e) => changePageSize(Number(e.target.value))} className="ml-2">
@@ -191,11 +191,10 @@ export default function DatabasesPage() {
               setCurrentPage(0);
             }
           }}
-          className="ml-2 p-1"
-          style={{ width: "60px" }}
+          className="ml-2 p-1 w-16"
         />
 
-        <span>/ {Math.ceil(totalCount / pageSize)}</span>
+        <span className="h-fit my-auto">/ {Math.ceil(totalCount / pageSize)}</span>
       </div>
       <div className="text-center mt-2">Total Count: {totalCount}</div>
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">

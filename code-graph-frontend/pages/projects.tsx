@@ -150,7 +150,7 @@ export default function ProjectPage() {
   };
 
   return (
-    <header>
+    <div>
       <EditModal
         open={editModalOpen}
         handleClose={() => setEditModalOpen(false)}
@@ -171,7 +171,7 @@ export default function ProjectPage() {
       />
 
       <Header title="Projects" />
-      <div className="flex justify-center">
+      <div className="mx-auto w-fit">
         <Button
           variant="outlined"
           component="label"
@@ -226,6 +226,6 @@ export default function ProjectPage() {
           </tbody>
         </table>
       </div>
-    </header>
+    </div>
   );
 }

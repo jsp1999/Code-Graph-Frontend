@@ -168,7 +168,7 @@ export default function CodeView() {
         />
       </div>
 
-      <div className="dynamicSvgContainer">
+      <div className="dynamicSvgContainer border h-[80vh] w-auto">
         {/* Use the fetched plotItems instead of dummy items */}
         <svg id="canvas" ref={canvasRef} width="100%" height="100%">
           <g id="container"></g>

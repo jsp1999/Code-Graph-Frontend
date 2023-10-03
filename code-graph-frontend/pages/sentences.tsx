@@ -146,12 +146,12 @@ export default function SentencesPage() {
   return (
     <div>
       <Header title="Sentences Data" />
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center my-4">
         {/* Dropdown menu to select datasetId */}
         <Select
           value={datasetId || ""}
           onChange={(e) => setDatasetId(Number(e.target.value) || undefined)}
-          className="mr-2"
+          className="mr-2 h-fit w-fit my-auto"
         >
           {datasets.map((dataset) => (
             <MenuItem key={dataset.dataset_id} value={dataset.dataset_id}>
@@ -159,10 +159,10 @@ export default function SentencesPage() {
             </MenuItem>
           ))}
         </Select>
-        <Button variant="outlined" onClick={prevPage} disabled={currentPage === 0}>
+        <Button variant="outlined" className="mx-2 h-fit w-fit my-auto" onClick={prevPage} disabled={currentPage === 0}>
           Previous Page
         </Button>
-        <Button variant="outlined" onClick={nextPage} disabled={currentPage === Math.ceil(totalCount / pageSize) - 1}>
+        <Button variant="outlined" className="mx-2 h-fit w-fit my-auto" onClick={nextPage} disabled={currentPage === Math.ceil(totalCount / pageSize) - 1}>
           Next Page
         </Button>
         <select value={pageSize} onChange={(e) => changePageSize(Number(e.target.value))} className="ml-2">
@@ -182,11 +182,9 @@ export default function SentencesPage() {
               setCurrentPage(0);
             }
           }}
-          className="ml-2 p-1"
-          style={{ width: "60px" }}
+          className="ml-2 p-1 w-16"
         />
-
-        <span>/ {Math.ceil(totalCount / pageSize)}</span>
+        <span className="h-fit my-auto" >/ {Math.ceil(totalCount / pageSize)}</span>
       </div>
       <TableContainer component={Paper}>
         <Table>

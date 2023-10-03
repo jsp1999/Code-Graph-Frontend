@@ -211,7 +211,7 @@ export default function databasesPage() {
   };
 
   return (
-    <header>
+    <div>
       <DeleteAllDatabasesModal
         open={deleteAllModalOpen}
         handleClose={() => setDeleteAllModalOpen(false)}
@@ -224,11 +224,11 @@ export default function databasesPage() {
         databaseName={databaseName}
       />
       <Header title="Databases" />
-      <div className="flex justify-center">
+      <div className="w-fit mx-auto">
         <Button
           variant="outlined"
           component="label"
-          className="flex items-center justify-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          className="flex items-center m-3 justify-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => initDatabases()}
         >
           <BsListColumnsReverse className="mr-2" />
@@ -237,7 +237,7 @@ export default function databasesPage() {
         <Button
           variant="outlined"
           component="label"
-          className="flex items-center justify-center bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          className="flex items-center m-3 justify-center bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => setDeleteAllModalOpen(true)}
         >
           <BsTrash className="mr-2" />
@@ -332,6 +332,6 @@ export default function databasesPage() {
           </tbody>
         </table>
       </div>
-    </header>
+    </div>
   );
 }
