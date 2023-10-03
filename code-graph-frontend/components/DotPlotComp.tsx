@@ -6,6 +6,8 @@ import { Button } from "@mui/material";
 import ItemList from "@/components/ItemList";
 import itemList from "@/components/ItemList";
 import ChangeCodeModal from "@/components/ChangeCodeModal";
+import AddCodeModal from "@/components/AddCodeModal";
+import {getCodeRoute} from "@/pages/api/api";
 function hsvToRgb(h, s, v) {
   let r, g, b;
   let i = Math.floor(h * 6);
@@ -121,7 +123,8 @@ function newColorScale(code_id) {
 
 class Dot {
   private addToCode: () => void;
-  constructor(dotId, x, y, segment, sentence, code, plot, addToCode) {
+  private setRightClickedId: (id: number) => void;
+  constructor(dotId, x, y, segment, sentence, code, plot, addToCode, setRightClickedId: (id: number) => void) {
     this.dotId = dotId;
     this.x = x;
     this.y = y;
@@ -139,6 +142,8 @@ class Dot {
     this.color = plot.color_mapper(this.code);
     this.plot.data.push(this);
     this.addToCode = addToCode;
+    this.setRightClickedId = setRightClickedId;
+
   }
 
   draw(plotter) {
@@ -208,6 +213,7 @@ class Dot {
             },
         }).then(() => plotter.forceUpdate())
       if (d.name === "Add to other code:")   {
+        this.setRightClickedId(this.dotId);
         this.addToCode();
       }
 
@@ -433,6 +439,7 @@ class Line {
 
 class DotPlot {
   private addToCode: () => void;
+  private setRightClickedId: (id: number) => void;
   constructor(
     containerId,
     projectId,
@@ -443,6 +450,7 @@ class DotPlot {
     is_dynamic = false,
     list_update_callback = null,
     addToCode: () => void,
+    setRightClickedId: (id: number) => void,
   ) {
     console.log("Initializing dot plotter...")
     this.containerId = containerId;
@@ -457,8 +465,9 @@ class DotPlot {
     this.selected = [];
     this.svg = svg;
     this.container = container;
-    this.addToCode = addToCode;
     this.point_r = 5.5;
+    this.addToCode = addToCode;
+    this.setRightClickedId = setRightClickedId;
     this.svg
       .append("defs")
       .append("marker")
@@ -719,6 +728,7 @@ class DotPlot {
           dotData.code,
           this,
           this.addToCode,
+          this.setRightClickedId,
         );
         newDot.draw(this);
       }
@@ -747,6 +757,7 @@ export interface DotPlotCompHandles {
 const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) => {
   const { projectId, source } = props;
   const [is_dynamic, set_dynamic] = useState(props.is_dynamic);
+  const [rightClickedItemId, setRightClickedItemId] = useState();
 const pendingFilterRef = useRef<any>(null);
   const canvasRef = useRef<SVGSVGElement>(null);
   const trainButtonRef = useRef<HTMLButtonElement>(null);
@@ -830,6 +841,7 @@ const isInitializedRef = useRef(false);
         is_dynamic,
         handleDataUpdate,
           handleOpen,
+          handleRightClick,
       );
       setPlot(newPlot);
 
@@ -850,8 +862,17 @@ const isInitializedRef = useRef(false);
     }
   }, [projectId, source, is_dynamic]);
 
+  const handleRightClick = (id: number) => {
+    setRightClickedItemId(id);
+  }
+  const handleChangeCodeClose = () => {
+    setChangeCodeModal(false);
+  };
+
   // Update the rendering part to utilize the fetched plotItems instead of the dummy items
   return (
+      <div>
+      <ChangeCodeModal open={openChangeCodeModal} handleClose={handleChangeCodeClose} projectId={projectId} segmentId={rightClickedItemId} />
     <div className="flex">
       <div className="dynamicSvgContainer">
         {/* Use the fetched plotItems instead of dummy items */}
@@ -881,6 +902,7 @@ const isInitializedRef = useRef(false);
         />
       </div>)}
     </div>
+        </div>
   );
 });
 
