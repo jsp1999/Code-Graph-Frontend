@@ -212,17 +212,11 @@ class Dot {
                 "Content-Type": "application/json", // Specify that we're sending JSON data
             },
         }).then(() => plotter.forceUpdate())
-      if (d.name === "Add to other code:")   {
+      if (d.name === "Add to other code")   {
         this.setRightClickedId(this.dotId);
         this.addToCode();
       }
 
-      }
-      if (d.name === "Add to other code") {
-        // modal richtig aufrufen
-        // code soll in modal ausgesucht werden und bei submit:
-        // /projects/{project_id}/plots/segment/{segment_id}
-        // mit body: {code_id: code_id}
       }
     })
     .append("rect")
