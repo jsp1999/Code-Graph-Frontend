@@ -114,7 +114,7 @@ export default function DatabasesPage() {
 
   return (
     <header>
-      <Header title="Code View" />
+      <Header title="Embeddings Data" />
       <div className="flex justify-center">
         <TextField
           label="Batch Size"

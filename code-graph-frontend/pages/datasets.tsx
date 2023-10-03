@@ -164,7 +164,7 @@ export default function DatasetPage() {
         datasetId={datasetId}
       />
 
-      <Header title="Code View" />
+      <Header title="Datasets Data" />
       <div className="flex justify-center">
         <div className="content-center">
           <UploadModal

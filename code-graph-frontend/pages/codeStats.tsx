@@ -179,7 +179,7 @@ export default function StatsPage() {
 
   return (
     <header>
-      <Header title="Code stats" />
+      <Header title="Code Stats" />
       <div className="bubble-container">{renderBubbleCharts()}</div>
       <div className="pie-container">{renderPieCodeCharts()}</div>
     </header>

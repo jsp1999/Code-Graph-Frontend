@@ -114,7 +114,7 @@ export default function StatsPage() {
 
   return (
     <header>
-      <Header title="Project stats" />
+      <Header title="Project Stats" />
       <div className="bar-container">{renderProjectInfoBarChart()}</div>
       <div className="bar-container">{renderProjectDataBarChart()}</div>
     </header>

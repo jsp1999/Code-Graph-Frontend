@@ -145,7 +145,7 @@ export default function SentencesPage() {
 
   return (
     <div>
-      <Header title="Sentences View" />
+      <Header title="Sentences Data" />
       <div className="flex justify-center mt-4">
         {/* Dropdown menu to select datasetId */}
         <Select

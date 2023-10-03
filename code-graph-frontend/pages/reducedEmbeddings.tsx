@@ -127,7 +127,7 @@ export default function ReducedEmbeddingsPage() {
 
   return (
     <header>
-      <Header title="Positions View" />
+      <Header title="Positions Data" />
       <div className="flex justify-center">
         <Button
           variant="outlined"

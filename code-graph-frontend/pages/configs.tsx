@@ -162,7 +162,7 @@ export default function ConfigPage() {
         config={editData}
         key={editData.config_id}
       />
-      <Header title="Code View" />
+      <Header title="Configs" />
 
       <div className="p-2 block max-w-full overflow-x-scroll overflow-y-hidden">
         <div className="h-2" />

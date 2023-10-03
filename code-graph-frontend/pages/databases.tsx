@@ -223,7 +223,7 @@ export default function databasesPage() {
         onDelete={handleDeleteDatabase}
         databaseName={databaseName}
       />
-      <Header title="Code View" />
+      <Header title="Databases" />
       <div className="flex justify-center">
         <Button
           variant="outlined"

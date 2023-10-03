@@ -84,7 +84,7 @@ export default function StatsPage() {
 
   return (
     <header>
-      <Header title="Project stats" />
+      <Header title="Cluster Stats" />
       <div className="pie-container">{renderPieClusterCharts()}</div>
     </header>
   );

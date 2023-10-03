@@ -170,7 +170,7 @@ export default function ProjectPage() {
         project_name={projectName}
       />
 
-      <Header title="Code View" />
+      <Header title="Projects" />
       <div className="flex justify-center">
         <Button
           variant="outlined"
