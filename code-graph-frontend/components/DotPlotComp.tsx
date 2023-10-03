@@ -5,6 +5,7 @@ import * as d3 from "d3";
 import { Button } from "@mui/material";
 import ItemList from "@/components/ItemList";
 import itemList from "@/components/ItemList";
+import ChangeCodeModal from "@/components/ChangeCodeModal";
 function hsvToRgb(h, s, v) {
   let r, g, b;
   let i = Math.floor(h * 6);
@@ -119,7 +120,8 @@ function newColorScale(code_id) {
 
 
 class Dot {
-  constructor(dotId, x, y, segment, sentence, code, plot) {
+  private addToCode: () => void;
+  constructor(dotId, x, y, segment, sentence, code, plot, addToCode) {
     this.dotId = dotId;
     this.x = x;
     this.y = y;
@@ -136,6 +138,7 @@ class Dot {
     }
     this.color = plot.color_mapper(this.code);
     this.plot.data.push(this);
+    this.addToCode = addToCode;
   }
 
   draw(plotter) {
@@ -204,6 +207,9 @@ class Dot {
                 "Content-Type": "application/json", // Specify that we're sending JSON data
             },
         }).then(() => plotter.forceUpdate())
+      if (d.name === "Add to other code:")   {
+        this.addToCode();
+      }
 
       }
       if (d.name === "Add to other code") {
@@ -426,6 +432,7 @@ class Line {
 }
 
 class DotPlot {
+  private addToCode: () => void;
   constructor(
     containerId,
     projectId,
@@ -435,6 +442,7 @@ class DotPlot {
     train_button,
     is_dynamic = false,
     list_update_callback = null,
+    addToCode: () => void,
   ) {
     console.log("Initializing dot plotter...")
     this.containerId = containerId;
@@ -449,6 +457,7 @@ class DotPlot {
     this.selected = [];
     this.svg = svg;
     this.container = container;
+    this.addToCode = addToCode;
     this.point_r = 5.5;
     this.svg
       .append("defs")
@@ -709,6 +718,7 @@ class DotPlot {
           dotData.sentence,
           dotData.code,
           this,
+          this.addToCode,
         );
         newDot.draw(this);
       }
@@ -745,6 +755,7 @@ const isInitializedRef = useRef(false);
   const [plot, setPlot] = useState<any>();
   const [train, setTrain] = useState<any>();
   const [plotItems, setPlotItems] = useState<any[]>([]);
+  const [openChangeCodeModal, setChangeCodeModal] = useState(false);
   const handleDataUpdate = (plot_this) => {
     const value = [...(plot_this?.getList() || [])];
     setPlotItems(value);
@@ -798,6 +809,8 @@ const isInitializedRef = useRef(false);
     item.remove();
   };
 
+  const handleOpen = () => setChangeCodeModal(true);
+
 
   useEffect(() => {
      if (!isInitializedRef.current) {
@@ -816,6 +829,7 @@ const isInitializedRef = useRef(false);
         trainButtonRef,
         is_dynamic,
         handleDataUpdate,
+          handleOpen,
       );
       setPlot(newPlot);
 
