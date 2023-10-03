@@ -72,16 +72,13 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
         console.error("Error fetching data:", error);
       });
     setLoading(false);
-
-
   }, []);
 
   useEffect(() => {
-    if (dotPlotRef.current && config)
-    {
-        console.log("SETTING MODEL TYPE", config.config.model_type);
-        console.log(config);
-        dotPlotRef.current.setModelType(config.config.model_type);
+    if (dotPlotRef.current && config) {
+      console.log("SETTING MODEL TYPE", config.config.model_type);
+      console.log(config);
+      dotPlotRef.current.setModelType(config.config.model_type);
     }
   }, [config]);
   const handleOpen = () => setOpen(true);
@@ -173,6 +170,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
         handleClose={() => setEditModalOpen(false)}
         onEdit={handleEditConfig}
         config={editData}
+        key={editData?.config_id}
       />
       <LoadingModal open={loading} />
       <div className="flex">
