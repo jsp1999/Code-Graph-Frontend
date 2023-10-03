@@ -1,6 +1,6 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import {getCodesRoutes, updateCodeRoute} from "@/pages/api/api";
+import {addCodeToParent, getCodesRoutes, updateCodeRoute} from "@/pages/api/api";
 
 interface AddToCodeModalProps {
     open: boolean;
@@ -33,7 +33,7 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
 
     function pressAddButton() {
             try {
-                updateCodeRoute(props.codeId, "", props.projectId, checkedId);
+                addCodeToParent(props.codeId, props.projectId, checkedId);
             } catch (e) {
                 console.error("Error adding code:", e);
             }
@@ -62,7 +62,6 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
             <Modal open={props.open} onClose={setClosed}>
                 <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10rem]">
                     <div className="mt-5 w-fit mx-auto">
-                        <p>Code ID: {props.codeId}</p>
                         <FormControl component="fieldset">
                             <FormLabel component="legend">Add to Code</FormLabel>
                             <div className="overflow-auto h-[25vw]">

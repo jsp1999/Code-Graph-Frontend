@@ -179,6 +179,10 @@ export const updateCodeRoute = (
   return axios.put<any>(`${baseURL}/projects/${project_id}/codes/${id}`, body);
 };
 
+export const addCodeToParent = (id: number, projectId: number, topLevelCodeId: number): Promise<any> => {
+  return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&parent_id=${topLevelCodeId}`)
+}
+
 export const renameCode = (id: number, codeName: string, projectId: number, topLevelCodeId: number | null,): Promise<any> => {
   if (topLevelCodeId == null) {
     return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&code_name=${codeName}`)
