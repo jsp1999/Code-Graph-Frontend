@@ -83,9 +83,9 @@ export default function StatsPage() {
   };
 
   return (
-    <header>
+    <div>
       <Header title="Cluster Stats" />
-      <div className="pie-container">{renderPieClusterCharts()}</div>
-    </header>
+      <div className="pie-container w-fit mx-auto my-16">{renderPieClusterCharts()}</div>
+    </div>
   );
 }

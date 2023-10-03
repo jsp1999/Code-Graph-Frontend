@@ -113,10 +113,10 @@ export default function StatsPage() {
   };
 
   return (
-    <header>
+    <div>
       <Header title="Project Stats" />
-      <div className="bar-container">{renderProjectInfoBarChart()}</div>
-      <div className="bar-container">{renderProjectDataBarChart()}</div>
-    </header>
+      <div className="bar-container w-fit mx-auto my-16">{renderProjectInfoBarChart()}</div>
+      <div className="bar-container w-fit mx-auto my-16">{renderProjectDataBarChart()}</div>
+    </div>
   );
 }

@@ -178,10 +178,10 @@ export default function StatsPage() {
   };
 
   return (
-    <header>
+    <div>
       <Header title="Code Stats" />
-      <div className="bubble-container">{renderBubbleCharts()}</div>
-      <div className="pie-container">{renderPieCodeCharts()}</div>
-    </header>
+      <div className="bubble-container w-fit mx-auto my-16">{renderBubbleCharts()}</div>
+      <div className="pie-container w-fit mx-auto my-16">{renderPieCodeCharts()}</div>
+    </div>
   );
 }
