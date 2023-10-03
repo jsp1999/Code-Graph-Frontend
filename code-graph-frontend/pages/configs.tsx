@@ -125,6 +125,8 @@ export default function ConfigPage() {
           }
         }
       }
+      // Sort configData by config_id
+      configData.sort((a, b) => a.config_id - b.config_id);
 
       setConfigs(configData);
     } catch (error) {
@@ -158,6 +160,7 @@ export default function ConfigPage() {
         handleClose={() => setEditModalOpen(false)}
         onEdit={handleEditConfig}
         config={editData}
+        key={editData.config_id}
       />
       <Header title="Code View" />
 

@@ -43,11 +43,47 @@ type Config = {
   project_name: string;
 };
 
+let emptyConf = {
+  name: "",
+  config_id: 0,
+  project_id: 0,
+  project_name: "",
+  config: {
+    name: "",
+    embedding_config: {
+      args: {
+        pretrained_model_name_or_path: "",
+      },
+      model_name: "",
+    },
+    reduction_config: {
+      args: {
+        n_neighbors: 0,
+        n_components: 0,
+        metric: "",
+        random_state: 0,
+        n_jobs: 0,
+      },
+      model_name: "",
+    },
+    cluster_config: {
+      args: {
+        min_cluster_size: 0,
+        metric: "",
+        cluster_selection_method: "",
+      },
+      model_name: "",
+    },
+    model_type: "",
+  },
+};
+
 interface EditModalProps {
   open: boolean;
   handleClose: () => void;
   config: Config;
   onEdit: (config: Config) => Promise<any>;
+  key: number;
 }
 
 function updateJsonWithPath(json: any, path: string, value: any): any {
@@ -71,93 +107,66 @@ function updateJsonWithPath(json: any, path: string, value: any): any {
 }
 
 export default function EditModal(props: EditModalProps) {
-  const initialFormData: Config = {
-    name: props?.config?.name,
-    config_id: props?.config?.config_id,
-    project_id: props?.config?.project_id,
-    project_name: props?.config?.project_name,
-    config: {
-      name: props?.config?.config?.name,
-      embedding_config: {
-        args: {
-          pretrained_model_name_or_path: props?.config?.config?.embedding_config?.args?.pretrained_model_name_or_path,
+  const getInitialFormData = () => {
+    return {
+      name: props?.config?.name,
+      config_id: props?.config?.config_id,
+      project_id: props?.config?.project_id,
+      project_name: props?.config?.project_name,
+      config: {
+        name: props?.config?.config?.name,
+        embedding_config: {
+          args: {
+            pretrained_model_name_or_path: props?.config?.config?.embedding_config?.args?.pretrained_model_name_or_path,
+          },
+          model_name: props?.config?.config?.embedding_config?.model_name,
         },
-        model_name: props?.config?.config?.embedding_config?.model_name,
-      },
-      reduction_config: {
-        args: {
-          n_neighbors: props?.config?.config?.reduction_config?.args?.n_neighbors,
-          n_components: props?.config?.config?.reduction_config?.args?.n_components,
-          metric: props?.config?.config?.reduction_config?.args?.metric,
-          random_state: props?.config?.config?.reduction_config?.args?.random_state,
-          n_jobs: props?.config?.config?.reduction_config?.args?.n_jobs,
+        reduction_config: {
+          args: {
+            n_neighbors: props?.config?.config?.reduction_config?.args?.n_neighbors,
+            n_components: props?.config?.config?.reduction_config?.args?.n_components,
+            metric: props?.config?.config?.reduction_config?.args?.metric,
+            random_state: props?.config?.config?.reduction_config?.args?.random_state,
+            n_jobs: props?.config?.config?.reduction_config?.args?.n_jobs,
+          },
+          model_name: props?.config?.config?.reduction_config?.model_name,
         },
-        model_name: props?.config?.config?.reduction_config?.model_name,
-      },
-      cluster_config: {
-        args: {
-          min_cluster_size: props?.config?.config?.cluster_config?.args?.min_cluster_size,
-          metric: props?.config?.config?.cluster_config?.args?.metric,
-          cluster_selection_method: props?.config?.config?.cluster_config?.args?.cluster_selection_method,
+        cluster_config: {
+          args: {
+            min_cluster_size: props?.config?.config?.cluster_config?.args?.min_cluster_size,
+            metric: props?.config?.config?.cluster_config?.args?.metric,
+            cluster_selection_method: props?.config?.config?.cluster_config?.args?.cluster_selection_method,
+          },
+          model_name: props?.config?.config?.cluster_config?.model_name,
         },
-        model_name: props?.config?.config?.cluster_config?.model_name,
+        model_type: props?.config?.config?.model_type,
       },
-      model_type: props?.config?.config?.model_type,
-    },
+    };
   };
 
-  const [formData, setFormData] = useState<Config>(initialFormData);
+  const [formData, setFormData] = useState<Config>(getInitialFormData);
   const [isDynamicModel, setIsDynamicModel] = useState<boolean>(props?.config?.config?.model_type === "dynamic");
 
   const handleFinish = async (newbody: any) => {
     try {
       await props.onEdit(newbody);
-
-      setFormData({
-        name: "",
-        config_id: 0,
-        project_id: 0,
-        project_name: "",
-        config: {
-          name: "",
-          embedding_config: {
-            args: {
-              pretrained_model_name_or_path: "",
-            },
-            model_name: "",
-          },
-          reduction_config: {
-            args: {
-              n_neighbors: 0,
-              n_components: 0,
-              metric: "",
-              random_state: 0,
-              n_jobs: 0,
-            },
-            model_name: "",
-          },
-          cluster_config: {
-            args: {
-              min_cluster_size: 0,
-              metric: "",
-              cluster_selection_method: "",
-            },
-            model_name: "",
-          },
-          model_type: "",
-        },
-      });
+      setClosed();
     } catch (error) {
       // Handle error
+    } finally {
+      setClosed();
     }
   };
 
   function setClosed() {
+    // reset all
+    setFormData(emptyConf);
+
     props.handleClose();
   }
 
   const handleSave = () => {
-    let oldFormData = initialFormData;
+    let oldFormData = getInitialFormData();
     if (!formData) {
       setClosed();
     }
@@ -222,16 +231,18 @@ export default function EditModal(props: EditModalProps) {
       oldFormData.config.reduction_config.model_name = "umap";
     }
 
-    setFormData(oldFormData);
-
     handleFinish(oldFormData);
-
     setClosed();
   };
 
   useEffect(() => {
-    setIsDynamicModel(formData?.config?.model_type === "dynamic" || props?.config?.config?.model_type === "dynamic");
-  }, [formData, props?.config?.config]);
+    // This will run only once when the component mounts
+    setIsDynamicModel(props?.config?.config?.model_type === "dynamic" || formData?.config?.model_type === "dynamic");
+  }, []);
+
+  useEffect(() => {
+    setIsDynamicModel(props?.config?.config?.model_type === "dynamic");
+  }, [props?.config?.config?.model_type]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -243,10 +254,8 @@ export default function EditModal(props: EditModalProps) {
     const { name, value } = event.target;
     switch (name) {
       case "model_type":
-        setFormData({ ...formData, config: { ...formData.config, model_type: value } });
-        console.log(value);
-        console.log(value === "dynamic");
         setIsDynamicModel(value === "dynamic");
+        setFormData({ ...formData, config: { ...formData.config, model_type: value } });
         break;
       default:
         setFormData({ ...formData, name: value });
@@ -276,6 +285,7 @@ export default function EditModal(props: EditModalProps) {
             variant="outlined"
             className="mb-3"
             fullWidth
+            disabled
           />
           <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth>
@@ -318,7 +328,7 @@ export default function EditModal(props: EditModalProps) {
             fullWidth
           />
           <p>Reduction config</p>
-          {isDynamicModel ? (
+          {isDynamicModel && (
             // Render fields for dynamic model
             <div>
               <TextField
@@ -343,7 +353,8 @@ export default function EditModal(props: EditModalProps) {
                 fullWidth
               />
             </div>
-          ) : (
+          )}
+          {!isDynamicModel && (
             // Render fields for static model
             <div>
               <TextField
