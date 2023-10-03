@@ -124,7 +124,8 @@ function newColorScale(code_id) {
 class Dot {
   private addToCode: () => void;
   private setRightClickedId: (id: number) => void;
-  constructor(dotId, x, y, segment, sentence, code, plot, addToCode, setRightClickedId: (id: number) => void) {
+  private dotId: number;
+  constructor(dotId, x, y, segment, sentence, code, plot, addToCode: () => void, setRightClickedId: (id: number) => void) {
     this.dotId = dotId;
     this.x = x;
     this.y = y;
@@ -205,18 +206,17 @@ class Dot {
     .on("click", d => {
       d = d.target.__data__;
       if (d.name === "Delete") {
-        // call the backend at DELETE /projects/:project_id/plots/segment/:segment_id with project id beeing the plotter.projectId and segment_id beeing the dot.dotId
+        // Call the backend at DELETE /projects/:project_id/plots/segment/:segment_id
+        // with project id being the plotter.projectId and segment_id being the dot.dotId
         fetch(this.plot.source + "projects/" + this.plot.projectId + "/plots/segment/" + this.dotId, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json", // Specify that we're sending JSON data
-            },
-        }).then(() => plotter.forceUpdate())
-      if (d.name === "Add to other code")   {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json", // Specify that we're sending JSON data
+          },
+        }).then(() => plotter.forceUpdate());
+      } else if (d.name === "Add to other code") {
         this.setRightClickedId(this.dotId);
         this.addToCode();
-      }
-
       }
     })
     .append("rect")
