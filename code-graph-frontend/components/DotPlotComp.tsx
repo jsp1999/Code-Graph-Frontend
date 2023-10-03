@@ -750,6 +750,7 @@ interface DotPlotProps {
   projectId: number;
   source: string;
   is_dynamic?: boolean; // Assuming this prop can be optional
+  setLoading: () => void;
 }
 
 // This is the interface for the functions you're exposing.
@@ -900,7 +901,7 @@ const isInitializedRef = useRef(false);
   // Update the rendering part to utilize the fetched plotItems instead of the dummy items
   return (
       <div>
-      <ChangeCodeModal open={openChangeCodeModal} handleClose={handleChangeCodeClose} projectId={projectId} segmentId={rightClickedItemId} />
+      <ChangeCodeModal open={openChangeCodeModal} handleClose={handleChangeCodeClose} projectId={projectId} segmentId={rightClickedItemId} setLoading={props.setLoading} />
     <div className="flex">
       <div className="dynamicSvgContainer">
         {/* Use the fetched plotItems instead of dummy items */}

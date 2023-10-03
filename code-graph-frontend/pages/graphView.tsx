@@ -86,7 +86,9 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     if (dotPlotRef.current && config) {
       console.log("SETTING MODEL TYPE", config.config.model_type);
       console.log(config);
+      setLoading(true);
       dotPlotRef.current.setModelType(config.config.model_type);
+      setLoading(false);
     }
   }, [config]);
   const handleOpen = () => setOpen(true);
@@ -131,16 +133,19 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   useEffect(() => {
     if (dotPlotRef.current && selectedNodes) {
       console.log("SETTING FILTER AND PLOTTING graphView, selected_codes", selectedNodes);
+      setLoading(true);
       dotPlotRef.current.setPlotFilter(selectedNodes);
+      setLoading(false);
     }
   }, [dotPlotRef, selectedNodes]);
 
   // Function to fetch and update project data
   const fetchAndUpdateConfigs = async () => {
     try {
+      setLoading(true);
       const configResponse = (await getconfig(projectId)).data;
-
       setConfig(configResponse);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching projects:", error);
     }
@@ -184,6 +189,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
         onEdit={handleEditConfig}
         config={editData}
         key={editData?.config_id}
+        setLoading={() => setLoading(!loading)}
       />
       <LoadingModal open={loading} />
       <div className="flex">

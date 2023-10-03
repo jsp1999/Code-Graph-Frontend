@@ -84,6 +84,7 @@ interface EditModalProps {
   config: Config;
   onEdit: (config: Config) => Promise<any>;
   key: number;
+  setLoading: () => void;
 }
 
 function updateJsonWithPath(json: any, path: string, value: any): any {
@@ -149,8 +150,10 @@ export default function EditModal(props: EditModalProps) {
 
   const handleFinish = async (newbody: any) => {
     try {
+      props.setLoading();
       await props.onEdit(newbody);
       setClosed();
+      props.setLoading();
     } catch (error) {
       // Handle error
     } finally {
@@ -166,9 +169,11 @@ export default function EditModal(props: EditModalProps) {
   }
 
   const handleSave = () => {
+    props.setLoading();
     let oldFormData = getInitialFormData();
     if (!formData) {
       setClosed();
+      props.setLoading();
     }
     if (formData.name != "") {
       oldFormData.name = formData.name;
@@ -233,6 +238,7 @@ export default function EditModal(props: EditModalProps) {
 
     handleFinish(oldFormData);
     setClosed();
+    props.setLoading();
   };
 
   useEffect(() => {
