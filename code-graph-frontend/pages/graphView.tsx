@@ -170,7 +170,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
         handleClose={() => setEditModalOpen(false)}
         onEdit={handleEditConfig}
         config={editData}
-        key={editData.config_id}
+        key={editData?.config_id}
       />
       <LoadingModal open={loading} />
       <div className="flex">
