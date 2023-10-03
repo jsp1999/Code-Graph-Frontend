@@ -121,6 +121,8 @@ export default function ProjectPage() {
       setConfirmModalOpen(false);
     } catch (error) {
       console.error("Error deleting project:", error);
+    } finally {
+      window.location.reload();
     }
   };
 
@@ -136,6 +138,8 @@ export default function ProjectPage() {
       setEditModalOpen(false);
     } catch (error) {
       console.error("Error editing project:", error);
+    } finally {
+      window.location.reload();
     }
   };
 
@@ -146,6 +150,8 @@ export default function ProjectPage() {
       setCreateModalOpen(false);
     } catch (error) {
       console.error("Error creating project:", error);
+    } finally {
+      window.location.reload();
     }
   };
 
