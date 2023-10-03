@@ -106,6 +106,8 @@ class CodeDot {
         contextMenu
             .append("div")
             .text("Rename")
+            .style("border", "1px solid #000000")
+            .style("background-color", "#FFFFFF")
             .on("click", () => {
                 this.setRightClickedId(this.dotId);
                 this.renameCode();
@@ -113,17 +115,21 @@ class CodeDot {
             });
 
         contextMenu
-        .append("div")
-        .text("Delete")
-        .on("click", () => {
-            this.setRightClickedId(this.dotId);
-            this.deleteCode();
-          contextMenu.remove();
-        });
+            .append("div")
+            .text("Delete")
+            .style("border", "1px solid #000000")
+            .style("background-color", "#FFFFFF")
+            .on("click", () => {
+                this.setRightClickedId(this.dotId);
+                this.deleteCode();
+              contextMenu.remove();
+            });
 
         contextMenu
             .append("div")
             .text("Add to Top-Level Code")
+            .style("border", "1px solid #000000")
+            .style("background-color", "#FFFFFF")
             .on("click", () => {
                 this.setRightClickedId(this.dotId);
                 this.addToCategory();

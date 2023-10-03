@@ -32,7 +32,6 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const [rightClickedItem, setRightClickedItem] = useState(0);
-  const [open, setOpen] = useState(false);
   const [jsonData, setJsonData] = useState(data);
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
@@ -91,19 +90,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
       setLoading(false);
     }
   }, [config]);
-  const handleOpen = () => setOpen(true);
-  const handleAddModalClose = () => {
-    setOpen(false);
-    setLoading(true);
-    getCodeTree(projectId)
-      .then((response) => {
-        setJsonData(response.data.codes);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  };
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     const { clientX, clientY } = e;
@@ -204,9 +191,6 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
           <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic={false} />
       </div>
       <div className="absolute right-5 bottom-5 ">
-          <Button variant="outlined" className="mr-10" onClick={handleOpen}>
-            Add new Code
-          </Button>
           <Button
             variant="outlined"
 className="mr-10"
