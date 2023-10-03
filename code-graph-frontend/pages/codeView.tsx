@@ -69,7 +69,7 @@ export default function CodeView() {
 
       setPlot(newPlot);
 
-      newPlot.generateColors().then(()=>newPlot.update()).then(() => newPlot.homeView());
+      newPlot.generateColors().then(()=>newPlot.update()).then(() => newPlot.homeView()).then(() => setLoading(false));
     } else {
       console.log("Error: canvas ref is null");
     }
@@ -78,7 +78,6 @@ export default function CodeView() {
 
     getCodeTree(projectId)
       .then((response) => {
-        localStorage.setItem("selectedNodes", JSON.stringify([]));
         setJsonData(response.data.codes);
         setLoading(false);
       })
@@ -158,8 +157,8 @@ export default function CodeView() {
 
   useEffect(() => {
     if (plot && selectedNodes) {
+      console.log("Applying codes filter")
       plot.applyCodesFilter(selectedNodes);
-      plot.generateColors().then(()=>plot.update()).then(() => plot.homeView());
     }
   }, [selectedNodes, plot]);
 

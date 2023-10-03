@@ -36,7 +36,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const [editData, setEditData] = useState<any>();
 
   const [loading, setLoading] = useState(false);
-
+  console.log("DOTPLOTCOMPONENT (grpahView) re rendered");
   const [selectedNodes, setSelectedNodes] = useState<number[]>(() => {
     if (typeof window === "undefined") {
       // We're on the server, just return the default value
@@ -62,8 +62,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
 
     getCodeTree(projectId)
       .then((response) => {
-        localStorage.setItem("selectedNodes", JSON.stringify([]));
-        console.log("resetting selected nodes");
+        console.log("current selected nodes");
         console.log(selectedNodes);
         console.log(localStorage.getItem("selectedNodes"));
         setJsonData(response.data.codes);
@@ -116,9 +115,10 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
 
   useEffect(() => {
     if (dotPlotRef.current && selectedNodes) {
+      console.log("SETTING FILTER AND PLOTTING graphView, selected_codes", selectedNodes);
       dotPlotRef.current.setPlotFilter(selectedNodes);
     }
-  }, [selectedNodes]);
+  }, [dotPlotRef, selectedNodes]);
 
   // Function to fetch and update project data
   const fetchAndUpdateConfigs = async () => {
