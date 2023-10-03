@@ -300,7 +300,7 @@ class CodeDotPlotter {
               dotData.average_position.y,
               dotData.text,
               this,
-              () => this.addToCategory,
+              this.addToCategory,
               radius,
           );
 
