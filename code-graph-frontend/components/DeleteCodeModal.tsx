@@ -6,6 +6,7 @@ interface DeleteCodeModalProps {
     open: boolean;
     handleClose: () => void;
     projectId: number;
+    setLoading: () => void;
 }
 
 export default function DeleteCodeModal(props: DeleteCodeModalProps) {
@@ -30,11 +31,13 @@ export default function DeleteCodeModal(props: DeleteCodeModalProps) {
         props.handleClose();
     }
 
-    function pressAddButton() {
+    function pressDeleteButton() {
         try {
+            props.setLoading();
             deleteCodeRoute(checkedId, props.projectId).then(() => {
                 setClosed();
                 props.handleClose();
+                props.setLoading();
                 window.location.reload(); // Reload the page
             })
         } catch (e) {
@@ -94,7 +97,7 @@ export default function DeleteCodeModal(props: DeleteCodeModalProps) {
                         <Button className="mx-2" variant="outlined" onClick={setClosed}>
                             Cancel
                         </Button>
-                        <Button className="mx-2 bg-blue-900" variant="contained" onClick={pressAddButton}>
+                        <Button className="mx-2 bg-blue-900" variant="contained" onClick={pressDeleteButton}>
                             Delete
                         </Button>
                     </div>

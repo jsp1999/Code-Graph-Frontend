@@ -12,6 +12,7 @@ interface RenameModalProps {
     codeId: number;
     codeName: string;
     codeParentId: number | null;
+    setLoading: () => void;
 }
 
 export default function RenameModal(props: RenameModalProps) {
@@ -23,10 +24,12 @@ export default function RenameModal(props: RenameModalProps) {
     }
 
     function pressRenameButton() {
+        props.setLoading();
             try {
                 renameCode(props.codeId, codeName, props.projectId, props.codeParentId).then(() => {
                     setClosed();
                     props.handleClose();
+                    props.setLoading();
                     window.location.reload(); // Reload the page
                 })
             } catch (e) {
