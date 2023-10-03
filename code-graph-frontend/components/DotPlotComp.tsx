@@ -117,77 +117,7 @@ function newColorScale(code_id) {
   return idToColorMap[code_id] || "#808080"; // Fallback to gray
 }
 
-class TrainSlide {
-  constructor(plot) {
-    console.log("Creating train slide...");
-    this.plot = plot;
-    this.plot.train_slide = this;
-    //this.interval = setInterval(() => this.update(), 10 * 1000);
-    //this.setupTrainLinesButton();
-  }
-  setupTrainLinesButton() {
-    const button = document.getElementById("trainLinesButton");
-    button.addEventListener("click", () => this.trainLines());
-  }
 
-  trainLines() {
-    // Transform lines data into the desired format
-    console.log("training lines...");
-    const formattedData = this.lines.map((line) => {
-      return {
-        id: line.dot.dotId,
-        pos: [line.end_x, line.end_y],
-      };
-    });
-    console.log("formattedData", formattedData)
-
-    const jsonData = JSON.stringify(formattedData); // Convert the formatted data to JSON
-    fetch(this.plot.source + "projects/" + this.plot.projectId + "/dynamic/correction?epochs=10", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json", // Specify that we're sending JSON data
-      },
-      body: jsonData, // Attach the JSON data to the request body
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        this.plot.forceUpdate();
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
-
-  update() {
-    d3.select("#lineList").html("");
-    const existingLinesData = this.plot.lines;
-    existingLinesData.forEach((lineData) => {
-      const listItem = d3
-        .select("#lineList")
-        .append("div")
-        .attr("class", "list-item")
-        .style("background-color", d3.color(lineData.dot.color).copy({ opacity: 0.5 }))
-        .append("span")
-        .append("div")
-        .text(`Segment: \"${lineData.dot.segment}\"`)
-        .append("div")
-        .text(`Code: \"${findCodePath(lineData.dot.plot.tree, lineData.dot.code)}\"`)
-        .append("div")
-        .append("button")
-        .text("Delete")
-        .on("click", () => {
-          lineData.remove();
-          this.update();
-        });
-    });
-  }
-}
-
-class ConfigSlide {
-  constructor(plot) {
-    this.plot = plot;
-  }
-}
 class Dot {
   constructor(dotId, x, y, segment, sentence, code, plot) {
     this.dotId = dotId;
@@ -210,7 +140,6 @@ class Dot {
 
   draw(plotter) {
     const creationZoomScale = d3.zoomTransform(this.plot.svg.node()).k;
-    console.log("drawing dot...");
     this.circle = plotter.container
       .append("circle")
       .attr("class", "dot")
@@ -227,7 +156,6 @@ class Dot {
       });
 
     this.circle.on("contextmenu", (event) => {
-      console.log("context menu");
     event.preventDefault();
     this.showContextMenu(event, plotter);
   });
@@ -268,7 +196,6 @@ class Dot {
     .attr("class", "option")
     .on("click", d => {
       d = d.target.__data__;
-      console.log("Clicked on option:", d.name)
       if (d.name === "Delete") {
         // call the backend at DELETE /projects/:project_id/plots/segment/:segment_id with project id beeing the plotter.projectId and segment_id beeing the dot.dotId
         fetch(this.plot.source + "projects/" + this.plot.projectId + "/plots/segment/" + this.dotId, {
@@ -278,6 +205,12 @@ class Dot {
             },
         }).then(() => plotter.forceUpdate())
 
+      }
+      if (d.name === "Add to other code") {
+        // modal richtig aufrufen
+        // code soll in modal ausgesucht werden und bei submit:
+        // /projects/{project_id}/plots/segment/{segment_id}
+        // mit body: {code_id: code_id}
       }
     })
     .append("rect")
@@ -311,7 +244,6 @@ class Dot {
   dropdown.append("xhtml:select")
     .on("change", function(d) {
       const selectedValue = this.value;
-      console.log("Dropdown selected:", selectedValue);
       // Handle the selected value
     })
     .selectAll("option")
@@ -391,7 +323,6 @@ class Dot {
   }
 
   remove() {
-    console.log("remove dot...");
     if (this.line) {
       this.line.remove();
     }
@@ -437,7 +368,6 @@ class Line {
     }
   }
   remove() {
-    console.log("remove line...");
     if (this.dot.line == this) {
       this.dot.line = null;
     }
@@ -617,7 +547,6 @@ class DotPlot {
     this.filter = filterFunc;
   }
   homeView() {
-    console.log("home view...");
     const xExtent = d3.extent(this.data, (d) => d.x);
     const yExtent = d3.extent(this.data, (d) => d.y);
 
@@ -661,7 +590,6 @@ class DotPlot {
   }
 
   generateColors() {
-    console.log("generating colors...");
     const endpoint = this.source + "projects/" + this.projectId + "/codes/tree";
     return fetch(endpoint)
       .then((response) => response.json())
@@ -691,7 +619,6 @@ class DotPlot {
     }
     const filterFunc = createCodeFilter(codes);
     this.setFilter(filterFunc);
-    console.log("temp filter", this.filter)
     this.update().then(() => this.homeView());
   }
 
@@ -733,8 +660,6 @@ class DotPlot {
       return response.json();
     })
     .then(() => {
-      console.log("Epochs remaining:", epochsRemaining)
-      console.log("Forcing Update...")
       this.forceUpdate();
       setTimeout(() => this.trainForEpochs(epochsRemaining - 1), 1000);
       //this.trainForEpochs(epochsRemaining - 1);
@@ -763,8 +688,6 @@ class DotPlot {
   render(newData) {
     // Existing Dots
     //this.container.selectAll(".dot").remove();
-    console.log("rendering...");
-    console.log("current_filter: ", this.filter);
     if (this.filter) {
       newData = newData.filter((dot) => this.filter(dot));
     } else {
@@ -797,7 +720,6 @@ class DotPlot {
       }
       return shouldKeep;
     });
-    console.log("all dots rendered: ", this.container.selectAll(".dot"));
   }
 }
 interface DotPlotProps {
@@ -824,20 +746,14 @@ const isInitializedRef = useRef(false);
   const [train, setTrain] = useState<any>();
   const [plotItems, setPlotItems] = useState<any[]>([]);
   const handleDataUpdate = (plot_this) => {
-    console.log("updating data line list...");
-    console.log("plot: ", plot_this);
     const value = [...(plot_this?.getList() || [])];
-    console.log("plot_this.getList(): ", value);
     setPlotItems(value);
   };
-  useEffect(() => {
-    console.log("plotItems has been updated:", plotItems);
-}, [plotItems]);
+
 
 
   useImperativeHandle(ref, () => ({
   setPlotFilter: (filterValue: any) => {
-    console.log("setting filter value")
     if (plot) {
       plot.applyCodeFilter(filterValue);
     } else {
@@ -873,14 +789,12 @@ const isInitializedRef = useRef(false);
 
   useEffect(() => {
   if (plot && pendingFilterRef.current) {
-    console.log("Applying queued filter value");
     plot.applyCodeFilter(pendingFilterRef.current);
     pendingFilterRef.current = null; // Clear the pending filter
   }
 }, [plot]);
 
   const handleDeleteItem = (item) => {
-    console.log("deleting item line list...");
     item.remove();
   };
 
@@ -888,7 +802,6 @@ const isInitializedRef = useRef(false);
   useEffect(() => {
      if (!isInitializedRef.current) {
     if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
-      console.log("Initializing dot plotter...")
       console.log("source: ", source)
       console.log("projectID: ", projectId)
       console.log("is_dynamic: ", is_dynamic)
@@ -904,9 +817,7 @@ const isInitializedRef = useRef(false);
         is_dynamic,
         handleDataUpdate,
       );
-      const newTrain = new TrainSlide(newPlot);
       setPlot(newPlot);
-      setTrain(newTrain);
 
       // Call generateColors and update as usual
       /*
