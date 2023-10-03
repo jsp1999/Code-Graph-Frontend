@@ -900,10 +900,9 @@ const isInitializedRef = useRef(false);
 
   // Update the rendering part to utilize the fetched plotItems instead of the dummy items
   return (
-      <div>
-      <ChangeCodeModal open={openChangeCodeModal} handleClose={handleChangeCodeClose} projectId={projectId} segmentId={rightClickedItemId} setLoading={props.setLoading} />
     <div className="flex">
-      <div className="dynamicSvgContainer">
+      <ChangeCodeModal open={openChangeCodeModal} handleClose={handleChangeCodeClose} projectId={projectId} segmentId={rightClickedItemId} setLoading={props.setLoading} />
+      <div className="dynamicSvgContainer border h-[80vh] w-auto">
         {/* Use the fetched plotItems instead of dummy items */}
         <svg id="canvas" ref={canvasRef} width="100%" height="100%">
           <g id="container"></g>
@@ -931,7 +930,6 @@ const isInitializedRef = useRef(false);
         />
       </div>)}
     </div>
-        </div>
   );
 });
 
