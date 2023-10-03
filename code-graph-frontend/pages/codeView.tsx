@@ -14,6 +14,7 @@ import MergeModal from "@/components/MergeModal";
 import ConfirmModal from "@/components/ConfirmModal";
 import RenameModal from "@/components/RenameModal";
 import DeleteCodeModal from "@/components/DeleteCodeModal";
+import SearchCodeOccurrencesModal from "@/components/codeView/SearchCodeOccurrences";
 
 export default function CodeView() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function CodeView() {
   const [openAddToCodeModal, setOpenAddToCodeModal] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [openRenameModal, setOpenRenameModal] = useState(false);
+  const [openShowModal, setOpenShowModal] = useState(false);
   const [openDeleteCodeModal, setOpenDeleteCodeModal] = useState(false);
   const [jsonData, setJsonData] = useState(data);
   const [loading, setLoading] = useState(false);
@@ -63,6 +65,10 @@ export default function CodeView() {
   }
     const handleOpenDelete = () => setOpenConfirmModal(true);
 
+    const handleOpenShow = () => {
+        setOpenShowModal(true);
+    }
+
   useEffect(() => {
     setLoading(true);
 
@@ -81,6 +87,7 @@ export default function CodeView() {
           handleRightClick,
           handleOpenDelete,
           handleOpenRename,
+          handleOpenShow,
       );
 
       setPlot(newPlot);
@@ -126,6 +133,10 @@ export default function CodeView() {
         setOpenDeleteCodeModal(false);
     };
 
+    const handleShowClose = () => {
+        setOpenShowModal(false);
+    };
+
     const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
     setSelectedNodes(newSelectedNodes);
   };
@@ -149,6 +160,7 @@ export default function CodeView() {
         codeId={rightClickedItemId}
         setLoading={() => setLoading(!loading)}
       />
+        <SearchCodeOccurrencesModal open={openShowModal} handleClose={handleShowClose} projectId={projectId} codeId={rightClickedItemId} />
       <LoadingModal open={loading} />
       <MergeModal
         open={openMergeModal}
