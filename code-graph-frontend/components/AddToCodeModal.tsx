@@ -33,7 +33,7 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
 
     function pressAddButton() {
             try {
-                updateCodeRoute(props.codeId, "", checkedId, props.projectId);
+                updateCodeRoute(props.codeId, "", props.projectId, checkedId);
             } catch (e) {
                 console.error("Error adding code:", e);
             }

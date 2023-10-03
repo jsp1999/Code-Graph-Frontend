@@ -1,7 +1,7 @@
 import { Button, Modal, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
-    getCodeRoute,
+    getCodeRoute, renameCode,
     updateCodeRoute
 } from "@/pages/api/api";
 
@@ -10,18 +10,12 @@ interface RenameModalProps {
     handleClose: () => void;
     projectId: number;
     codeId: number;
+    codeName: string;
+    codeParentId: number | null;
 }
 
 export default function RenameModal(props: RenameModalProps) {
-    const [codeName, setCodeName] = useState("");
-    const [parentId, setParentId] = useState(1);
-
-    useEffect(() => {
-        getCodeRoute(props.codeId, props.projectId).then((result) => {
-            setCodeName(result.data.text);
-            setParentId(result.data.parent_code_id)
-        })
-    }, [codeName]);
+    const [codeName, setCodeName] = useState(props.codeName);
 
     function setClosed() {
         props.handleClose();
@@ -30,7 +24,7 @@ export default function RenameModal(props: RenameModalProps) {
 
     function pressRenameButton() {
             try {
-                updateCodeRoute(props.codeId, codeName, parentId, props.projectId).then(() => {
+                renameCode(props.codeId, codeName, props.projectId, props.codeParentId).then(() => {
                     setClosed();
                     props.handleClose();
                 })
@@ -47,7 +41,7 @@ export default function RenameModal(props: RenameModalProps) {
         <>
             <Modal open={props.open} onClose={setClosed}>
                 <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10rem]">
-                    <p>{`Rename Code "${codeName}"`}</p>
+                    <p>{`Rename Code "${props.codeName}"`}</p>
                     <div>
                         <TextField
                             className="w-[25rem]"

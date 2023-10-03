@@ -167,8 +167,8 @@ export const getCodeRoute = (id: number, project_id: number): Promise<any> => {
 export const updateCodeRoute = (
   id: number,
   codeName: string,
-  topLevelCodeId: number,
   project_id: number,
+  topLevelCodeId: number | null,
 ): Promise<any> => {
   const body = {
     code: codeName,
@@ -178,6 +178,14 @@ export const updateCodeRoute = (
   console.log(`${baseURL}/projects/${project_id}/codes/${id}`, body);
   return axios.put<any>(`${baseURL}/projects/${project_id}/codes/${id}`, body);
 };
+
+export const renameCode = (id: number, codeName: string, projectId: number, topLevelCodeId: number | null,): Promise<any> => {
+  if (topLevelCodeId == null) {
+    return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&code_name=${codeName}`)
+  } else {
+    return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&code_name=${codeName}&parent_id=${topLevelCodeId}`)
+  }
+}
 
 export const deleteCodeRoute = (id: number, project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/codes/${id}`);

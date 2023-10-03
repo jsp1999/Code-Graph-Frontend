@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { Button } from "@mui/material";
 import AddCodeModal from "@/components/AddCodeModal";
 import CodeTreeView from "@/components/CodeTreeView";
-import { getCodeTree } from "@/pages/api/api";
+import {getCodeRoute, getCodeTree} from "@/pages/api/api";
 import { useRouter } from "next/router";
 import LoadingModal from "@/components/LoadingModal";
 import * as d3 from "d3";
@@ -21,6 +21,8 @@ export default function CodeView() {
   const canvasRef = useRef<SVGSVGElement>(null);
   const [plot, setPlot] = useState<any>();
   const [rightClickedItemId, setRightClickedItemId] = useState(0);
+  const [rightClickedItemName, setRightClickedItemName] = useState("");
+  const [rightClickedItemParentId, setRightClickedItemParentId] = useState(null);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openMergeModal, setOpenMergeModal] = useState(false);
   const [openAddToCodeModal, setOpenAddToCodeModal] = useState(false);
@@ -47,8 +49,16 @@ export default function CodeView() {
     localStorage.setItem("selectedNodes", JSON.stringify(selectedNodes));
   }, [selectedNodes]);
   const handleOpen = () => setOpenAddToCodeModal(true);
-  const handleRightClick = (id: number) => setRightClickedItemId(id);
-  const handleOpenRename = () => setOpenRenameModal(true);
+  const handleRightClick = (id: number) => {
+      setRightClickedItemId(id);
+      getCodeRoute(id, projectId).then((result) => {
+          setRightClickedItemName(result.data.text);
+          setRightClickedItemParentId(result.data.parent_code_id);
+      })
+  }
+  const handleOpenRename = () => {
+      setOpenRenameModal(true);
+  }
     const handleOpenDelete = () => setOpenConfirmModal(true);
 
   useEffect(() => {
@@ -184,8 +194,8 @@ export default function CodeView() {
         projectId={projectId}
         setLoading={() => setLoading(!loading)}
       />
-        <ConfirmModal open={openConfirmModal} handleClose={handleConfirmModalClose} projectId={projectId} codeId={rightClickedItemId} />
-        <RenameModal open={openRenameModal} handleClose={handleRenameModalClose} projectId={projectId} codeId={rightClickedItemId} />
+        <ConfirmModal open={openConfirmModal} handleClose={handleConfirmModalClose} projectId={projectId} codeId={rightClickedItemId} codeName={rightClickedItemName} />
+        <RenameModal open={openRenameModal} handleClose={handleRenameModalClose} projectId={projectId} codeId={rightClickedItemId} codeName={rightClickedItemName} codeParentId={rightClickedItemParentId} />
       <div className="flex">
 
       <div className="float-left">
