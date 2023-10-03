@@ -323,7 +323,7 @@ class Line {
     this.dot = dot;
     dot.line = this;
     dot.plot.lines.push(this);
-    this.dot.plot.list_update_callback();
+    this.dot.plot.list_update_callback(this.dot.plot);
   }
   updateStart(x, y) {
     this.start.x = x;
@@ -347,7 +347,7 @@ class Line {
     if (this.element) {
       this.element.remove();
     }
-    this.dot.plot.list_update_callback();
+    this.dot.plot.list_update_callback(this.dot.plot);
   }
   draw(plotter) {
     const creationZoomScale = d3.zoomTransform(this.dot.plot.svg.node()).k;
@@ -406,7 +406,7 @@ class DotPlot {
     is_dynamic = false,
     list_update_callback = null,
   ) {
-
+    console.log("Initializing dot plotter...")
     this.containerId = containerId;
     this.is_dynamic = is_dynamic;
     this.train_button = train_button;
@@ -418,9 +418,7 @@ class DotPlot {
     this.lines = [];
     this.selected = [];
     this.svg = svg;
-    console.log(this.svg);
     this.container = container;
-    console.log(this.container);
     this.point_r = 5.5;
     this.svg
       .append("defs")
@@ -462,6 +460,7 @@ class DotPlot {
       });
     this.setupTrainButton();
     this.svg.call(this.zoom);
+    this.generateColors().then(()=>this.update()).then(() => this.homeView());
   }
 
   setupTrainButton() {
@@ -490,7 +489,6 @@ class DotPlot {
   }
   setFilter(filterFunc) {
     this.filter = filterFunc;
-    this.update();
   }
   homeView() {
     console.log("home view...");
@@ -504,13 +502,7 @@ class DotPlot {
     // Calculate the viewport's width and height
     const svgElem = this.svg.node(); // Assuming svg is a D3 selection. If it's a raw DOM element, you don't need .node().
     const { width, height } = svgElem.getBoundingClientRect();
-    //const width = 400;
-    //const height = 400;
-    //const width = +this.svg.attr("width");
-    //const height = +this.svg.attr("height");
-    console.log(width);
-    console.log(height);
-    // Calculate the scaling factor
+
     const kx = width / dataWidth;
     const ky = height / dataHeight;
     const k = 0.95 * Math.min(kx, ky); // 0.95 is for a little padding
@@ -524,11 +516,10 @@ class DotPlot {
   }
 
   fetchData() {
-    console.log("fetching data...");
     if (this.fetched_data) {
-      console.log("already fetched data...");
       return Promise.resolve(this.fetched_data);
     } else {
+      console.log("fetching data...");
       const endpoint = this.source + "projects/" + this.projectId + "/plots/?all=true";
       return fetch(endpoint)
         .then((response) => response.json())
@@ -560,6 +551,7 @@ class DotPlot {
   }
 
   update() {
+    console.log("updating...");
     return this.fetchData().then((newData) => {
       this.render(newData);
     });
@@ -573,6 +565,7 @@ class DotPlot {
     }
     const filterFunc = createCodeFilter(codes);
     this.setFilter(filterFunc);
+    console.log("temp filter", this.filter)
     this.update().then(() => this.homeView());
   }
 
@@ -598,28 +591,36 @@ class DotPlot {
   getList() {
     return this.lines;
   }
+  forceUpdate() {
+    console.log("force updating...")
+    this.fetched_data = null;
+    this.update();
+  }
+
+  conditionalUpdate() {
+    if (this.fetched_data) {
+      this.update();
+    }
+  }
+
   render(newData) {
     // Existing Dots
     //this.container.selectAll(".dot").remove();
     console.log("rendering...");
+    console.log("current_filter: ", this.filter);
     if (this.filter) {
-      console.log("filtering...");
       newData = newData.filter((dot) => this.filter(dot));
     } else {
       newData = [];
     }
 
     newData.forEach((dotData) => {
-      //console.log(dotData);
       let existingDot = this.data.find((d) => d.dotId === dotData.id);
-      //console.log(existingDot);
       if (existingDot) {
-        // Update existing dot
         existingDot.x = dotData.reduced_embedding.x;
         existingDot.y = dotData.reduced_embedding.y;
         existingDot.move(); // Animate transition
       } else {
-        // Create new dot
         let newDot = new Dot(
           dotData.id,
           dotData.reduced_embedding.x,
@@ -632,30 +633,14 @@ class DotPlot {
         newDot.draw(this);
       }
     });
-    // Optional: remove dots that don't exist in newData
     this.data = this.data.filter((dot) => {
       let shouldKeep = newData.find((d) => d.id === dot.dotId);
       if (!shouldKeep && dot.circle) {
         dot.remove();
       }
-      /*
-      const validDotIds = newData.map((d) => d.id);
-      // Directly select all dots in the SVG
-      const allDotsInSVG = this.container.selectAll(".dot");
-
-      // Remove the dots whose IDs are not in validDotIds
-      allDotsInSVG.each(function () {
-        const dot = d3.select(this);
-        const dotId = parseInt(dot.attr("data-dotId")); // Assuming you've stored the dotId as a data attribute
-
-        if (!validDotIds.includes(dotId)) {
-          dot.remove();
-        }
-      });
-*/
       return shouldKeep;
     });
-    console.log(this.container.selectAll(".dot"));
+    console.log("all dots rendered: ", this.container.selectAll(".dot"));
   }
 }
 interface DotPlotProps {
@@ -671,35 +656,57 @@ export interface DotPlotCompHandles {
 
 const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) => {
   const { projectId, source, is_dynamic } = props;
-
+const pendingFilterRef = useRef<any>(null);
   const canvasRef = useRef<SVGSVGElement>(null);
   const trainButtonRef = useRef<HTMLButtonElement>(null);
   const [items, setItems] = useState<Item[]>([]);
-
+const isInitializedRef = useRef(false);
   const [plot, setPlot] = useState<any>();
   const [train, setTrain] = useState<any>();
-  const handleDataUpdate = () => {
-    console.log("handle data update...");
-    console.log(plot);
-    console.log(plot?.getList());
-    setPlotItems(plot?.getList() || []);
-  };
-  useImperativeHandle(ref, () => ({
-    setPlotFilter: (filterValue: any) => {
-      if (plot) {
-        plot.applyCodeFilter(filterValue);
-      }
-    },
-  }));
-
-  const handleDeleteItem = (item) => {
-    item.remove();
-    handleDataUpdate();
-  };
   const [plotItems, setPlotItems] = useState<any[]>([]);
+  const handleDataUpdate = (plot_this) => {
+    console.log("updating data line list...");
+    console.log("plot: ", plot_this);
+    const value = plot_this?.getList() || [];
+    console.log("plot_this.getList(): ", value);
+    setPlotItems(value);
+  };
+  useEffect(() => {
+    console.log("plotItems has been updated:", plotItems);
+}, [plotItems]);
+  useImperativeHandle(ref, () => ({
+  setPlotFilter: (filterValue: any) => {
+    console.log("setting filter value")
+    if (plot) {
+      plot.applyCodeFilter(filterValue);
+    } else {
+      console.log("plot is null; queuing the filter value");
+      pendingFilterRef.current = filterValue;
+    }
+  }
+}));
 
   useEffect(() => {
+  if (plot && pendingFilterRef.current) {
+    console.log("Applying queued filter value");
+    plot.applyCodeFilter(pendingFilterRef.current);
+    pendingFilterRef.current = null; // Clear the pending filter
+  }
+}, [plot]);
+
+  const handleDeleteItem = (item) => {
+    console.log("deleting item line list...");
+    item.remove();
+  };
+
+
+  useEffect(() => {
+     if (!isInitializedRef.current) {
     if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
+      console.log("Initializing dot plotter...")
+      console.log("source: ", source)
+      console.log("projectID: ", projectId)
+      console.log("is_dynamic: ", is_dynamic)
       const svg_ = d3.select(canvasRef.current);
       const container_ = d3.select("#container");
       const newPlot = new DotPlot(
@@ -717,6 +724,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
       setTrain(newTrain);
 
       // Call generateColors and update as usual
+      /*
       newPlot
         .generateColors()
         .then(() => newPlot.update())
@@ -725,6 +733,10 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
           setPlotItems(newPlot.getList()); // Assuming list is the correct variable name
           newPlot.homeView();
         });
+       */
+      isInitializedRef.current = true;
+    }
+
     }
   }, [projectId, source, is_dynamic]);
 

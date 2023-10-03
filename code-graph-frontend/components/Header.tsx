@@ -92,6 +92,7 @@ export default function Header(props: HeaderProps) {
                     <button
                       onClick={() => {
                         localStorage.setItem("projectId", project.project_id.toString());
+                        localStorage.setItem("selectedNodes", JSON.stringify([]));
                         window.location.reload(); // Reload the page
                       }}
                     >
