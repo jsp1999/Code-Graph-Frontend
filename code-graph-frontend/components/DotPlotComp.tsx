@@ -224,10 +224,58 @@ class Dot {
       .on("mouseout", (event) => {
         this.hideTooltip();
       });
+
+    this.circle.on("contextmenu", (event) => {
+      console.log("context menu");
+    event.preventDefault();
+    this.showContextMenu(event, plotter);
+  });
     if (this.plot.is_dynamic) {
       this.setDragBehavior(plotter);
     }
   }
+  showContextMenu(event, plotter) {
+  // Remove any existing context menus
+  d3.selectAll(".custom-context-menu").remove();
+
+  const contextMenu = plotter.container.append("g")
+    .attr("class", "custom-context-menu")
+    .attr("transform", `translate(${event.clientX}, ${event.clientY})`);
+
+  const options = ["Delete", "Add to other code"];
+  const rectHeight = 30;
+  const rectWidth = 150;
+
+  contextMenu.selectAll("rect")
+    .data(options)
+    .enter()
+    .append("rect")
+    .attr("x", 0)
+    .attr("y", (d, i) => i * rectHeight)
+    .attr("width", rectWidth)
+    .attr("height", rectHeight)
+    .style("fill", "#eee")
+    .on("click", (d) => {
+      if (d === "Delete") {
+        // handle delete
+      } else if (d === "Add to other code") {
+        // display dropdown or handle other logic
+      }
+    });
+
+  contextMenu.selectAll("text")
+    .data(options)
+    .enter()
+    .append("text")
+    .attr("x", 10)
+    .attr("y", (d, i) => (i * rectHeight) + 20)
+    .text(d => d);
+
+  // Add an event listener to hide the menu when clicking elsewhere
+  d3.select("body").on("click", () => {
+    contextMenu.remove();
+  });
+}
 
   move() {
     if (this.circle) {
@@ -597,6 +645,7 @@ class DotPlot {
     this.update().then(() => this.homeView());
   }
 
+  /*
   trainForEpochs(epochsRemaining) {
     if (this.stopTraining || epochsRemaining <= 0) {
       this.toggleTrainButtonState();
@@ -614,7 +663,37 @@ class DotPlot {
         console.error("Error:", error);
         this.toggleTrainButtonState(); // Ensure the button state is reset if there's an error
       });
+  } */
+
+  trainForEpochs(epochsRemaining) {
+  // Check if training should stop or epochs remaining is zero
+  if (this.stopTraining || epochsRemaining <= 0) {
+    this.toggleTrainButtonState();
+    return;
   }
+
+  // Send a request to the backend to train for 1 epoch
+  fetch(this.source + "projects/" + this.projectId + "/dynamic/cluster?epochs=10", {
+    method: "POST",
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok.");
+      }
+      return response.json();
+    })
+    .then(() => {
+      console.log("Epochs remaining:", epochsRemaining)
+      console.log("Forcing Update...")
+      this.forceUpdate();
+      setTimeout(() => this.trainForEpochs(epochsRemaining - 1), 1000);
+      //this.trainForEpochs(epochsRemaining - 1);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      this.toggleTrainButtonState(); // Ensure the button state is reset if there's an error
+    });
+}
 
   getList() {
     return this.lines;
@@ -622,7 +701,7 @@ class DotPlot {
   forceUpdate() {
     console.log("force updating...")
     this.fetched_data = null;
-    this.update();
+    return this.update();
   }
 
   conditionalUpdate() {
@@ -680,10 +759,12 @@ interface DotPlotProps {
 // This is the interface for the functions you're exposing.
 export interface DotPlotCompHandles {
   setPlotFilter: (filterValue: any) => void;
+  setModelType: (modelType: any) => void;
 }
 
 const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) => {
-  const { projectId, source, is_dynamic } = props;
+  const { projectId, source } = props;
+  const [is_dynamic, set_dynamic] = useState(props.is_dynamic);
 const pendingFilterRef = useRef<any>(null);
   const canvasRef = useRef<SVGSVGElement>(null);
   const trainButtonRef = useRef<HTMLButtonElement>(null);
@@ -702,6 +783,8 @@ const isInitializedRef = useRef(false);
   useEffect(() => {
     console.log("plotItems has been updated:", plotItems);
 }, [plotItems]);
+
+
   useImperativeHandle(ref, () => ({
   setPlotFilter: (filterValue: any) => {
     console.log("setting filter value")
@@ -711,7 +794,31 @@ const isInitializedRef = useRef(false);
       console.log("plot is null; queuing the filter value");
       pendingFilterRef.current = filterValue;
     }
-  }
+  },
+
+    setModelType: (modelType: any) => {
+      console.log("setting model type")
+      console.log("modelType", modelType)
+      if (plot) {
+        if (modelType == "dynamic") {
+          plot.is_dynamic = true;
+          set_dynamic(true);
+          plot.train_button = trainButtonRef;
+          plot.setupTrainButton();
+        } else {
+          plot.is_dynamic = false;
+          set_dynamic(false);
+          plot.train_button = null;
+        }
+        console.log("plot", plot);
+        plot?.forceUpdate().then(() => plot.homeView());
+      }
+      else{
+        console.log("plot is null; queuing the model type");
+      }
+      console.log(plot)
+      console.log("is_dynamic: ", is_dynamic)
+    }
 }));
 
   useEffect(() => {
@@ -787,6 +894,7 @@ const isInitializedRef = useRef(false);
           </Button>
         )}
       </div>
+      {is_dynamic && (
       <div className="itemListContainer">
         <ItemList
           items={plotItems}
@@ -796,7 +904,7 @@ const isInitializedRef = useRef(false);
             plot.trainLines();
           }}
         />
-      </div>
+      </div>)}
     </div>
   );
 });

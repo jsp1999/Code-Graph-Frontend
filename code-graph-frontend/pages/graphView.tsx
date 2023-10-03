@@ -72,8 +72,18 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
         console.error("Error fetching data:", error);
       });
     setLoading(false);
+
+
   }, []);
 
+  useEffect(() => {
+    if (dotPlotRef.current && config)
+    {
+        console.log("SETTING MODEL TYPE", config.config.model_type);
+        console.log(config);
+        dotPlotRef.current.setModelType(config.config.model_type);
+    }
+  }, [config]);
   const handleOpen = () => setOpen(true);
   const handleAddModalClose = () => {
     setOpen(false);
@@ -174,7 +184,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
             updateSelectedNodes={handleUpdateSelectedNodes}
           />
         </div>
-        <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic={1} />
+        <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic={false} />
       </div>
       <div className="absolute right-5 bottom-5 ">
         <ButtonGroup>
