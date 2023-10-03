@@ -53,6 +53,7 @@ export default function AddCodeModal(props: AddCodeModalProps) {
     }
     setClosed();
     props.handleClose();
+    window.location.reload(); // Reload the page
   }
 
   const [searchQuery, setSearchQuery] = useState<string>('');

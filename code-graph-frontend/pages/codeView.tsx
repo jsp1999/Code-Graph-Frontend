@@ -104,32 +104,26 @@ export default function CodeView() {
 
   const handleAddModalClose = () => {
     setOpenAddModal(false);
-    window.location.reload(); // Reload the page
   };
 
   const handleAddToCodeModalClose = () => {
     setOpenAddToCodeModal(false);
-    window.location.reload(); // Reload the page
   };
 
   const handleMergeModalClose = () => {
     setOpenMergeModal(false);
-    window.location.reload(); // Reload the page
   };
 
     const handleConfirmModalClose = () => {
         setOpenConfirmModal(false);
-        window.location.reload(); // Reload the page
     };
 
     const handleRenameModalClose = () => {
         setOpenRenameModal(false);
-        window.location.reload(); // Reload the page
     };
 
     const handleDeleteCodeModalClose = () => {
         setOpenDeleteCodeModal(false);
-        window.location.reload(); // Reload the page
     };
 
     const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {

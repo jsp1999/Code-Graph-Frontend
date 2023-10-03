@@ -1,6 +1,6 @@
 import { Button, FormControlLabel, FormGroup, Modal, Switch, TextField } from "@mui/material";
 import React, { useState } from "react";
-import { getProjects, postProject, uploadAdvancedDataset, uploadDataset } from "@/pages/api/api";
+import { postProject, uploadAdvancedDataset, uploadDataset } from "@/pages/api/api";
 import { useRouter } from "next/router";
 
 interface CategoryModalProps {

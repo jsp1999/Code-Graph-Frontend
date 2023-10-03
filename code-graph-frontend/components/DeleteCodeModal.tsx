@@ -35,6 +35,7 @@ export default function DeleteCodeModal(props: DeleteCodeModalProps) {
             deleteCodeRoute(checkedId, props.projectId).then(() => {
                 setClosed();
                 props.handleClose();
+                window.location.reload(); // Reload the page
             })
         } catch (e) {
             console.error("Error adding code:", e);

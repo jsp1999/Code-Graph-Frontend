@@ -15,6 +15,7 @@ export default function ConfirmModal(props: ConfirmModalProps) {
   const handleFinish = () => {
     deleteCodeRoute(props.codeId, props.projectId).then(() => {
       props.handleClose();
+      window.location.reload(); // Reload the page
     })
   };
 

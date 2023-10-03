@@ -58,6 +58,7 @@ export default function MergeModal(props: MergeModalProps) {
                     setClosed();
                     props.handleClose();
                     props.setLoading();
+                    window.location.reload(); // Reload the page
                 }
             )
         } catch (e) {

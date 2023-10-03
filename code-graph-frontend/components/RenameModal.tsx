@@ -27,6 +27,7 @@ export default function RenameModal(props: RenameModalProps) {
                 renameCode(props.codeId, codeName, props.projectId, props.codeParentId).then(() => {
                     setClosed();
                     props.handleClose();
+                    window.location.reload(); // Reload the page
                 })
             } catch (e) {
                 console.error("Error adding code:", e);
