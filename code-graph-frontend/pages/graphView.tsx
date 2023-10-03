@@ -195,9 +195,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
             updateSelectedNodes={handleUpdateSelectedNodes}
           />
         </div>
-        <div className="border">
           <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic={false} />
-        </div>
       </div>
       <div className="absolute right-5 bottom-5 ">
           <Button variant="outlined" className="mr-10" onClick={handleOpen}>
@@ -205,7 +203,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
           </Button>
           <Button
             variant="outlined"
-            className="mr-10"
+className="mr-10"
             onClick={() => {
               handleEditClick(config);
             }}
@@ -215,18 +213,11 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
           <Button
             variant="outlined"
             className="mr-10"
+
             onClick={() => {
               handleRecalculate();
             }}
-            disabled={loadingRecalulate}
           >
-              {loadingRecalulate ? (
-            <CircularProgress size={20} />
-          ) : recalulateSuccess ? (
-            <CheckIcon style={{ color: "green", marginRight: "8px" }} />
-          ) : (
-            <BsListColumnsReverse className="mr-2" />
-          )}
             Recalculate
           </Button>
         <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/codeView`)}>
@@ -237,5 +228,4 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     </div>
   );
 };
-
 export default DotPlotComponent;
