@@ -19,7 +19,9 @@ class CodeDot {
     private setRightClickedId: (id: number) => void;
     private deleteCode: () => void;
     private renameCode: () => void;
-    constructor(dotId: number, x: number, y: number, code: string, plot: any, addToCategory: () => void, radius: number, setRightClickedId: (id: number) => void, deleteCode: () => void, renameCode: () => void) {
+    private showCode: () => void;
+    constructor(dotId: number, x: number, y: number, code: string, plot: any, addToCategory: () => void, radius: number, setRightClickedId: (id: number) => void, deleteCode: () => void, renameCode: () => void,
+                showCode: () => void) {
         this.dotId = dotId;
         this.x = x;
         this.y = y;
@@ -44,6 +46,7 @@ class CodeDot {
 
         this.plot.data.push(this);
         this.addToCategory = addToCategory;
+        this.showCode = showCode;
 
     if (this.x === 0 && this.y === 0) {
       this.x = Math.random() * 100;
@@ -133,6 +136,15 @@ class CodeDot {
             .on("click", () => {
                 this.setRightClickedId(this.dotId);
                 this.addToCategory();
+                contextMenu.remove();
+            });
+
+        contextMenu
+            .append("div")
+            .text("Show code occurrences")
+            .on("click", () => {
+                this.setRightClickedId(this.dotId);
+                this.showCode();
                 contextMenu.remove();
             });
 

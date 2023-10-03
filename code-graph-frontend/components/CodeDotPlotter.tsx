@@ -109,6 +109,7 @@ class CodeDotPlotter {
   private setRightClickedId: (id: number) => void;
   private deleteCode: () => void;
   private renameCode: () => void;
+  private showCode: () => void;
 
   constructor(
     containerId: string,
@@ -121,6 +122,7 @@ class CodeDotPlotter {
     setRightClickedId: (id: number) => void,
     deleteCode: () => void,
     renameCode: () => void,
+    showCode: () => void,
   ) {
     this.containerId = containerId;
     this.source = source;
@@ -137,6 +139,7 @@ class CodeDotPlotter {
     this.setRightClickedId = setRightClickedId;
     this.deleteCode = deleteCode;
     this.renameCode = renameCode;
+    this.showCode = showCode;
     const allDotsInSVG = this.container.selectAll(".dot");
     allDotsInSVG.each(function () {
       console.log("removing erranious dots");
@@ -313,7 +316,8 @@ class CodeDotPlotter {
               radius,
               this.setRightClickedId,
               this.deleteCode,
-              this.renameCode
+              this.renameCode,
+              this.showCode,
           );
 
           console.log("radius", radius);
