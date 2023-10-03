@@ -829,6 +829,14 @@ const isInitializedRef = useRef(false);
       console.log("is_dynamic: ", is_dynamic)
     }
 }));
+
+  useEffect(() => {
+  if (plot && pendingFilterRef.current) {
+    console.log("Applying queued filter value");
+    plot.applyCodeFilter(pendingFilterRef.current);
+    pendingFilterRef.current = null; // Clear the pending filter
+  }
+}, [plot]);
   useEffect(() => {
     console.log("AAAAAAAAAAAAAAAHHHHHHHHH")
     if (trainButtonRef.current) {
