@@ -5,6 +5,9 @@ import * as d3 from "d3";
 import { Button } from "@mui/material";
 import ItemList from "@/components/ItemList";
 import itemList from "@/components/ItemList";
+import ChangeCodeModal from "@/components/ChangeCodeModal";
+import AddCodeModal from "@/components/AddCodeModal";
+import {getCodeRoute} from "@/pages/api/api";
 function hsvToRgb(h, s, v) {
   let r, g, b;
   let i = Math.floor(h * 6);
@@ -117,79 +120,11 @@ function newColorScale(code_id) {
   return idToColorMap[code_id] || "#808080"; // Fallback to gray
 }
 
-class TrainSlide {
-  constructor(plot) {
-    console.log("Creating train slide...");
-    this.plot = plot;
-    this.plot.train_slide = this;
-    //this.interval = setInterval(() => this.update(), 10 * 1000);
-    //this.setupTrainLinesButton();
-  }
-  setupTrainLinesButton() {
-    const button = document.getElementById("trainLinesButton");
-    button.addEventListener("click", () => this.trainLines());
-  }
 
-  trainLines() {
-    // Transform lines data into the desired format
-    console.log("training lines...");
-    const formattedData = this.lines.map((line) => {
-      return {
-        id: line.dot.dotId,
-        pos: [line.end_x, line.end_y],
-      };
-    });
-    console.log("formattedData", formattedData)
-
-    const jsonData = JSON.stringify(formattedData); // Convert the formatted data to JSON
-    fetch(this.plot.source + "projects/" + this.plot.projectId + "/dynamic/correction?epochs=10", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json", // Specify that we're sending JSON data
-      },
-      body: jsonData, // Attach the JSON data to the request body
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        this.plot.forceUpdate();
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
-
-  update() {
-    d3.select("#lineList").html("");
-    const existingLinesData = this.plot.lines;
-    existingLinesData.forEach((lineData) => {
-      const listItem = d3
-        .select("#lineList")
-        .append("div")
-        .attr("class", "list-item")
-        .style("background-color", d3.color(lineData.dot.color).copy({ opacity: 0.5 }))
-        .append("span")
-        .append("div")
-        .text(`Segment: \"${lineData.dot.segment}\"`)
-        .append("div")
-        .text(`Code: \"${findCodePath(lineData.dot.plot.tree, lineData.dot.code)}\"`)
-        .append("div")
-        .append("button")
-        .text("Delete")
-        .on("click", () => {
-          lineData.remove();
-          this.update();
-        });
-    });
-  }
-}
-
-class ConfigSlide {
-  constructor(plot) {
-    this.plot = plot;
-  }
-}
 class Dot {
-  constructor(dotId, x, y, segment, sentence, code, plot) {
+  private addToCode: () => void;
+  private setRightClickedId: (id: number) => void;
+  constructor(dotId, x, y, segment, sentence, code, plot, addToCode, setRightClickedId: (id: number) => void) {
     this.dotId = dotId;
     this.x = x;
     this.y = y;
@@ -206,11 +141,13 @@ class Dot {
     }
     this.color = plot.color_mapper(this.code);
     this.plot.data.push(this);
+    this.addToCode = addToCode;
+    this.setRightClickedId = setRightClickedId;
+
   }
 
   draw(plotter) {
     const creationZoomScale = d3.zoomTransform(this.plot.svg.node()).k;
-    console.log("drawing dot...");
     this.circle = plotter.container
       .append("circle")
       .attr("class", "dot")
@@ -227,7 +164,6 @@ class Dot {
       });
 
     this.circle.on("contextmenu", (event) => {
-      console.log("context menu");
     event.preventDefault();
     this.showContextMenu(event, plotter);
   });
@@ -268,7 +204,6 @@ class Dot {
     .attr("class", "option")
     .on("click", d => {
       d = d.target.__data__;
-      console.log("Clicked on option:", d.name)
       if (d.name === "Delete") {
         // call the backend at DELETE /projects/:project_id/plots/segment/:segment_id with project id beeing the plotter.projectId and segment_id beeing the dot.dotId
         fetch(this.plot.source + "projects/" + this.plot.projectId + "/plots/segment/" + this.dotId, {
@@ -277,6 +212,10 @@ class Dot {
                 "Content-Type": "application/json", // Specify that we're sending JSON data
             },
         }).then(() => plotter.forceUpdate())
+      if (d.name === "Add to other code")   {
+        this.setRightClickedId(this.dotId);
+        this.addToCode();
+      }
 
       }
     })
@@ -311,7 +250,6 @@ class Dot {
   dropdown.append("xhtml:select")
     .on("change", function(d) {
       const selectedValue = this.value;
-      console.log("Dropdown selected:", selectedValue);
       // Handle the selected value
     })
     .selectAll("option")
@@ -376,6 +314,10 @@ class Dot {
     this.circle.call(drag);
   }
 
+  removeDragBehavior() {
+    this.circle.on(".drag", null);
+  }
+
   dragStart(plotter, event) {
     if (this.line) {
       this.line.remove();
@@ -391,7 +333,6 @@ class Dot {
   }
 
   remove() {
-    console.log("remove dot...");
     if (this.line) {
       this.line.remove();
     }
@@ -437,7 +378,6 @@ class Line {
     }
   }
   remove() {
-    console.log("remove line...");
     if (this.dot.line == this) {
       this.dot.line = null;
     }
@@ -450,6 +390,8 @@ class Line {
     this.dot.plot.list_update_callback(this.dot.plot);
   }
   draw(plotter) {
+    console.log("Drawing line");
+    console.log("drawing line plotter", plotter);
     const creationZoomScale = d3.zoomTransform(this.dot.plot.svg.node()).k;
     this.element = plotter.container
       .append("line")
@@ -496,6 +438,8 @@ class Line {
 }
 
 class DotPlot {
+  private addToCode: () => void;
+  private setRightClickedId: (id: number) => void;
   constructor(
     containerId,
     projectId,
@@ -505,6 +449,8 @@ class DotPlot {
     train_button,
     is_dynamic = false,
     list_update_callback = null,
+    addToCode: () => void,
+    setRightClickedId: (id: number) => void,
   ) {
     console.log("Initializing dot plotter...")
     this.containerId = containerId;
@@ -520,6 +466,8 @@ class DotPlot {
     this.svg = svg;
     this.container = container;
     this.point_r = 5.5;
+    this.addToCode = addToCode;
+    this.setRightClickedId = setRightClickedId;
     this.svg
       .append("defs")
       .append("marker")
@@ -565,7 +513,11 @@ class DotPlot {
 
   setupTrainButton() {
     const trainButton = this.train_button.current;
-    if (!trainButton) return;
+    if (!trainButton){
+      console.log("train button not found");
+      console.log("aborting...");
+      return;
+    }
     trainButton.addEventListener("click", () => {
       if (trainButton.textContent === "Train") {
         this.toggleTrainButtonState();
@@ -617,7 +569,6 @@ class DotPlot {
     this.filter = filterFunc;
   }
   homeView() {
-    console.log("home view...");
     const xExtent = d3.extent(this.data, (d) => d.x);
     const yExtent = d3.extent(this.data, (d) => d.y);
 
@@ -661,7 +612,6 @@ class DotPlot {
   }
 
   generateColors() {
-    console.log("generating colors...");
     const endpoint = this.source + "projects/" + this.projectId + "/codes/tree";
     return fetch(endpoint)
       .then((response) => response.json())
@@ -691,7 +641,6 @@ class DotPlot {
     }
     const filterFunc = createCodeFilter(codes);
     this.setFilter(filterFunc);
-    console.log("temp filter", this.filter)
     this.update().then(() => this.homeView());
   }
 
@@ -733,8 +682,6 @@ class DotPlot {
       return response.json();
     })
     .then(() => {
-      console.log("Epochs remaining:", epochsRemaining)
-      console.log("Forcing Update...")
       this.forceUpdate();
       setTimeout(() => this.trainForEpochs(epochsRemaining - 1), 1000);
       //this.trainForEpochs(epochsRemaining - 1);
@@ -763,8 +710,6 @@ class DotPlot {
   render(newData) {
     // Existing Dots
     //this.container.selectAll(".dot").remove();
-    console.log("rendering...");
-    console.log("current_filter: ", this.filter);
     if (this.filter) {
       newData = newData.filter((dot) => this.filter(dot));
     } else {
@@ -786,6 +731,8 @@ class DotPlot {
           dotData.sentence,
           dotData.code,
           this,
+          this.addToCode,
+          this.setRightClickedId,
         );
         newDot.draw(this);
       }
@@ -797,7 +744,6 @@ class DotPlot {
       }
       return shouldKeep;
     });
-    console.log("all dots rendered: ", this.container.selectAll(".dot"));
   }
 }
 interface DotPlotProps {
@@ -815,7 +761,9 @@ export interface DotPlotCompHandles {
 const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) => {
   const { projectId, source } = props;
   const [is_dynamic, set_dynamic] = useState(props.is_dynamic);
+  const [rightClickedItemId, setRightClickedItemId] = useState();
 const pendingFilterRef = useRef<any>(null);
+const pendingButtonRef = useRef<any>(null);
   const canvasRef = useRef<SVGSVGElement>(null);
   const trainButtonRef = useRef<HTMLButtonElement>(null);
   const [items, setItems] = useState<Item[]>([]);
@@ -823,21 +771,16 @@ const isInitializedRef = useRef(false);
   const [plot, setPlot] = useState<any>();
   const [train, setTrain] = useState<any>();
   const [plotItems, setPlotItems] = useState<any[]>([]);
+  const [openChangeCodeModal, setChangeCodeModal] = useState(false);
   const handleDataUpdate = (plot_this) => {
-    console.log("updating data line list...");
-    console.log("plot: ", plot_this);
     const value = [...(plot_this?.getList() || [])];
-    console.log("plot_this.getList(): ", value);
     setPlotItems(value);
   };
-  useEffect(() => {
-    console.log("plotItems has been updated:", plotItems);
-}, [plotItems]);
+
 
 
   useImperativeHandle(ref, () => ({
   setPlotFilter: (filterValue: any) => {
-    console.log("setting filter value")
     if (plot) {
       plot.applyCodeFilter(filterValue);
     } else {
@@ -851,17 +794,41 @@ const isInitializedRef = useRef(false);
       console.log("modelType", modelType)
       if (plot) {
         if (modelType == "dynamic") {
+          console.log("setting dynamic to true")
           plot.is_dynamic = true;
           set_dynamic(true);
+          console.log("plot", plot);
+          plot?.forceUpdate().then(() => plot.homeView());
           plot.train_button = trainButtonRef;
-          plot.setupTrainButton();
-        } else {
+          if (plot.train_button) {
+            console.log("train button", plot.train_button);
+            plot.setupTrainButton();
+          } else {
+            console.log("train button not found");
+            pendingButtonRef.current = true;
+          }
+
+          for (const dot of plot.data) {
+            dot.setDragBehavior(plot);
+          }
+        }
+
+
+         else {
+          console.log("setting dynamic to false");
           plot.is_dynamic = false;
           set_dynamic(false);
           plot.train_button = null;
-        }
-        console.log("plot", plot);
+          for (const dot of plot.data) {
+            dot.removeDragBehavior();
+          }
+          for (const line of plot.lines) {
+            line.remove();
+          }
+          console.log("plot", plot);
         plot?.forceUpdate().then(() => plot.homeView());
+        }
+
       }
       else{
         console.log("plot is null; queuing the model type");
@@ -870,25 +837,47 @@ const isInitializedRef = useRef(false);
       console.log("is_dynamic: ", is_dynamic)
     }
 }));
+  useEffect(() => {
+    console.log("AAAAAAAAAAAAAAAHHHHHHHHH")
+    if (trainButtonRef.current) {
+        // Your logic to connect the button.
+        if (plot && plot.is_dynamic) {
+          console.log("setting up train button")
+            console.log("train button", trainButtonRef.current);
+            plot.train_button = trainButtonRef.current;
+            plot.setupTrainButton();
+        }
+    }
+}, [trainButtonRef.current]);
 
   useEffect(() => {
   if (plot && pendingFilterRef.current) {
-    console.log("Applying queued filter value");
     plot.applyCodeFilter(pendingFilterRef.current);
     pendingFilterRef.current = null; // Clear the pending filter
   }
 }, [plot]);
 
+  useEffect(() => {
+    console.log("trying to set button")
+    console.log("trainButtonRef", trainButtonRef)
+    console.log("pendingButtonRef", pendingButtonRef)
+    console.log(plot)
+    if (plot && trainButtonRef.current) {
+        plot.train_button = trainButtonRef;
+        plot.setupTrainButton();
+        pendingButtonRef.current = null; // Clear the pending filter
+    }
+  }, [trainButtonRef.current, pendingButtonRef.current]);
   const handleDeleteItem = (item) => {
-    console.log("deleting item line list...");
     item.remove();
   };
+
+  const handleOpen = () => setChangeCodeModal(true);
 
 
   useEffect(() => {
      if (!isInitializedRef.current) {
     if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
-      console.log("Initializing dot plotter...")
       console.log("source: ", source)
       console.log("projectID: ", projectId)
       console.log("is_dynamic: ", is_dynamic)
@@ -903,10 +892,10 @@ const isInitializedRef = useRef(false);
         trainButtonRef,
         is_dynamic,
         handleDataUpdate,
+          handleOpen,
+          handleRightClick,
       );
-      const newTrain = new TrainSlide(newPlot);
       setPlot(newPlot);
-      setTrain(newTrain);
 
       // Call generateColors and update as usual
       /*
@@ -925,8 +914,17 @@ const isInitializedRef = useRef(false);
     }
   }, [projectId, source, is_dynamic]);
 
+  const handleRightClick = (id: number) => {
+    setRightClickedItemId(id);
+  }
+  const handleChangeCodeClose = () => {
+    setChangeCodeModal(false);
+  };
+
   // Update the rendering part to utilize the fetched plotItems instead of the dummy items
   return (
+      <div>
+      <ChangeCodeModal open={openChangeCodeModal} handleClose={handleChangeCodeClose} projectId={projectId} segmentId={rightClickedItemId} />
     <div className="flex">
       <div className="dynamicSvgContainer">
         {/* Use the fetched plotItems instead of dummy items */}
@@ -956,6 +954,7 @@ const isInitializedRef = useRef(false);
         />
       </div>)}
     </div>
+        </div>
   );
 });
 

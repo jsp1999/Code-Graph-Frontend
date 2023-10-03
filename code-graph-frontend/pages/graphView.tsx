@@ -10,9 +10,15 @@ import LoadingModal from "@/components/LoadingModal";
 import CodeItem from "@/components/CodeItem";
 import ContextMenu from "@/components/ContextMenu";
 import { useRouter } from "next/router";
-import { getconfig, updateConfig, refreshEntries } from "@/pages/api/api";
+import { getconfig, updateConfig, recalculateEntries } from "@/pages/api/api";
 import EditModal from "@/components/config/EditConfigModal";
 import DotPlotComp from "@/components/DotPlotComp";
+import { CircularProgress } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+import { BsListColumnsReverse } from "react-icons/bs";
+
+
+
 
 const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const canvasRef = useRef<SVGSVGElement>(null);
@@ -34,6 +40,8 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [config, setConfig] = useState<any>();
   const [editData, setEditData] = useState<any>();
+  const [loadingRecalulate, setloadingRecalulate] = useState(false);
+  const [recalulateSuccess, setRecalulateSuccess] = useState(false);
 
   const [loading, setLoading] = useState(false);
   console.log("DOTPLOTCOMPONENT (grpahView) re rendered");
@@ -153,12 +161,17 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     setEditModalOpen(true);
   };
 
-  const handleRefresh = async () => {
+  const handleRecalculate = async () => {
     try {
-      await refreshEntries(projectId);
+      setloadingRecalulate(true);
+      await recalculateEntries(projectId);
       fetchAndUpdateConfigs();
     } catch (error) {
-      console.error("Error refreshing entries:", error);
+      console.error("Error recalculate entries:", error);
+    }
+    finally{
+      setloadingRecalulate(false);
+      setRecalulateSuccess(true);
     }
   };
 
@@ -203,10 +216,18 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
             variant="outlined"
             className="mr-10"
             onClick={() => {
-              handleRefresh();
+              handleRecalculate();
             }}
+            disabled={loadingRecalulate}
           >
-            Refresh
+              {loadingRecalulate ? (
+            <CircularProgress size={20} />
+          ) : recalulateSuccess ? (
+            <CheckIcon style={{ color: "green", marginRight: "8px" }} />
+          ) : (
+            <BsListColumnsReverse className="mr-2" />
+          )}
+            Recalculate
           </Button>
         <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/codeView`)}>
           Change View
