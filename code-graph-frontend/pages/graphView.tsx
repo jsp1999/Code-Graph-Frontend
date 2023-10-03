@@ -13,6 +13,12 @@ import { useRouter } from "next/router";
 import { getconfig, updateConfig, recalculateEntries } from "@/pages/api/api";
 import EditModal from "@/components/config/EditConfigModal";
 import DotPlotComp from "@/components/DotPlotComp";
+import { CircularProgress } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+import { BsListColumnsReverse } from "react-icons/bs";
+
+
+
 
 const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const canvasRef = useRef<SVGSVGElement>(null);
@@ -34,6 +40,8 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [config, setConfig] = useState<any>();
   const [editData, setEditData] = useState<any>();
+  const [loadingRecalulate, setloadingRecalulate] = useState(false);
+  const [recalulateSuccess, setRecalulateSuccess] = useState(false);
 
   const [loading, setLoading] = useState(false);
   console.log("DOTPLOTCOMPONENT (grpahView) re rendered");
@@ -155,10 +163,15 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
 
   const handleRecalculate = async () => {
     try {
+      setloadingRecalulate(true);
       await recalculateEntries(projectId);
       fetchAndUpdateConfigs();
     } catch (error) {
       console.error("Error recalculate entries:", error);
+    }
+    finally{
+      setloadingRecalulate(false);
+      setRecalulateSuccess(true);
     }
   };
 
@@ -204,9 +217,18 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
             onClick={() => {
               handleRecalculate();
             }}
+            disabled={loadingRecalulate}
           >
+              {loadingRecalulate ? (
+            <CircularProgress size={20} />
+          ) : recalulateSuccess ? (
+            <CheckIcon style={{ color: "green", marginRight: "8px" }} />
+          ) : (
+            <BsListColumnsReverse className="mr-2" />
+          )}
             Recalculate
           </Button>
+          
         </ButtonGroup>
         <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/codeView`)}>
           Change View
