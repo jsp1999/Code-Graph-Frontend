@@ -13,6 +13,7 @@ import AddToCodeModal from "@/components/AddToCodeModal";
 import MergeModal from "@/components/MergeModal";
 import ConfirmModal from "@/components/ConfirmModal";
 import RenameModal from "@/components/RenameModal";
+import DeleteCodeModal from "@/components/DeleteCodeModal";
 
 export default function CodeView() {
   const router = useRouter();
@@ -28,6 +29,7 @@ export default function CodeView() {
   const [openAddToCodeModal, setOpenAddToCodeModal] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [openRenameModal, setOpenRenameModal] = useState(false);
+  const [openDeleteCodeModal, setOpenDeleteCodeModal] = useState(false);
   const [jsonData, setJsonData] = useState(data);
   const [loading, setLoading] = useState(false);
   const [projectId, setProjectId] = useState(
@@ -125,6 +127,11 @@ export default function CodeView() {
         window.location.reload(); // Reload the page
     };
 
+    const handleDeleteCodeModalClose = () => {
+        setOpenDeleteCodeModal(false);
+        window.location.reload(); // Reload the page
+    };
+
     const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
     setSelectedNodes(newSelectedNodes);
   };
@@ -156,7 +163,8 @@ export default function CodeView() {
       />
         <ConfirmModal open={openConfirmModal} handleClose={handleConfirmModalClose} projectId={projectId} codeId={rightClickedItemId} codeName={rightClickedItemName} />
         <RenameModal open={openRenameModal} handleClose={handleRenameModalClose} projectId={projectId} codeId={rightClickedItemId} codeName={rightClickedItemName} codeParentId={rightClickedItemParentId} />
-      <div className="flex">
+        <DeleteCodeModal open={openDeleteCodeModal} handleClose={handleDeleteCodeModalClose} projectId={projectId} />
+        <div className="flex">
 
       <div className="float-left">
         <CodeTreeView
@@ -178,6 +186,9 @@ export default function CodeView() {
         <Button variant="outlined" className="mr-10" onClick={() => setOpenMergeModal(true)}>
           Merge Codes
         </Button>
+          <Button variant="outlined" className="mr-10" onClick={() => setOpenDeleteCodeModal(true)}>
+              Delete Code
+          </Button>
         <Button variant="outlined" className="mr-10" onClick={() => setOpenAddModal(true)}>
           Add new Code
         </Button>
