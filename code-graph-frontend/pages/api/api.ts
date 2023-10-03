@@ -370,6 +370,20 @@ curl -X 'GET' \
   -H 'accept: application/json'
 */
 
+export const searchCodeOccurrences = (
+  project_id: number,
+  code_id: number,
+  search_segment_query: string,
+  limit: number,
+): Promise<any> => {
+  console.log(
+    `${baseURL}/projects/${project_id}/plots/code/${code_id}/search?search_segment_query=${search_segment_query}&limit=${limit}`,
+  );
+  return axios.get<any>(
+    `${baseURL}/projects/${project_id}/plots/code/${code_id}/search?search_segment_query=${search_segment_query}&limit=${limit}`,
+  );
+};
+
 export const searchSegment = (project_id: number, search_segment_query: string, limit: number): Promise<any> => {
   console.log(
     `${baseURL}/projects/${project_id}/plots/segment?search_segment_query=${search_segment_query}&limit=${limit}`,
