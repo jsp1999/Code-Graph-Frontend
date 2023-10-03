@@ -106,6 +106,7 @@ class CodeDotPlotter {
   private fetched_data: any;
   private minRadiusOfAllCodes: number;
   private maxRadiusOfAllCodes: number;
+  private setRightClickedId: (id: number) => void;
 
   constructor(
     containerId: string,
@@ -115,6 +116,7 @@ class CodeDotPlotter {
     container: any,
     selectedNodes: number[],
     addToCategory: () => void,
+    setRightClickedId: (id: number) => void,
   ) {
     this.containerId = containerId;
     this.source = source;
@@ -128,6 +130,7 @@ class CodeDotPlotter {
     this.fetched_data = null;
     this.minRadiusOfAllCodes = 0;
     this.maxRadiusOfAllCodes = 10;
+    this.setRightClickedId = setRightClickedId;
     const allDotsInSVG = this.container.selectAll(".dot");
     allDotsInSVG.each(function () {
       console.log("removing erranious dots");
@@ -302,6 +305,7 @@ class CodeDotPlotter {
               this,
               this.addToCategory,
               radius,
+              this.setRightClickedId,
           );
 
           console.log("radius", radius);

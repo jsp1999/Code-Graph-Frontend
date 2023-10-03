@@ -16,7 +16,8 @@ class CodeDot {
     private color: any;
     private label: null | d3.Selection<SVGTextElement, any, any, any>;
     private addToCategory: () => void;
-    constructor(dotId: number, x: number, y: number, code: string, plot: any, addToCategory: () => void, radius: number) {
+    private setRightClickedId: (id: number) => void;
+    constructor(dotId: number, x: number, y: number, code: string, plot: any, addToCategory: () => void, radius: number, setRightClickedId: (id: number) => void) {
         this.dotId = dotId;
         this.x = x;
         this.y = y;
@@ -24,6 +25,7 @@ class CodeDot {
         this.circle = null;
         this.label = null;
         this.plot = plot;
+        this.setRightClickedId = setRightClickedId;
         if (!this.plot.color_mapper) {
             console.log("No color mapper")
             console.log(this.plot.color_mapper)
@@ -116,6 +118,7 @@ class CodeDot {
             .text("Add to Top-Level Code")
             .on("click", () => {
                 this.addToCategory();
+                this.setRightClickedId(this.dotId);
                 contextMenu.remove();
             });
 

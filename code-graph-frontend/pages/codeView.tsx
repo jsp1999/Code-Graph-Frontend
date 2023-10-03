@@ -47,6 +47,7 @@ export default function CodeView() {
     localStorage.setItem("selectedNodes", JSON.stringify(selectedNodes));
   }, [selectedNodes]);
   const handleOpen = () => setOpenAddToCodeModal(true);
+  const handleRightClick = (id: number) => setRightClickedItemId(id);
 
   useEffect(() => {
     setLoading(true);
@@ -63,6 +64,7 @@ export default function CodeView() {
         container_,
         selectedNodes,
         handleOpen,
+          handleRightClick,
       );
 
       setPlot(newPlot);
