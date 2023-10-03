@@ -108,6 +108,7 @@ export default function SearchCodeOccurrencesModal(props: SearchModalProps) {
       let limit = 100;
       const response = await searchCodeOccurrences(props.projectId, props.codeId, searchQuery, limit);
       const response_data = response.data.data;
+
       setPlots(response_data);
 
       setSearchQuery("");
@@ -123,7 +124,7 @@ export default function SearchCodeOccurrencesModal(props: SearchModalProps) {
           {/* Searchs */}
           <div className="flex items-center">
             <TextField
-              label="Search Sentence"
+              label="Search Segments"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               variant="outlined"
