@@ -102,67 +102,27 @@ export default function CodeView() {
 
   const handleAddModalClose = () => {
     setOpenAddModal(false);
-    setLoading(true);
-    getCodeTree(projectId)
-      .then((response) => {
-        setJsonData(response.data.codes);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    window.location.reload(); // Reload the page
   };
 
   const handleAddToCodeModalClose = () => {
     setOpenAddToCodeModal(false);
-    setLoading(true);
-    getCodeTree(projectId)
-      .then((response) => {
-        setJsonData(response.data.codes);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    window.location.reload(); // Reload the page
   };
 
   const handleMergeModalClose = () => {
     setOpenMergeModal(false);
-    setLoading(true);
-    getCodeTree(projectId)
-      .then((response) => {
-        setJsonData(response.data.codes);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    window.location.reload(); // Reload the page
   };
 
     const handleConfirmModalClose = () => {
         setOpenConfirmModal(false);
-        setLoading(true);
-        getCodeTree(projectId)
-            .then((response) => {
-                setJsonData(response.data.codes);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-            });
+        window.location.reload(); // Reload the page
     };
 
     const handleRenameModalClose = () => {
         setOpenRenameModal(false);
-        setLoading(true);
-        getCodeTree(projectId)
-            .then((response) => {
-                setJsonData(response.data.codes);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-            });
+        window.location.reload(); // Reload the page
     };
 
     const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
