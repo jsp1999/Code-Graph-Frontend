@@ -667,7 +667,7 @@ const isInitializedRef = useRef(false);
   const handleDataUpdate = (plot_this) => {
     console.log("updating data line list...");
     console.log("plot: ", plot_this);
-    const value = plot_this?.getList() || [];
+    const value = [...(plot_this?.getList() || [])];
     console.log("plot_this.getList(): ", value);
     setPlotItems(value);
   };
