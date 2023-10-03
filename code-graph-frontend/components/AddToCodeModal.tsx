@@ -7,6 +7,7 @@ interface AddToCodeModalProps {
     handleClose: () => void;
     projectId: number;
     codeId: number;
+    setLoading: () => void;
 }
 
 export default function AddToCodeModal(props: AddToCodeModalProps) {
@@ -32,14 +33,17 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
     }
 
     function pressAddButton() {
+        props.setLoading();
             try {
-                addCodeToParent(props.codeId, props.projectId, checkedId);
+                addCodeToParent(props.codeId, props.projectId, checkedId).then(() => {
+                    setClosed();
+                    props.handleClose();
+                    props.setLoading();
+                    window.location.reload(); // Reload the page
+                });
             } catch (e) {
                 console.error("Error adding code:", e);
             }
-        setClosed();
-        props.handleClose();
-        window.location.reload(); // Reload the page
     }
 
     const [searchQuery, setSearchQuery] = useState<string>('');

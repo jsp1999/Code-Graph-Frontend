@@ -6,6 +6,7 @@ interface AddCodeModalProps {
   open: boolean;
   handleClose: () => void;
   projectId: number;
+  setLoading: () => void;
 }
 
 export default function AddCodeModal(props: AddCodeModalProps) {
@@ -42,6 +43,7 @@ export default function AddCodeModal(props: AddCodeModalProps) {
   }
 
   function pressAddButton() {
+    props.setLoading();
     if (checkedId == noneIndex) {
       try {
         insertCodeRoute(inputValue, props.projectId);
@@ -53,6 +55,7 @@ export default function AddCodeModal(props: AddCodeModalProps) {
     }
     setClosed();
     props.handleClose();
+    props.setLoading();
     window.location.reload(); // Reload the page
   }
 

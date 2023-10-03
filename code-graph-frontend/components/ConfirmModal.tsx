@@ -7,14 +7,17 @@ interface ConfirmModalProps {
   handleClose: () => void;
   projectId: number;
   codeId: number;
-  codeName: string
+  codeName: string;
+  setLoading: () => void;
 }
 
 export default function ConfirmModal(props: ConfirmModalProps) {
 
   const handleFinish = () => {
+    props.setLoading();
     deleteCodeRoute(props.codeId, props.projectId).then(() => {
       props.handleClose();
+      props.setLoading();
       window.location.reload(); // Reload the page
     })
   };

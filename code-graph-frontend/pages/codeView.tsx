@@ -141,12 +141,13 @@ export default function CodeView() {
   return (
     <div>
       <Header title="Code View" />
-      <AddCodeModal open={openAddModal} handleClose={handleAddModalClose} projectId={projectId} />
+      <AddCodeModal open={openAddModal} handleClose={handleAddModalClose} projectId={projectId} setLoading={() => setLoading(!loading)} />
       <AddToCodeModal
         open={openAddToCodeModal}
         handleClose={handleAddToCodeModalClose}
         projectId={projectId}
         codeId={rightClickedItemId}
+        setLoading={() => setLoading(!loading)}
       />
       <LoadingModal open={loading} />
       <MergeModal
@@ -155,9 +156,9 @@ export default function CodeView() {
         projectId={projectId}
         setLoading={() => setLoading(!loading)}
       />
-        <ConfirmModal open={openConfirmModal} handleClose={handleConfirmModalClose} projectId={projectId} codeId={rightClickedItemId} codeName={rightClickedItemName} />
-        <RenameModal open={openRenameModal} handleClose={handleRenameModalClose} projectId={projectId} codeId={rightClickedItemId} codeName={rightClickedItemName} codeParentId={rightClickedItemParentId} />
-        <DeleteCodeModal open={openDeleteCodeModal} handleClose={handleDeleteCodeModalClose} projectId={projectId} />
+        <ConfirmModal open={openConfirmModal} handleClose={handleConfirmModalClose} projectId={projectId} codeId={rightClickedItemId} codeName={rightClickedItemName} setLoading={() => setLoading(!loading)} />
+        <RenameModal open={openRenameModal} handleClose={handleRenameModalClose} projectId={projectId} codeId={rightClickedItemId} codeName={rightClickedItemName} codeParentId={rightClickedItemParentId} setLoading={() => setLoading(!loading)} />
+        <DeleteCodeModal open={openDeleteCodeModal} handleClose={handleDeleteCodeModalClose} projectId={projectId} setLoading={() => setLoading(!loading)} />
         <div className="flex">
 
       <div className="float-left">
