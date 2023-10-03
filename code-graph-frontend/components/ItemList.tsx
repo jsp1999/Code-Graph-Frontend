@@ -1,8 +1,7 @@
 import React, {useEffect} from 'react';
 import { List, ListItem, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-
+import { Button } from "@mui/material";
 
 interface ItemListProps {
   items: [];
@@ -26,8 +25,8 @@ const ItemList: React.FC<ItemListProps> = ({ items, onDelete, onTrain }) => {
   //if (!items.length) return null;
 
   return (
-  <div className="container-list">
-    <h1>Arrows</h1>
+  <div className="container-list border">
+    <h1 className="text-2xl underline mb-5 w-fit mx-auto">Arrows</h1>
 
     <List className="scroll-list-list">
       {items.map((item) => (
@@ -53,10 +52,10 @@ const ItemList: React.FC<ItemListProps> = ({ items, onDelete, onTrain }) => {
       ))}
     </List>
 
-    <button onClick={() => { if (items.length > 0){
+    <Button variant="contained" className="bg-blue-900 rounded w-fit mx-auto mb-1" onClick={() => { if (items.length > 0){
       onTrain(items[0].dot.plot)}}}>
-      Train
-    </button>
+      Train Arrows
+    </Button>
   </div>
 );
 };
