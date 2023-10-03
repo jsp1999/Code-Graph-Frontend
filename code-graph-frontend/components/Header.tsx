@@ -1,8 +1,6 @@
 import { Menu } from "@mui/icons-material";
-import { Accordion, AccordionDetails, AccordionSummary, Drawer } from "@mui/material";
+import { Accordion, AccordionSummary, Drawer } from "@mui/material";
 import { useEffect, useState } from "react";
-import ConfirmModal from "./ConfirmModal";
-import EditModal from "./EditModal";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { useRouter } from "next/router";
@@ -37,8 +35,6 @@ interface Project {
 export default function Header(props: HeaderProps) {
   const router = useRouter();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
@@ -65,8 +61,6 @@ export default function Header(props: HeaderProps) {
 
   return (
     <header className="w-screen h-16 bg-blue-900 p-3 pl-5 mb-5 text-white flex items-center">
-      <ConfirmModal open={confirmModalOpen} handleClose={() => setConfirmModalOpen(false)} />
-      <EditModal open={editModalOpen} handleClose={() => setEditModalOpen(false)} />
       <div className="mr-5">
         <button onClick={toggleDrawer}>
           <Menu />
