@@ -142,6 +142,8 @@ class CodeDot {
         contextMenu
             .append("div")
             .text("Show code occurrences")
+            .style("border", "1px solid #000000")
+            .style("background-color", "#FFFFFF")
             .on("click", () => {
                 this.setRightClickedId(this.dotId);
                 this.showCode();

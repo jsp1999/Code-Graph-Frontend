@@ -7,7 +7,6 @@ interface AddToCodeModalProps {
     handleClose: () => void;
     projectId: number;
     segmentId: number;
-    setLoading: () => void;
 }
 
 export default function ChangeCodeModal(props: AddToCodeModalProps) {
@@ -33,7 +32,6 @@ export default function ChangeCodeModal(props: AddToCodeModalProps) {
     }
 
     function pressAddButton() {
-        props.setLoading();
             try {
                 if (checkedId != null) {
                     addCodeToParent(props.codeId, props.projectId, checkedId);
@@ -43,7 +41,6 @@ export default function ChangeCodeModal(props: AddToCodeModalProps) {
             }
         setClosed();
         props.handleClose();
-        props.setLoading();
         window.location.reload(); // Reload the page
     }
 

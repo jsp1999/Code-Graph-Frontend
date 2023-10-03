@@ -140,9 +140,11 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
 
   const handleEditConfig = async (config: any) => {
     try {
+      setLoading(true);
       await updateConfig(config.config_id, config);
       fetchAndUpdateConfigs();
       setEditModalOpen(false);
+      setLoading(false);
     } catch (error) {
       console.error("Error editing project:", error);
     }
@@ -155,6 +157,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
 
   const handleRecalculate = async () => {
     try {
+      setLoading(true);
       setloadingRecalulate(true);
       await recalculateEntries(projectId);
       fetchAndUpdateConfigs();
@@ -164,6 +167,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     finally{
       setloadingRecalulate(false);
       setRecalulateSuccess(true);
+      setLoading(false);
     }
   };
 
