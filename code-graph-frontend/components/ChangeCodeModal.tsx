@@ -1,6 +1,6 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import {addCodeToParent, getCodesRoutes, updateCodeRoute} from "@/pages/api/api";
+import {addCodeToParent, addCodeToSegment, getCodesRoutes, updateCodeRoute} from "@/pages/api/api";
 
 interface AddToCodeModalProps {
     open: boolean;
@@ -35,14 +35,15 @@ export default function ChangeCodeModal(props: AddToCodeModalProps) {
             try {
                 console.log("try changing code")
                 console.log(checkedId)
+                console.log(props)
                 if (checkedId != null) {
-                    addCodeToParent(props.codeId, props.projectId, checkedId);
+                    addCodeToSegment(props.segmentId, props.projectId, checkedId);
                 }
             } catch (e) {
                 console.error("Error adding code:", e);
             }
         setClosed();
-        props.handleClose();
+        //props.handleClose();
         window.location.reload(); // Reload the page
     }
 

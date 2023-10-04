@@ -182,6 +182,10 @@ export const addCodeToParent = (id: number, projectId: number, topLevelCodeId: n
   return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&parent_id=${topLevelCodeId}`);
 };
 
+export const addCodeToSegment = (id: number, projectId: number, topLevelCodeId: number): Promise<any> => {
+  return axios.put<any>(`${baseURL}/projects/${projectId}/plots/segment/${id}?code_id=${topLevelCodeId}`);
+};
+
 export const renameCode = (
   id: number,
   codeName: string,
