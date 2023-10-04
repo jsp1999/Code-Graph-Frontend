@@ -75,7 +75,7 @@ export default function StatsPage() {
       };
 
       return (
-        <div key={index} >
+        <div key={index}>
           <h3 className="w-fit mx-auto text-3xl underline my-5">{project.project.project_name}</h3>
           <Doughnut data={pieData} options={options} />
         </div>

@@ -7,8 +7,8 @@ import ItemList from "@/components/ItemList";
 import itemList from "@/components/ItemList";
 import ChangeCodeModal from "@/components/ChangeCodeModal";
 import AddCodeModal from "@/components/AddCodeModal";
-import {getCodeRoute} from "@/pages/api/api";
-import {getErrorSource} from "next/dist/client/components/react-dev-overlay/internal/helpers/nodeStackFrames";
+import { getCodeRoute } from "@/pages/api/api";
+import { getErrorSource } from "next/dist/client/components/react-dev-overlay/internal/helpers/nodeStackFrames";
 function hsvToRgb(h, s, v) {
   let r, g, b;
   let i = Math.floor(h * 6);
@@ -121,12 +121,22 @@ function newColorScale(code_id) {
   return idToColorMap[code_id] || "#808080"; // Fallback to gray
 }
 
-
 class Dot {
   private addToCode: () => void;
   private setRightClickedId: (id: number) => void;
   private dotId: number;
-  constructor(dotId, x, y, segment, sentence, code, cluster_id,  plot, addToCode: () => void, setRightClickedId: (id: number) => void) {
+  constructor(
+    dotId,
+    x,
+    y,
+    segment,
+    sentence,
+    code,
+    cluster_id,
+    plot,
+    addToCode: () => void,
+    setRightClickedId: (id: number) => void,
+  ) {
     this.dotId = dotId;
     this.x = x;
     this.y = y;
@@ -147,7 +157,6 @@ class Dot {
     this.color = plot.color_mapper(this.code);
     this.addToCode = addToCode;
     this.setRightClickedId = setRightClickedId;
-
   }
 
   makeSuggestion() {
@@ -156,14 +165,12 @@ class Dot {
     const scale = d3.zoomTransform(this.plot.svg.node()).k;
     if (!this.suggestion) {
       this.suggestion = true;
-      this.circle.attr("stroke", "red")
-      .attr("stroke-width", 2/scale);
-    }
-    else{
+      this.circle.attr("stroke", "red").attr("stroke-width", 2 / scale);
+    } else {
       this.suggestion = false;
     }
-    }
-  removeSuggestion(){
+  }
+  removeSuggestion() {
     this.remove();
     this.draw(this.plot);
   }
@@ -174,11 +181,11 @@ class Dot {
     this.draw(this.plot);
   }
 
-    removeCluster() {
+  removeCluster() {
     this.cluster = false;
     this.remove();
     this.draw(this.plot);
-    }
+  }
   draw(plotter) {
     const creationZoomScale = d3.zoomTransform(this.plot.svg.node()).k;
     this.circle = plotter.container
@@ -186,7 +193,7 @@ class Dot {
       .attr("class", "dot")
       .attr("cx", this.x)
       .attr("cy", this.y)
-      .attr("r", this.plot.point_r/creationZoomScale)
+      .attr("r", this.plot.point_r / creationZoomScale)
       .attr("data-dotId", this.dotId)
       .attr("fill", this.color) // Add fill color
       .on("mouseover", (event) => {
@@ -197,115 +204,123 @@ class Dot {
       });
     this.plot.data.push(this);
 
-    if(this.cluster){
+    if (this.cluster) {
       const scale = d3.zoomTransform(this.plot.svg.node()).k;
       console.log("setting cluster color");
-      const colors = [ "#00FF00", "#0000FF", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8800", "#FF0088", "#00FFF0"]
+      const colors = ["#00FF00", "#0000FF", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8800", "#FF0088", "#00FFF0"];
       const index = this.cluster_id % colors.length;
-        this.circle.attr("stroke", colors[index])
-      .attr("stroke-width", 2/scale);
+      this.circle.attr("stroke", colors[index]).attr("stroke-width", 2 / scale);
     }
 
     this.circle.on("contextmenu", (event) => {
-    event.preventDefault();
-    this.showContextMenu(event, plotter);
-  });
+      event.preventDefault();
+      this.showContextMenu(event, plotter);
+    });
     if (this.plot.is_dynamic) {
       this.setDragBehavior(plotter);
     }
   }
 
-
   showContextMenu(event, plotter) {
-  // Remove any existing context menus
-  d3.selectAll(".custom-context-menu").remove();
-  this.hideTooltip();
+    // Remove any existing context menus
+    d3.selectAll(".custom-context-menu").remove();
+    this.hideTooltip();
 
-  const currentTransform = d3.zoomTransform(plotter.svg.node());
-  const scale = currentTransform.k;
+    const currentTransform = d3.zoomTransform(plotter.svg.node());
+    const scale = currentTransform.k;
 
-  const adjustedX = (event.layerX - currentTransform.x) / currentTransform.k;
-  const adjustedY = (event.layerY - currentTransform.y) / currentTransform.k;
+    const adjustedX = (event.layerX - currentTransform.x) / currentTransform.k;
+    const adjustedY = (event.layerY - currentTransform.y) / currentTransform.k;
 
-  const options = [
-    { name: "Delete", type: "option" },
-    { name: "Add to other code", type: "option"}
-  ];
+    const options = [
+      { name: "Delete", type: "option" },
+      { name: "Add to other code", type: "option" },
+    ];
 
-  const rectHeight = 30 / scale;
-  const rectWidth = 150 / scale;
+    const rectHeight = 30 / scale;
+    const rectWidth = 150 / scale;
 
-  const contextMenu = plotter.container.append("g")
-    .attr("class", "custom-context-menu")
-    .attr("transform", `translate(${adjustedX}, ${adjustedY})`);
+    const contextMenu = plotter.container
+      .append("g")
+      .attr("class", "custom-context-menu")
+      .attr("transform", `translate(${adjustedX}, ${adjustedY})`);
 
-  // Handle option type
-  contextMenu.selectAll("g.option")
-    .data(options.filter(d => d.type === "option"))
-    .enter()
-    .append("g")
-    .attr("class", "option")
-    .on("click", d => {
-      d = d.target.__data__;
-      if (d.name === "Delete") {
-        // Call the backend at DELETE /projects/:project_id/plots/segment/:segment_id
-        // with project id being the plotter.projectId and segment_id being the dot.dotId
-        fetch(this.plot.source + "projects/" + this.plot.projectId + "/plots/segment/" + this.dotId, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json", // Specify that we're sending JSON data
-          },
-        }).then(() => plotter.forceUpdate());
-      } else if (d.name === "Add to other code") {
-        this.setRightClickedId(this.dotId);
-        this.addToCode();
-      }
-    })
-    .append("rect")
-    .attr("x", 0)
-    .attr("y", (d, i) => i * rectHeight)
-    .attr("width", rectWidth)
-    .attr("height", rectHeight)
-    .style("fill", "#eee");
+    // Handle option type
+    contextMenu
+      .selectAll("g.option")
+      .data(options.filter((d) => d.type === "option"))
+      .enter()
+      .append("g")
+      .attr("class", "option")
+      .on("click", (d) => {
+        d = d.target.__data__;
+        if (d.name === "Delete") {
+          // Call the backend at DELETE /projects/:project_id/plots/segment/:segment_id
+          // with project id being the plotter.projectId and segment_id being the dot.dotId
+          fetch(this.plot.source + "projects/" + this.plot.projectId + "/plots/segment/" + this.dotId, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json", // Specify that we're sending JSON data
+            },
+          }).then(() => plotter.forceUpdate());
+        } else if (d.name === "Add to other code") {
+          this.setRightClickedId(this.dotId);
+          this.addToCode();
+        }
+      })
+      .append("rect")
+      .attr("x", 0)
+      .attr("y", (d, i) => i * rectHeight)
+      .attr("width", rectWidth)
+      .attr("height", rectHeight)
+      .style("fill", "#eee");
 
-  contextMenu.selectAll("g.option")
-    .append("text")
-    .attr("x", 10 / scale)
-    .attr("y", (d, i) => (i * rectHeight) + 20 / scale)
-    .attr("font-size", `${12 / scale}px`)
-    .text(d => d.name);
+    contextMenu
+      .selectAll("g.option")
+      .append("text")
+      .attr("x", 10 / scale)
+      .attr("y", (d, i) => i * rectHeight + 20 / scale)
+      .attr("font-size", `${12 / scale}px`)
+      .text((d) => d.name);
 
-  // Handle dropdown type
-  const dropdownGroup = contextMenu.selectAll("g.dropdown")
-    .data(options.filter(d => d.type === "dropdown"))
-    .enter()
-    .append("g")
-    .attr("class", "dropdown")
-    .attr("transform", (d, i) => `translate(0, ${i * rectHeight})`);
+    // Handle dropdown type
+    const dropdownGroup = contextMenu
+      .selectAll("g.dropdown")
+      .data(options.filter((d) => d.type === "dropdown"))
+      .enter()
+      .append("g")
+      .attr("class", "dropdown")
+      .attr("transform", (d, i) => `translate(0, ${i * rectHeight})`);
 
-  const dropdown = dropdownGroup.append("foreignObject")
-    .attr("x", rectWidth - 60/scale)
-    .attr("y", 0)
-    .attr("width", 60/scale)
-    .attr("height", rectHeight);
+    const dropdown = dropdownGroup
+      .append("foreignObject")
+      .attr("x", rectWidth - 60 / scale)
+      .attr("y", 0)
+      .attr("width", 60 / scale)
+      .attr("height", rectHeight);
 
-  dropdown.append("xhtml:select")
-    .on("change", function(d) {
-      const selectedValue = this.value;
-      // Handle the selected value
-    })
-    .selectAll("option")
-    .data(d => d.values)
-    .enter()
-    .append("xhtml:option")
-    .attr("value", d => d)
-    .text(d => d);
+    dropdown
+      .append("xhtml:select")
+      .on("change", function (d) {
+        const selectedValue = this.value;
+        // Handle the selected value
+      })
+      .selectAll("option")
+      .data((d) => d.values)
+      .enter()
+      .append("xhtml:option")
+      .attr("value", (d) => d)
+      .text((d) => d);
 
-  // Add an event listener to hide the menu when clicking elsewhere
-  d3.select("body").on("click", () => {
-    contextMenu.remove();
-  }, false);
-}
+    // Add an event listener to hide the menu when clicking elsewhere
+    d3.select("body").on(
+      "click",
+      () => {
+        contextMenu.remove();
+      },
+      false,
+    );
+  }
 
   move() {
     if (this.circle) {
@@ -442,7 +457,7 @@ class Line {
       .attr("x2", this.end_x)
       .attr("y2", this.end_y)
       .attr("stroke", this.dot.color) // or whatever style you want
-      .attr("stroke-width", (this.dot.plot.point_r/2) / creationZoomScale)
+      .attr("stroke-width", this.dot.plot.point_r / 2 / creationZoomScale)
       .attr("marker-end", "url(#arrowhead)");
 
     this.hitbox = plotter.container
@@ -494,7 +509,7 @@ class DotPlot {
     addToCode: () => void,
     setRightClickedId: (id: number) => void,
   ) {
-    console.log("Initializing dot plotter...")
+    console.log("Initializing dot plotter...");
     this.containerId = containerId;
     this.is_dynamic = is_dynamic;
     this.train_button = train_button;
@@ -529,10 +544,10 @@ class DotPlot {
       .style("stroke", "none");
 
     const allDotsInSVG = this.container.selectAll(".dot");
-      allDotsInSVG.each(function () {
-        const dot = d3.select(this);
-        dot.remove();
-      });
+    allDotsInSVG.each(function () {
+      const dot = d3.select(this);
+      dot.remove();
+    });
     this.zoom = d3
       .zoom()
       .scaleExtent([0.01, 1000]) // Adjust as per your requirements
@@ -542,23 +557,24 @@ class DotPlot {
         const dots = this.container.selectAll(".dot");
         const lines = this.container.selectAll("line");
         const hitbox = this.container.selectAll("circle");
-        lines.attr("stroke-width", (this.point_r/2) / scale);
+        lines.attr("stroke-width", this.point_r / 2 / scale);
         hitbox.attr("r", this.point_r / scale);
         if (scale > 1.5) {
-          dots.attr("r", this.point_r / scale)
-              .attr("stroke-width", 2/scale); // If original radius is this.point_r
+          dots.attr("r", this.point_r / scale).attr("stroke-width", 2 / scale); // If original radius is this.point_r
         } else {
           dots.attr("r", this.point_r);
         }
       });
     this.setupTrainButton();
     this.svg.call(this.zoom);
-    this.generateColors().then(()=>this.update()).then(() => this.homeView());
+    this.generateColors()
+      .then(() => this.update())
+      .then(() => this.homeView());
   }
 
   setupTrainButton() {
     const trainButton = this.train_button.current;
-    if (!trainButton){
+    if (!trainButton) {
       console.log("train button not found");
       console.log("aborting...");
       return;
@@ -589,16 +605,14 @@ class DotPlot {
       },
       body: jsonData, // Attach the JSON data to the request body
     })
-    .then((response) => response.json())
-    .then(() => {
-      this.forceUpdate();
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-
+      .then((response) => response.json())
+      .then(() => {
+        this.forceUpdate();
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
-
 
   toggleTrainButtonState() {
     const trainButton = this.train_button.current;
@@ -671,7 +685,7 @@ class DotPlot {
         throw error;
       });
   }
-  updateClusters(){
+  updateClusters() {
     return this.fetchData().then((newData) => {
       this.renderClusters(newData);
     });
@@ -679,19 +693,18 @@ class DotPlot {
 
   renderClusters(newData) {
     // make the color of all dots in this.data [red, green, blue] depending on cluster id
-    if(!this.cluster) {
+    if (!this.cluster) {
       this.cluster = true;
       console.log("making clusters...");
       for (const dot of this.data) {
         dot.makeCluster();
       }
-    }
-    else {
+    } else {
       this.cluster = false;
       console.log("removing clusters...");
-        for (const dot of this.data) {
-            dot.removeCluster();
-        }
+      for (const dot of this.data) {
+        dot.removeCluster();
+      }
     }
     console.log("done");
   }
@@ -734,38 +747,38 @@ class DotPlot {
   } */
 
   trainForEpochs(epochsRemaining) {
-  // Check if training should stop or epochs remaining is zero
-  if (this.stopTraining || epochsRemaining <= 0) {
-    this.toggleTrainButtonState();
-    return;
-  }
+    // Check if training should stop or epochs remaining is zero
+    if (this.stopTraining || epochsRemaining <= 0) {
+      this.toggleTrainButtonState();
+      return;
+    }
 
-  // Send a request to the backend to train for 1 epoch
-  fetch(this.source + "projects/" + this.projectId + "/dynamic/cluster?epochs=10", {
-    method: "POST",
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok.");
-      }
-      return response.json();
+    // Send a request to the backend to train for 1 epoch
+    fetch(this.source + "projects/" + this.projectId + "/dynamic/cluster?epochs=10", {
+      method: "POST",
     })
-    .then(() => {
-      this.forceUpdate();
-      setTimeout(() => this.trainForEpochs(epochsRemaining - 1), 1000);
-      //this.trainForEpochs(epochsRemaining - 1);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      this.toggleTrainButtonState(); // Ensure the button state is reset if there's an error
-    });
-}
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok.");
+        }
+        return response.json();
+      })
+      .then(() => {
+        this.forceUpdate();
+        setTimeout(() => this.trainForEpochs(epochsRemaining - 1), 1000);
+        //this.trainForEpochs(epochsRemaining - 1);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        this.toggleTrainButtonState(); // Ensure the button state is reset if there's an error
+      });
+  }
 
   getList() {
     return this.lines;
   }
   forceUpdate() {
-    console.log("force updating...")
+    console.log("force updating...");
     this.fetched_data = null;
     return this.update();
   }
@@ -779,7 +792,7 @@ class DotPlot {
   render(newData) {
     // Existing Dots
     //this.container.selectAll(".dot").remove();
-    console.log("rendering...")
+    console.log("rendering...");
     if (this.filter) {
       newData = newData.filter((dot) => this.filter(dot));
     } else {
@@ -835,12 +848,12 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
   const { projectId, source } = props;
   const [is_dynamic, set_dynamic] = useState(props.is_dynamic);
   const [rightClickedItemId, setRightClickedItemId] = useState();
-const pendingFilterRef = useRef<any>(null);
-const pendingButtonRef = useRef<any>(null);
+  const pendingFilterRef = useRef<any>(null);
+  const pendingButtonRef = useRef<any>(null);
   const canvasRef = useRef<SVGSVGElement>(null);
   const trainButtonRef = useRef<HTMLButtonElement>(null);
   const [items, setItems] = useState<Item[]>([]);
-const isInitializedRef = useRef(false);
+  const isInitializedRef = useRef(false);
   const [plot, setPlot] = useState<any>();
   const [train, setTrain] = useState<any>();
   const [plotItems, setPlotItems] = useState<any[]>([]);
@@ -850,38 +863,33 @@ const isInitializedRef = useRef(false);
     setPlotItems(value);
   };
 
-
-
   useImperativeHandle(ref, () => ({
-  setPlotFilter: (filterValue: any) => {
-    if (plot) {
-      plot.applyCodeFilter(filterValue);
-    } else {
-      console.log("plot is null; queuing the filter value");
-      pendingFilterRef.current = filterValue;
-    }
-  },
+    setPlotFilter: (filterValue: any) => {
+      if (plot) {
+        plot.applyCodeFilter(filterValue);
+      } else {
+        console.log("plot is null; queuing the filter value");
+        pendingFilterRef.current = filterValue;
+      }
+    },
 
     setModelType: (modelType: any) => {
-      console.log("setting model type")
-      console.log("modelType", modelType)
+      console.log("setting model type");
+      console.log("modelType", modelType);
       if (plot) {
         if (modelType == "dynamic") {
-          console.log("setting dynamic to true")
+          console.log("setting dynamic to true");
           plot.is_dynamic = true;
           set_dynamic(true);
           console.log("plot", plot);
           plot?.forceUpdate().then(() => plot.homeView());
-            plot.train_button = trainButtonRef;
+          plot.train_button = trainButtonRef;
 
-            plot.setupTrainButton();
+          plot.setupTrainButton();
           for (const dot of plot.data) {
             dot.setDragBehavior(plot);
           }
-        }
-
-
-         else {
+        } else {
           console.log("setting dynamic to false");
           plot.is_dynamic = false;
           set_dynamic(false);
@@ -893,41 +901,38 @@ const isInitializedRef = useRef(false);
             line.remove();
           }
           console.log("plot", plot);
-        plot?.forceUpdate().then(() => plot.homeView());
+          plot?.forceUpdate().then(() => plot.homeView());
         }
-
-      }
-      else{
+      } else {
         console.log("plot is null; queuing the model type");
       }
-      console.log(plot)
-      console.log("is_dynamic: ", is_dynamic)
+      console.log(plot);
+      console.log("is_dynamic: ", is_dynamic);
+    },
+  }));
+
+  useEffect(() => {
+    if (plot && pendingFilterRef.current) {
+      console.log("Applying queued filter value");
+      plot.applyCodeFilter(pendingFilterRef.current);
+      pendingFilterRef.current = null; // Clear the pending filter
     }
-}));
+  }, [plot]);
 
   useEffect(() => {
-  if (plot && pendingFilterRef.current) {
-    console.log("Applying queued filter value");
-    plot.applyCodeFilter(pendingFilterRef.current);
-    pendingFilterRef.current = null; // Clear the pending filter
-  }
-}, [plot]);
-
-  useEffect(() => {
-    console.log("AAAAAAAAAAAAAAAHHHHHHHHH")
+    console.log("AAAAAAAAAAAAAAAHHHHHHHHH");
     if (trainButtonRef.current) {
-        // Your logic to connect the button.
-        if (plot && plot.is_dynamic) {
-          console.log("setting up train button")
-            console.log("train button", trainButtonRef);
-            plot.train_button = trainButtonRef;
-            plot.setupTrainButton();
-        }
+      // Your logic to connect the button.
+      if (plot && plot.is_dynamic) {
+        console.log("setting up train button");
+        console.log("train button", trainButtonRef);
+        plot.train_button = trainButtonRef;
+        plot.setupTrainButton();
+      }
+    } else {
+      console.log("train button not found");
     }
-    else{
-        console.log("train button not found");
-    }
-}, [trainButtonRef]);
+  }, [trainButtonRef]);
 
   const handleDeleteItem = (item) => {
     item.remove();
@@ -935,34 +940,34 @@ const isInitializedRef = useRef(false);
 
   const handleOpen = () => setChangeCodeModal(true);
 
-
   useEffect(() => {
     console.log("is_dynamic: ", is_dynamic);
     console.log("isInitializedRef.current: ", isInitializedRef.current);
     console.log("Entered UseEffect");
-     if (!isInitializedRef.current) {//} && is_dynamic != undefined) {
-        if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
-          console.log("source: ", source)
-          console.log("projectID: ", projectId)
-          console.log("is_dynamic: ", is_dynamic)
-          const svg_ = d3.select(canvasRef.current);
-          const container_ = d3.select("#container");
-          const newPlot = new DotPlot(
-            "container",
-            projectId,
-            source,
-            svg_,
-            container_,
-            trainButtonRef,
-            is_dynamic,
-            handleDataUpdate,
-              handleOpen,
-              handleRightClick,
-          );
-          setPlot(newPlot);
+    if (!isInitializedRef.current) {
+      //} && is_dynamic != undefined) {
+      if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
+        console.log("source: ", source);
+        console.log("projectID: ", projectId);
+        console.log("is_dynamic: ", is_dynamic);
+        const svg_ = d3.select(canvasRef.current);
+        const container_ = d3.select("#container");
+        const newPlot = new DotPlot(
+          "container",
+          projectId,
+          source,
+          svg_,
+          container_,
+          trainButtonRef,
+          is_dynamic,
+          handleDataUpdate,
+          handleOpen,
+          handleRightClick,
+        );
+        setPlot(newPlot);
 
-          // Call generateColors and update as usual
-          /*
+        // Call generateColors and update as usual
+        /*
           newPlot
             .generateColors()
             .then(() => newPlot.update())
@@ -972,15 +977,14 @@ const isInitializedRef = useRef(false);
               newPlot.homeView();
             });
            */
-          isInitializedRef.current = true;
-        }
-
+        isInitializedRef.current = true;
+      }
     }
   }, [projectId, source, is_dynamic]);
 
   const handleRightClick = (id: number) => {
     setRightClickedItemId(id);
-  }
+  };
   const handleChangeCodeClose = () => {
     setChangeCodeModal(false);
   };
@@ -988,25 +992,29 @@ const isInitializedRef = useRef(false);
   // Update the rendering part to utilize the fetched plotItems instead of the dummy items
   return (
     <div className="flex">
-      <ChangeCodeModal open={openChangeCodeModal} handleClose={handleChangeCodeClose} projectId={projectId} segmentId={rightClickedItemId} />
+      <ChangeCodeModal
+        open={openChangeCodeModal}
+        handleClose={handleChangeCodeClose}
+        projectId={projectId}
+        segmentId={rightClickedItemId}
+      />
       <div className="dynamicSvgContainer border h-[80vh] w-auto">
         {/* Use the fetched plotItems instead of dummy items */}
         <svg id="canvas" ref={canvasRef} width="100%" height="100%">
           <g id="container"></g>
         </svg>
-        <div style={{ display: 'flex', position: 'absolute', right: '20px', bottom: '20px', gap: '10px' }}>
-        <Button
+        <div style={{ display: "flex", position: "absolute", right: "20px", bottom: "20px", gap: "10px" }}>
+          <Button
             variant="contained"
             className="bg-blue-900 rounded"
             ref={trainButtonRef}
             onClick={() => {
               plot.updateClusters();
-
             }}
           >
             show_cluster
           </Button>
-        <Button
+          <Button
             variant="contained"
             className="bg-blue-900 rounded "
             ref={trainButtonRef}
@@ -1014,64 +1022,64 @@ const isInitializedRef = useRef(false);
               fetch(source + "projects/" + projectId + "/clusters/errors?max_count=20", {
                 method: "GET",
                 headers: {
-                    "Content-Type": "application/json", // Specify that we're sending JSON data
+                  "Content-Type": "application/json", // Specify that we're sending JSON data
                 },
-                }
-              ).then((response) => response.json())
+              })
+                .then((response) => response.json())
                 .then((data) => {
-                 const id_list = data.data;
-                 const filtered_dots = plot.data.filter((dot) => id_list.includes(dot.dotId));
-                 console.log("len dots", plot.data)
-                 for (const dot of filtered_dots) {
-
-                   dot.makeSuggestion();
-                 }
-
-            })}}
+                  const id_list = data.data;
+                  const filtered_dots = plot.data.filter((dot) => id_list.includes(dot.dotId));
+                  console.log("len dots", plot.data);
+                  for (const dot of filtered_dots) {
+                    dot.makeSuggestion();
+                  }
+                });
+            }}
           >
             Suggestions
           </Button>
-        {is_dynamic && (
-          <Button
-            variant="contained"
-            className="bg-blue-900 rounded"
-            ref={trainButtonRef}
-            onClick={() => {
-              console.log("wanting to train plot");
-              console.log("plot: ", plot);
-              console.log("button_set", plot?.button_is_set);
-              if (!plot?.button_is_set) {
-                plot.train_button = trainButtonRef;
-                plot?.setupTrainButton();
+          {is_dynamic && (
+            <Button
+              variant="contained"
+              className="bg-blue-900 rounded"
+              ref={trainButtonRef}
+              onClick={() => {
+                console.log("wanting to train plot");
+                console.log("plot: ", plot);
+                console.log("button_set", plot?.button_is_set);
+                if (!plot?.button_is_set) {
+                  plot.train_button = trainButtonRef;
+                  plot?.setupTrainButton();
                 }
-              if (trainButtonRef.current?.textContent === "Train") {
+                if (trainButtonRef.current?.textContent === "Train") {
                   plot?.toggleTrainButtonState();
                   plot?.trainForEpochs(10);
                 } else {
                   plot.stopTraining = true;
-                  trainButtonRef.current.textContent = "Stopping..."
+                  trainButtonRef.current.textContent = "Stopping...";
                 }
 
-              //plot?.trainForEpochs(10);
-              //plot?.setupTrainButton();
-            }}
-          >
-            Train
-          </Button>
-        )}
-          </div>
+                //plot?.trainForEpochs(10);
+                //plot?.setupTrainButton();
+              }}
+            >
+              Train
+            </Button>
+          )}
+        </div>
       </div>
       {is_dynamic && (
-      <div className="itemListContainer">
-        <ItemList
-          items={plotItems}
-          onDelete={handleDeleteItem}
-          onTrain={(plot) => {
-            console.log("wanting to train lines, plot: ", plot);
-            plot.trainLines();
-          }}
-        />
-      </div>)}
+        <div className="itemListContainer">
+          <ItemList
+            items={plotItems}
+            onDelete={handleDeleteItem}
+            onTrain={(plot) => {
+              console.log("wanting to train lines, plot: ", plot);
+              plot.trainLines();
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 });

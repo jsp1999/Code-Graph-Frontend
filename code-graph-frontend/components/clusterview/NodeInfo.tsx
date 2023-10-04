@@ -17,12 +17,12 @@ interface NodeInfoProps {
 }
 
 export const NodeInfo: React.FC<NodeInfoProps> = ({ nodeData }) => {
-    const option_list = Object.keys(annotation_id_map);
-    React.useEffect(() => {
-        // This code will run every time nodeData changes
-        // You can perform any side effects or additional logic here
-        // console.log('nodeData has changed:', nodeData);
-    }, [nodeData]); // Specify the dependency as nodeData to trigger the effect whenever it changes
+  const option_list = Object.keys(annotation_id_map);
+  React.useEffect(() => {
+    // This code will run every time nodeData changes
+    // You can perform any side effects or additional logic here
+    // console.log('nodeData has changed:', nodeData);
+  }, [nodeData]); // Specify the dependency as nodeData to trigger the effect whenever it changes
 
   if (!nodeData) {
     return null; // Render nothing if nodeData is null or empty

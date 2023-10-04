@@ -24,7 +24,6 @@ export default function CodeItem(props: CodeItemProps) {
     return () => {
       isMounted = false;
     };
-
   }, [props.id, props.projectId]);
 
   return (

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
+import React, { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
 
 const AnnotationChart = ({ jsonData }) => {
   // Assumption: jsonData is an array of objects containing the provided JSON format
@@ -14,10 +14,10 @@ const AnnotationChart = ({ jsonData }) => {
     labels: xLabels,
     datasets: [
       {
-        label: 'Annotations',
+        label: "Annotations",
         data: yData,
         fill: false,
-        borderColor: 'rgba(75,192,192,1)',
+        borderColor: "rgba(75,192,192,1)",
         borderWidth: 2,
       },
     ],
@@ -29,17 +29,17 @@ const AnnotationChart = ({ jsonData }) => {
     maintainAspectRatio: false,
     scales: {
       x: {
-        type: 'linear',
-        position: 'bottom',
+        type: "linear",
+        position: "bottom",
         title: {
           display: true,
-          text: 'Annotations',
+          text: "Annotations",
         },
       },
       y: {
         title: {
           display: true,
-          text: 'Number of Annotations',
+          text: "Number of Annotations",
         },
       },
     },

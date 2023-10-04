@@ -59,11 +59,9 @@ export default function AddCodeModal(props: AddCodeModalProps) {
     window.location.reload(); // Reload the page
   }
 
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const filteredCodeList = codeList.filter((code) =>
-      code.text.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCodeList = codeList.filter((code) => code.text.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -76,7 +74,7 @@ export default function AddCodeModal(props: AddCodeModalProps) {
 
   useEffect(() => {
     if (!props.open) {
-      setSearchQuery('');
+      setSearchQuery("");
     }
   }, [props.open]);
 
@@ -98,11 +96,11 @@ export default function AddCodeModal(props: AddCodeModalProps) {
               <FormLabel component="legend">Add to Code</FormLabel>
               <div className="overflow-auto h-[25vw]">
                 <TextField
-                    className="w-[25rem]"
-                    id="search"
-                    label="Search"
-                    value={searchQuery}
-                    onChange={handleSearchInputChange}
+                  className="w-[25rem]"
+                  id="search"
+                  label="Search"
+                  value={searchQuery}
+                  onChange={handleSearchInputChange}
                 />
                 <RadioGroup aria-label="Add to Code" name="add" value={"Add to Category"}>
                   <FormControlLabel
@@ -114,7 +112,7 @@ export default function AddCodeModal(props: AddCodeModalProps) {
                     onChange={() => handleCheckboxChange(noneIndex)}
                   />
                   {filteredCodeList != null &&
-                      filteredCodeList.map((code) => (
+                    filteredCodeList.map((code) => (
                       <FormControlLabel
                         value={code.code_id}
                         control={<Radio />}
