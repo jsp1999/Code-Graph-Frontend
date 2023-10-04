@@ -8,7 +8,24 @@ interface MergeModalProps {
   projectId: number;
   setLoading: () => void;
 }
+function findCodePath(tree, code_id) {
+  let currentNode = tree.find(node => node.code_id === code_id);
+  if (!currentNode) {
+    return null; // the given code_id doesn't exist in the tree
+  }
 
+  let path = currentNode.text;
+
+  // Traverse up the tree to get the path
+  while (currentNode && currentNode.parent_code_id !== null) {
+    currentNode = tree.find(node => node.code_id === currentNode.parent_code_id);
+    if (currentNode) {
+      path = currentNode.text + "-" + path;
+    }
+  }
+
+  return path;
+}
 export default function MergeModal(props: MergeModalProps) {
   const [selectedIds, setSelectedIds] = React.useState<number[]>([]);
   const [disabled, setDisabled] = React.useState(true);
@@ -114,7 +131,7 @@ export default function MergeModal(props: MergeModalProps) {
                       <FormControlLabel
                         value={code.code_id}
                         control={<Radio />}
-                        label={code.text}
+                        label={findCodePath(codeList, code.code_id)}
                         key={code.code_id}
                         checked={selectedIds.includes(code.code_id)}
                         onChange={() => handleCheckboxChange(code.code_id)}

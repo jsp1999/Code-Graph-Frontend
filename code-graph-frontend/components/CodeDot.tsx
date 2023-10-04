@@ -3,6 +3,21 @@ import * as d3 from "d3";
 function newColorScale(code_id) {
   return idToColorMap[code_id] || "#808080"; // Fallback to gray
 }
+function findCodePath(tree, code_id, currentPath = "") {
+  for (const key in tree) {
+    const node = tree[key];
+    const newPath = currentPath ? `${currentPath}-${node.name}` : node.name;
+
+    if (node.id === code_id) {
+      return newPath;
+    }
+
+    const subcategories = node.subcategories;
+    const result = findCodePath(subcategories, code_id, newPath);
+    if (result) return result;
+  }
+  return null;
+}
 class CodeDot {
   private dotId: number;
   private x: number;
@@ -94,7 +109,7 @@ class CodeDot {
       .attr("font-size", "0.07px")
       .attr("x", this.x) // Adjust the x-coordinate for label placement
       .attr("y", this.y - 0.01) // Adjust the y-coordinate for label placement
-      .text(this.code); //
+      .text(findCodePath(this.plot.tree, this.dotId)); //
 
     this.circle?.on("contextmenu", (event, d) => {
       event.preventDefault();
