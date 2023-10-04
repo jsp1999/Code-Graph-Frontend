@@ -33,6 +33,8 @@ export default function ChangeCodeModal(props: AddToCodeModalProps) {
 
     function pressAddButton() {
             try {
+                console.log("try changing code")
+                console.log(checkedId)
                 if (checkedId != null) {
                     addCodeToParent(props.codeId, props.projectId, checkedId);
                 }

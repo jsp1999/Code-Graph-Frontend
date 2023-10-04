@@ -564,14 +564,14 @@ class DotPlot {
       return;
     }
     this.button_is_set = true;
-    trainButton.addEventListener("click", () => {
+    /*trainButton.addEventListener("click", () => {
       if (trainButton.textContent === "Train") {
         this.toggleTrainButtonState();
         this.trainForEpochs(10);
       } else {
         this.stopTraining = true;
       }
-    });
+    });*/
   }
   trainLines() {
     // Transform lines data into the desired format
@@ -1043,9 +1043,15 @@ const isInitializedRef = useRef(false);
               if (!plot?.button_is_set) {
                 plot.train_button = trainButtonRef;
                 plot?.setupTrainButton();
-                plot?.toggleTrainButtonState();
-                plot?.trainForEpochs(10);
-              }
+                }
+              if (trainButtonRef.current?.textContent === "Train") {
+                  plot?.toggleTrainButtonState();
+                  plot?.trainForEpochs(10);
+                } else {
+                  plot.stopTraining = true;
+                  trainButtonRef.current.textContent = "Stopping..."
+                }
+
               //plot?.trainForEpochs(10);
               //plot?.setupTrainButton();
             }}
