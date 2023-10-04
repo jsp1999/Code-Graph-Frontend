@@ -17,9 +17,6 @@ import { CircularProgress } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { BsListColumnsReverse } from "react-icons/bs";
 
-
-
-
 const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const canvasRef = useRef<SVGSVGElement>(null);
   const dotPlotRef = useRef<DotPlotCompHandles | null>(null);
@@ -145,12 +142,9 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
       fetchAndUpdateConfigs();
       setEditModalOpen(false);
       setLoading(false);
-
     } catch (error) {
       console.error("Error editing project:", error);
-    }
-    finally
-    {
+    } finally {
       window.location.reload();
     }
   };
@@ -168,15 +162,14 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
       fetchAndUpdateConfigs();
     } catch (error) {
       console.error("Error recalculate entries:", error);
-    }
-    finally{
+    } finally {
       setloadingRecalulate(false);
       setRecalulateSuccess(true);
       setLoading(false);
     }
   };
   console.log("config_above", config);
-  console.log("config_above_return", config? (config.config.model_type === "dynamic"): undefined);
+  console.log("config_above_return", config ? config.config.model_type === "dynamic" : undefined);
   return (
     <div>
       <Header title="Graph View" />
@@ -198,28 +191,32 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
             updateSelectedNodes={handleUpdateSelectedNodes}
           />
         </div>
-          <DotPlotComp ref={dotPlotRef} projectId={projectId} source="http://localhost:8000/" is_dynamic={config? (config.config.model_type === "dynamic"): undefined} />
+        <DotPlotComp
+          ref={dotPlotRef}
+          projectId={projectId}
+          source="http://localhost:8000/"
+          is_dynamic={config ? config.config.model_type === "dynamic" : undefined}
+        />
       </div>
       <div className="absolute right-5 bottom-5 ">
-          <Button
-            variant="outlined"
-className="mr-10"
-            onClick={() => {
-              handleEditClick(config);
-            }}
-          >
-            Edit Config
-          </Button>
-          <Button
-            variant="outlined"
-            className="mr-10"
-
-            onClick={() => {
-              handleRecalculate();
-            }}
-          >
-            Recalculate
-          </Button>
+        <Button
+          variant="outlined"
+          className="mr-10"
+          onClick={() => {
+            handleEditClick(config);
+          }}
+        >
+          Edit Config
+        </Button>
+        <Button
+          variant="outlined"
+          className="mr-10"
+          onClick={() => {
+            handleRecalculate();
+          }}
+        >
+          Recalculate
+        </Button>
         <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/codeView`)}>
           Change View
         </Button>

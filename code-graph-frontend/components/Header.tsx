@@ -75,14 +75,16 @@ export default function Header(props: HeaderProps) {
             <h2 className="text-2xl text-black">Project {projectId}</h2>
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <p className="w-fit mx-auto">{projects.find((project) => project.project_id == projectId)?.project_name}</p>
+                <p className="w-fit mx-auto">
+                  {projects.find((project) => project.project_id == projectId)?.project_name}
+                </p>
               </AccordionSummary>
               {projects.map((project) => (
                 <div key={project.project_id} className="w-fit mx-auto my-1">
                   {project.project_name}
                   {project.project_id != projectId && (
                     <button
-                        className="ml-1"
+                      className="ml-1"
                       onClick={() => {
                         localStorage.setItem("projectId", project.project_id.toString());
                         localStorage.setItem("selectedNodes", JSON.stringify([]));
@@ -267,10 +269,7 @@ export default function Header(props: HeaderProps) {
           </div>
         </div>
       </Drawer>
-      <button
-        className="ml-auto mr-5"
-        onClick={() => router.push("/")}
-      >
+      <button className="ml-auto mr-5" onClick={() => router.push("/")}>
         CodeGraph
       </button>
     </header>

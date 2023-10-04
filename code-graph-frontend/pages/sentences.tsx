@@ -162,7 +162,12 @@ export default function SentencesPage() {
         <Button variant="outlined" className="mx-2 h-fit w-fit my-auto" onClick={prevPage} disabled={currentPage === 0}>
           Previous Page
         </Button>
-        <Button variant="outlined" className="mx-2 h-fit w-fit my-auto" onClick={nextPage} disabled={currentPage === Math.ceil(totalCount / pageSize) - 1}>
+        <Button
+          variant="outlined"
+          className="mx-2 h-fit w-fit my-auto"
+          onClick={nextPage}
+          disabled={currentPage === Math.ceil(totalCount / pageSize) - 1}
+        >
           Next Page
         </Button>
         <select value={pageSize} onChange={(e) => changePageSize(Number(e.target.value))} className="ml-2">
@@ -184,7 +189,7 @@ export default function SentencesPage() {
           }}
           className="ml-2 p-1 w-16"
         />
-        <span className="h-fit my-auto" >/ {Math.ceil(totalCount / pageSize)}</span>
+        <span className="h-fit my-auto">/ {Math.ceil(totalCount / pageSize)}</span>
       </div>
       <TableContainer component={Paper}>
         <Table>

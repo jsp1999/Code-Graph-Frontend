@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
-import { List, ListItem, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React, { useEffect } from "react";
+import { List, ListItem, IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Button } from "@mui/material";
 
 interface ItemListProps {
@@ -14,7 +14,7 @@ function rgbToRgba(rgbString, alpha = 1) {
 
   if (!matches || matches.length !== 3) {
     console.error("Invalid RGB format"); // handle error
-    return '';
+    return "";
   }
 
   const [r, g, b] = matches.map(Number);
@@ -25,39 +25,45 @@ const ItemList: React.FC<ItemListProps> = ({ items, onDelete, onTrain }) => {
   //if (!items.length) return null;
 
   return (
-  <div className="container-list border">
-    <h1 className="text-2xl underline mb-5 w-fit mx-auto">Arrows</h1>
+    <div className="container-list border">
+      <h1 className="text-2xl underline mb-5 w-fit mx-auto">Arrows</h1>
 
-    <List className="scroll-list-list">
-      {items.map((item) => (
-        <ListItem key={item.dot.dotId} style={{
-          backgroundColor: item.dot.color
-            ? rgbToRgba(item.dot.color, 0.5) // 50% transparency
-            : 'rgba(245, 100, 245, 0.5)'
-          }}>
-          <div className="flex">
-            <div>
+      <List className="scroll-list-list">
+        {items.map((item) => (
+          <ListItem
+            key={item.dot.dotId}
+            style={{
+              backgroundColor: item.dot.color
+                ? rgbToRgba(item.dot.color, 0.5) // 50% transparency
+                : "rgba(245, 100, 245, 0.5)",
+            }}
+          >
+            <div className="flex">
               <div>
-                Code: {item.dot.codeText}
+                <div>Code: {item.dot.codeText}</div>
+                <div>Segment: {item.dot.segment}</div>
               </div>
-              <div>
-                Segment: {item.dot.segment}
-              </div>
+              <IconButton onClick={() => onDelete(item)}>
+                <DeleteIcon />
+              </IconButton>
             </div>
-            <IconButton onClick={() => onDelete(item)}>
-              <DeleteIcon />
-            </IconButton>
-          </div>
-        </ListItem>
-      ))}
-    </List>
+          </ListItem>
+        ))}
+      </List>
 
-    <Button variant="contained" className="bg-blue-900 rounded w-fit mx-auto mb-1" onClick={() => { if (items.length > 0){
-      onTrain(items[0].dot.plot)}}}>
-      Train Arrows
-    </Button>
-  </div>
-);
+      <Button
+        variant="contained"
+        className="bg-blue-900 rounded w-fit mx-auto mb-1"
+        onClick={() => {
+          if (items.length > 0) {
+            onTrain(items[0].dot.plot);
+          }
+        }}
+      >
+        Train Arrows
+      </Button>
+    </div>
+  );
 };
 
 export default ItemList;

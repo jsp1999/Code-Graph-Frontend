@@ -161,7 +161,12 @@ export default function DatabasesPage() {
         <Button variant="outlined" className="mx-1" onClick={prevPage} disabled={currentPage === 0}>
           Previous Page
         </Button>
-        <Button variant="outlined" className="mx-1" onClick={nextPage} disabled={currentPage === Math.ceil(totalCount / pageSize) - 1}>
+        <Button
+          variant="outlined"
+          className="mx-1"
+          onClick={nextPage}
+          disabled={currentPage === Math.ceil(totalCount / pageSize) - 1}
+        >
           Next Page
         </Button>
         <select value={pageSize} onChange={(e) => changePageSize(Number(e.target.value))} className="ml-2">

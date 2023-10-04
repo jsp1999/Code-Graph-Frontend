@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { Button } from "@mui/material";
 import AddCodeModal from "@/components/AddCodeModal";
 import CodeTreeView from "@/components/CodeTreeView";
-import {getCodeRoute, getCodeTree} from "@/pages/api/api";
+import { getCodeRoute, getCodeTree } from "@/pages/api/api";
 import { useRouter } from "next/router";
 import LoadingModal from "@/components/LoadingModal";
 import * as d3 from "d3";
@@ -54,20 +54,20 @@ export default function CodeView() {
   }, [selectedNodes]);
   const handleOpen = () => setOpenAddToCodeModal(true);
   const handleRightClick = (id: number) => {
-      setRightClickedItemId(id);
-      getCodeRoute(id, projectId).then((result) => {
-          setRightClickedItemName(result.data.text);
-          setRightClickedItemParentId(result.data.parent_code_id);
-      })
-  }
+    setRightClickedItemId(id);
+    getCodeRoute(id, projectId).then((result) => {
+      setRightClickedItemName(result.data.text);
+      setRightClickedItemParentId(result.data.parent_code_id);
+    });
+  };
   const handleOpenRename = () => {
-      setOpenRenameModal(true);
-  }
-    const handleOpenDelete = () => setOpenConfirmModal(true);
+    setOpenRenameModal(true);
+  };
+  const handleOpenDelete = () => setOpenConfirmModal(true);
 
-    const handleOpenShow = () => {
-        setOpenShowModal(true);
-    }
+  const handleOpenShow = () => {
+    setOpenShowModal(true);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -84,15 +84,19 @@ export default function CodeView() {
         container_,
         selectedNodes,
         handleOpen,
-          handleRightClick,
-          handleOpenDelete,
-          handleOpenRename,
-          handleOpenShow,
+        handleRightClick,
+        handleOpenDelete,
+        handleOpenRename,
+        handleOpenShow,
       );
 
       setPlot(newPlot);
 
-      newPlot.generateColors().then(()=>newPlot.update()).then(() => newPlot.homeView()).then(() => setLoading(false));
+      newPlot
+        .generateColors()
+        .then(() => newPlot.update())
+        .then(() => newPlot.homeView())
+        .then(() => setLoading(false));
     } else {
       console.log("Error: canvas ref is null");
     }
@@ -121,38 +125,46 @@ export default function CodeView() {
     setOpenMergeModal(false);
   };
 
-    const handleConfirmModalClose = () => {
-        setOpenConfirmModal(false);
-    };
+  const handleConfirmModalClose = () => {
+    setOpenConfirmModal(false);
+  };
 
-    const handleRenameModalClose = () => {
-        setOpenRenameModal(false);
-    };
+  const handleRenameModalClose = () => {
+    setOpenRenameModal(false);
+  };
 
-    const handleDeleteCodeModalClose = () => {
-        setOpenDeleteCodeModal(false);
-    };
+  const handleDeleteCodeModalClose = () => {
+    setOpenDeleteCodeModal(false);
+  };
 
-    const handleShowClose = () => {
-        setOpenShowModal(false);
-    };
+  const handleShowClose = () => {
+    setOpenShowModal(false);
+  };
 
-    const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
+  const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
     setSelectedNodes(newSelectedNodes);
   };
 
   useEffect(() => {
     if (plot && selectedNodes) {
-      console.log("Applying codes filter")
+      console.log("Applying codes filter");
       plot.applyCodesFilter(selectedNodes);
-      plot.generateColors().then(()=>plot.update()).then(() => plot.homeView());
+      plot
+        .generateColors()
+        .then(() => plot.update())
+        .then(() => plot.homeView());
     }
   }, [selectedNodes, plot]);
 
   return (
     <div>
       <Header title="Code View" />
-      <AddCodeModal open={openAddModal} handleClose={handleAddModalClose} projectId={projectId} setLoading={() => setLoading(!loading)} />
+      <AddCodeModal
+        open={openAddModal}
+        handleClose={handleAddModalClose}
+        projectId={projectId}
+        setLoading={() => setLoading(!loading)}
+      />
       <AddToCodeModal
         open={openAddToCodeModal}
         handleClose={handleAddToCodeModalClose}
@@ -160,7 +172,12 @@ export default function CodeView() {
         codeId={rightClickedItemId}
         setLoading={() => setLoading(!loading)}
       />
-        <SearchCodeOccurrencesModal open={openShowModal} handleClose={handleShowClose} projectId={projectId} codeId={rightClickedItemId} />
+      <SearchCodeOccurrencesModal
+        open={openShowModal}
+        handleClose={handleShowClose}
+        projectId={projectId}
+        codeId={rightClickedItemId}
+      />
       <LoadingModal open={loading} />
       <MergeModal
         open={openMergeModal}
@@ -168,34 +185,53 @@ export default function CodeView() {
         projectId={projectId}
         setLoading={() => setLoading(!loading)}
       />
-        <ConfirmModal open={openConfirmModal} handleClose={handleConfirmModalClose} projectId={projectId} codeId={rightClickedItemId} codeName={rightClickedItemName} setLoading={() => setLoading(!loading)} />
-        <RenameModal open={openRenameModal} handleClose={handleRenameModalClose} projectId={projectId} codeId={rightClickedItemId} codeName={rightClickedItemName} codeParentId={rightClickedItemParentId} setLoading={() => setLoading(!loading)} />
-        <DeleteCodeModal open={openDeleteCodeModal} handleClose={handleDeleteCodeModalClose} projectId={projectId} setLoading={() => setLoading(!loading)} />
-        <div className="flex">
-
-      <div className="float-left">
-        <CodeTreeView
-          taxonomyData={jsonData}
-          selectedNodes={selectedNodes}
-          updateSelectedNodes={handleUpdateSelectedNodes}
-        />
-      </div>
-
-      <div className="dynamicSvgContainer border h-[80vh] w-auto">
-        {/* Use the fetched plotItems instead of dummy items */}
-        <svg id="canvas" ref={canvasRef} width="100%" height="100%">
-          <g id="container"></g>
-        </svg>
-      </div>
+      <ConfirmModal
+        open={openConfirmModal}
+        handleClose={handleConfirmModalClose}
+        projectId={projectId}
+        codeId={rightClickedItemId}
+        codeName={rightClickedItemName}
+        setLoading={() => setLoading(!loading)}
+      />
+      <RenameModal
+        open={openRenameModal}
+        handleClose={handleRenameModalClose}
+        projectId={projectId}
+        codeId={rightClickedItemId}
+        codeName={rightClickedItemName}
+        codeParentId={rightClickedItemParentId}
+        setLoading={() => setLoading(!loading)}
+      />
+      <DeleteCodeModal
+        open={openDeleteCodeModal}
+        handleClose={handleDeleteCodeModalClose}
+        projectId={projectId}
+        setLoading={() => setLoading(!loading)}
+      />
+      <div className="flex">
+        <div className="float-left">
+          <CodeTreeView
+            taxonomyData={jsonData}
+            selectedNodes={selectedNodes}
+            updateSelectedNodes={handleUpdateSelectedNodes}
+          />
         </div>
+
+        <div className="dynamicSvgContainer border h-[80vh] w-auto">
+          {/* Use the fetched plotItems instead of dummy items */}
+          <svg id="canvas" ref={canvasRef} width="100%" height="100%">
+            <g id="container"></g>
+          </svg>
+        </div>
+      </div>
 
       <div className="absolute right-5 bottom-5 ">
         <Button variant="outlined" className="mr-10" onClick={() => setOpenMergeModal(true)}>
           Merge Codes
         </Button>
-          <Button variant="outlined" className="mr-10" onClick={() => setOpenDeleteCodeModal(true)}>
-              Delete Code
-          </Button>
+        <Button variant="outlined" className="mr-10" onClick={() => setOpenDeleteCodeModal(true)}>
+          Delete Code
+        </Button>
         <Button variant="outlined" className="mr-10" onClick={() => setOpenAddModal(true)}>
           Add new Code
         </Button>

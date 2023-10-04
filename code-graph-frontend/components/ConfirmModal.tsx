@@ -1,6 +1,6 @@
 import { Button, Modal } from "@mui/material";
-import React, {useEffect, useState} from "react";
-import {deleteCodeRoute, getCodeRoute} from "@/pages/api/api";
+import React, { useEffect, useState } from "react";
+import { deleteCodeRoute, getCodeRoute } from "@/pages/api/api";
 
 interface ConfirmModalProps {
   open: boolean;
@@ -12,14 +12,13 @@ interface ConfirmModalProps {
 }
 
 export default function ConfirmModal(props: ConfirmModalProps) {
-
   const handleFinish = () => {
     props.setLoading();
     deleteCodeRoute(props.codeId, props.projectId).then(() => {
       props.handleClose();
       props.setLoading();
       window.location.reload(); // Reload the page
-    })
+    });
   };
 
   function setClosed() {

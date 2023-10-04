@@ -147,8 +147,7 @@ class CodeDotPlotter {
       dot.remove();
     });
 
-
-       // window.addEventListener('beforeunload', this.handleBeforeUnload);
+    // window.addEventListener('beforeunload', this.handleBeforeUnload);
 
     this.zoom = d3
       .zoom()
@@ -157,20 +156,20 @@ class CodeDotPlotter {
         this.container.attr("transform", event.transform);
         const scale = event.transform.k;
         const labels = this.container.selectAll("text");
-        console.log(labels)
+        console.log(labels);
         labels.attr("font-size", 14 / scale);
       });
 
     this.svg.call(this.zoom);
-        this.generateColors();
-    }
+    this.generateColors();
+  }
 
   private handleBeforeUnload = (event: Event) => {
     this.data = [];
     window.removeEventListener("beforeunload", this.handleBeforeUnload);
   };
 
-      generateColors() {
+  generateColors() {
     console.log("generating colors...");
     const endpoint = this.source + "projects/" + this.projectId + "/codes/tree";
     return fetch(endpoint)
@@ -185,32 +184,32 @@ class CodeDotPlotter {
         throw error;
       });
   }
-    homeView() {
-        console.log("home view...");
-        console.log("data", this.data)
-        const xExtent = d3.extent(this.data, (d) => d.x);
-        const yExtent = d3.extent(this.data, (d) => d.y);
-        console.log("xExtent", xExtent)
-        console.log("yExtent", yExtent)
-        // Calculate width and height of the bounding box
-        const dataWidth = xExtent[1] - xExtent[0];
-        const dataHeight = yExtent[1] - yExtent[0];
+  homeView() {
+    console.log("home view...");
+    console.log("data", this.data);
+    const xExtent = d3.extent(this.data, (d) => d.x);
+    const yExtent = d3.extent(this.data, (d) => d.y);
+    console.log("xExtent", xExtent);
+    console.log("yExtent", yExtent);
+    // Calculate width and height of the bounding box
+    const dataWidth = xExtent[1] - xExtent[0];
+    const dataHeight = yExtent[1] - yExtent[0];
 
-        // Calculate the viewport's width and height
-        const svgElem = this.svg.node(); // Assuming svg is a D3 selection. If it's a raw DOM element, you don't need .node().
-        const { width, height } = svgElem.getBoundingClientRect();
-        // Calculate the scaling factor
-        const kx = width / dataWidth;
-        const ky = height / dataHeight;
-        const k = 0.95 * Math.min(kx, ky); // 0.95 is for a little
+    // Calculate the viewport's width and height
+    const svgElem = this.svg.node(); // Assuming svg is a D3 selection. If it's a raw DOM element, you don't need .node().
+    const { width, height } = svgElem.getBoundingClientRect();
+    // Calculate the scaling factor
+    const kx = width / dataWidth;
+    const ky = height / dataHeight;
+    const k = 0.95 * Math.min(kx, ky); // 0.95 is for a little
 
-        // Calculate the translation to center the bounding box in the viewport
-        const tx = (width - k * (xExtent[1] + xExtent[0])) / 2;
-        const ty = (height - k * (yExtent[1] + yExtent[0])) / 2;
+    // Calculate the translation to center the bounding box in the viewport
+    const tx = (width - k * (xExtent[1] + xExtent[0])) / 2;
+    const ty = (height - k * (yExtent[1] + yExtent[0])) / 2;
 
-        // Apply the zoom transform
-        this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
-    }
+    // Apply the zoom transform
+    this.svg.transition().call(this.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
+  }
 
   applyCodesFilter(codes: any) {
     function createCodeFilter(codes: any) {
@@ -287,14 +286,13 @@ class CodeDotPlotter {
     } else {
       newData = [];
     }
-/*
+    /*
         if (this.selectedNodes.length > 0) {
             console.log("Codes are selected", this.selectedNodes)
             newData = newData.filter((dot: any) => this.selectedNodes.includes(dot.code_id));
             console.log("Data after selection", newData);
         }
 */
-
 
     newData.forEach((dotData: any) => {
       if (dotData.segment_count !== 0) {
@@ -305,19 +303,19 @@ class CodeDotPlotter {
           existingDot.code = dotData.text;
         } else {
           let radius =
-              (dotData.segment_count - this.minRadiusOfAllCodes) / (this.maxRadiusOfAllCodes - this.minRadiusOfAllCodes);
+            (dotData.segment_count - this.minRadiusOfAllCodes) / (this.maxRadiusOfAllCodes - this.minRadiusOfAllCodes);
           let newDot = new CodeDot(
-              dotData.code_id,
-              dotData.average_position.x,
-              dotData.average_position.y,
-              dotData.text,
-              this,
-              this.addToCategory,
-              radius,
-              this.setRightClickedId,
-              this.deleteCode,
-              this.renameCode,
-              this.showCode,
+            dotData.code_id,
+            dotData.average_position.x,
+            dotData.average_position.y,
+            dotData.text,
+            this,
+            this.addToCategory,
+            radius,
+            this.setRightClickedId,
+            this.deleteCode,
+            this.renameCode,
+            this.showCode,
           );
 
           console.log("radius", radius);

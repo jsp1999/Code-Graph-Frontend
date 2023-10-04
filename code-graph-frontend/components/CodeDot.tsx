@@ -1,52 +1,60 @@
-
 import * as d3 from "d3";
-
 
 function newColorScale(code_id) {
   return idToColorMap[code_id] || "#808080"; // Fallback to gray
 }
 class CodeDot {
-    private dotId: number;
-    private x: number;
-    private y: number;
-    private code: string;
-    private circle: null | d3.Selection<SVGCircleElement, any, any, any>;
-    private plot: any;
-    private radius: number;
-    private color: any;
-    private label: null | d3.Selection<SVGTextElement, any, any, any>;
-    private addToCategory: () => void;
-    private setRightClickedId: (id: number) => void;
-    private deleteCode: () => void;
-    private renameCode: () => void;
-    private showCode: () => void;
-    constructor(dotId: number, x: number, y: number, code: string, plot: any, addToCategory: () => void, radius: number, setRightClickedId: (id: number) => void, deleteCode: () => void, renameCode: () => void,
-                showCode: () => void) {
-        this.dotId = dotId;
-        this.x = x;
-        this.y = y;
-        this.code = code;
-        this.circle = null;
-        this.label = null;
-        this.plot = plot;
-        this.setRightClickedId = setRightClickedId;
-        this.deleteCode = deleteCode;
-        this.renameCode = renameCode;
-        if (!this.plot.color_mapper) {
-            console.log("No color mapper")
-            console.log(this.plot.color_mapper)
-            console.log(this.plot)
-            this.color =  "#808080";
-        }
-        else{
-            console.log("Color mapper")
-            this.color = plot.color_mapper(this.dotId);
-        }
-        this.radius = radius;
+  private dotId: number;
+  private x: number;
+  private y: number;
+  private code: string;
+  private circle: null | d3.Selection<SVGCircleElement, any, any, any>;
+  private plot: any;
+  private radius: number;
+  private color: any;
+  private label: null | d3.Selection<SVGTextElement, any, any, any>;
+  private addToCategory: () => void;
+  private setRightClickedId: (id: number) => void;
+  private deleteCode: () => void;
+  private renameCode: () => void;
+  private showCode: () => void;
+  constructor(
+    dotId: number,
+    x: number,
+    y: number,
+    code: string,
+    plot: any,
+    addToCategory: () => void,
+    radius: number,
+    setRightClickedId: (id: number) => void,
+    deleteCode: () => void,
+    renameCode: () => void,
+    showCode: () => void,
+  ) {
+    this.dotId = dotId;
+    this.x = x;
+    this.y = y;
+    this.code = code;
+    this.circle = null;
+    this.label = null;
+    this.plot = plot;
+    this.setRightClickedId = setRightClickedId;
+    this.deleteCode = deleteCode;
+    this.renameCode = renameCode;
+    if (!this.plot.color_mapper) {
+      console.log("No color mapper");
+      console.log(this.plot.color_mapper);
+      console.log(this.plot);
+      this.color = "#808080";
+    } else {
+      console.log("Color mapper");
+      this.color = plot.color_mapper(this.dotId);
+    }
+    this.radius = radius;
 
-        this.plot.data.push(this);
-        this.addToCategory = addToCategory;
-        this.showCode = showCode;
+    this.plot.data.push(this);
+    this.addToCategory = addToCategory;
+    this.showCode = showCode;
 
     if (this.x === 0 && this.y === 0) {
       this.x = Math.random() * 100;
@@ -106,51 +114,51 @@ class CodeDot {
         .style("top", circleRect.top - 10 + "px");
 
       // Add menu options
-        contextMenu
-            .append("div")
-            .text("Rename")
-            .style("border", "1px solid #000000")
-            .style("background-color", "#FFFFFF")
-            .on("click", () => {
-                this.setRightClickedId(this.dotId);
-                this.renameCode();
-                contextMenu.remove();
-            });
+      contextMenu
+        .append("div")
+        .text("Rename")
+        .style("border", "1px solid #000000")
+        .style("background-color", "#FFFFFF")
+        .on("click", () => {
+          this.setRightClickedId(this.dotId);
+          this.renameCode();
+          contextMenu.remove();
+        });
 
-        contextMenu
-            .append("div")
-            .text("Delete")
-            .style("border", "1px solid #000000")
-            .style("background-color", "#FFFFFF")
-            .on("click", () => {
-                this.setRightClickedId(this.dotId);
-                this.deleteCode();
-              contextMenu.remove();
-            });
+      contextMenu
+        .append("div")
+        .text("Delete")
+        .style("border", "1px solid #000000")
+        .style("background-color", "#FFFFFF")
+        .on("click", () => {
+          this.setRightClickedId(this.dotId);
+          this.deleteCode();
+          contextMenu.remove();
+        });
 
-        contextMenu
-            .append("div")
-            .text("Add to Top-Level Code")
-            .style("border", "1px solid #000000")
-            .style("background-color", "#FFFFFF")
-            .on("click", () => {
-                this.setRightClickedId(this.dotId);
-                this.addToCategory();
-                contextMenu.remove();
-            });
+      contextMenu
+        .append("div")
+        .text("Add to Top-Level Code")
+        .style("border", "1px solid #000000")
+        .style("background-color", "#FFFFFF")
+        .on("click", () => {
+          this.setRightClickedId(this.dotId);
+          this.addToCategory();
+          contextMenu.remove();
+        });
 
-        contextMenu
-            .append("div")
-            .text("Show code occurrences")
-            .style("border", "1px solid #000000")
-            .style("background-color", "#FFFFFF")
-            .on("click", () => {
-                this.setRightClickedId(this.dotId);
-                this.showCode();
-                contextMenu.remove();
-            });
+      contextMenu
+        .append("div")
+        .text("Show code occurrences")
+        .style("border", "1px solid #000000")
+        .style("background-color", "#FFFFFF")
+        .on("click", () => {
+          this.setRightClickedId(this.dotId);
+          this.showCode();
+          contextMenu.remove();
+        });
 
-        // Close the context menu when clicking elsewhere
+      // Close the context menu when clicking elsewhere
       d3.select("body").on("click.custom-context-menu", () => {
         contextMenu.remove();
       });
