@@ -134,8 +134,8 @@ class CodeDotPlotter {
     this.selectedNodes = selectedNodes;
     this.addToCategory = addToCategory;
     this.fetched_data = null;
-    this.minRadiusOfAllCodes = 0;
-    this.maxRadiusOfAllCodes = 10;
+    this.minRadiusOfAllCodes = 1;
+    this.maxRadiusOfAllCodes = 4;
     this.setRightClickedId = setRightClickedId;
     this.deleteCode = deleteCode;
     this.renameCode = renameCode;
@@ -242,10 +242,10 @@ class CodeDotPlotter {
             console.log("Code Stats Codes:", codeStats.code_segments_count.codes);
             this.fetched_data = codeStats.code_segments_count.codes;
             this.minRadiusOfAllCodes = Math.min(
-              ...codeStats.code_segments_count.codes.map((code: any) => code.segment_count),
+              ...codeStats.code_segments_count.codes.map((code: any) => Math.sqrt(code.segment_count)),
             );
             this.maxRadiusOfAllCodes = Math.max(
-              ...codeStats.code_segments_count.codes.map((code: any) => code.segment_count),
+              ...codeStats.code_segments_count.codes.map((code: any) => Math.sqrt(code.segment_count)),
             );
             return codeStats.code_segments_count.codes;
           }
@@ -302,8 +302,7 @@ class CodeDotPlotter {
           existingDot.y = dotData.average_position.y;
           existingDot.code = dotData.text;
         } else {
-          let radius =
-            (dotData.segment_count - this.minRadiusOfAllCodes) / (this.maxRadiusOfAllCodes - this.minRadiusOfAllCodes);
+          let radius = (Math.sqrt(dotData.segment_count)-this.minRadiusOfAllCodes)/ (this.maxRadiusOfAllCodes - this.minRadiusOfAllCodes);
           let newDot = new CodeDot(
             dotData.code_id,
             dotData.average_position.x,
