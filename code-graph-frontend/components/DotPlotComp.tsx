@@ -598,7 +598,7 @@ class DotPlot {
       };
     });
     const jsonData = JSON.stringify(formattedData); // Convert the formatted data to JSON
-    fetch(this.source + "projects/" + this.projectId + "/dynamic/correction?epochs=10", {
+    fetch(this.source + "projects/" + this.projectId + "/dynamic/correction?epochs=3", {
       method: "POST",
       headers: {
         "Content-Type": "application/json", // Specify that we're sending JSON data
@@ -754,7 +754,7 @@ class DotPlot {
     }
 
     // Send a request to the backend to train for 1 epoch
-    fetch(this.source + "projects/" + this.projectId + "/dynamic/cluster?epochs=10", {
+    fetch(this.source + "projects/" + this.projectId + "/dynamic/cluster?epochs=3", {
       method: "POST",
     })
       .then((response) => {

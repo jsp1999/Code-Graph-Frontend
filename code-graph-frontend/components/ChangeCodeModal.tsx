@@ -37,14 +37,14 @@ export default function ChangeCodeModal(props: AddToCodeModalProps) {
                 console.log(checkedId)
                 console.log(props)
                 if (checkedId != null) {
-                    addCodeToSegment(props.segmentId, props.projectId, checkedId);
+                    addCodeToSegment(props.segmentId, props.projectId, checkedId).then(() => window.location.reload());
                 }
             } catch (e) {
                 console.error("Error adding code:", e);
             }
         setClosed();
         //props.handleClose();
-        window.location.reload(); // Reload the page
+        //window.location.reload(); // Reload the page
     }
 
   const [searchQuery, setSearchQuery] = useState<string>("");
