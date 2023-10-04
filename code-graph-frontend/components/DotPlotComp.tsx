@@ -8,6 +8,7 @@ import itemList from "@/components/ItemList";
 import ChangeCodeModal from "@/components/ChangeCodeModal";
 import AddCodeModal from "@/components/AddCodeModal";
 import {getCodeRoute} from "@/pages/api/api";
+import {getErrorSource} from "next/dist/client/components/react-dev-overlay/internal/helpers/nodeStackFrames";
 function hsvToRgb(h, s, v) {
   let r, g, b;
   let i = Math.floor(h * 6);
@@ -125,28 +126,59 @@ class Dot {
   private addToCode: () => void;
   private setRightClickedId: (id: number) => void;
   private dotId: number;
-  constructor(dotId, x, y, segment, sentence, code, plot, addToCode: () => void, setRightClickedId: (id: number) => void) {
+  constructor(dotId, x, y, segment, sentence, code, cluster_id,  plot, addToCode: () => void, setRightClickedId: (id: number) => void) {
     this.dotId = dotId;
     this.x = x;
     this.y = y;
     this.segment = segment;
     this.sentence = sentence;
+    this.cluster_id = cluster_id;
+    this.cluster = false;
     this.code = code;
     this.codeText = findCodePath(plot.tree, code);
     this.line = null;
     this.tooltip = null; // for tooltip
     this.circle = null; // for the circle representation
     this.plot = plot;
+    this.suggestion = false;
     if (!this.plot.color_mapper) {
       this.plot.color_mapper = newColorScale;
     }
     this.color = plot.color_mapper(this.code);
-    this.plot.data.push(this);
     this.addToCode = addToCode;
     this.setRightClickedId = setRightClickedId;
 
   }
 
+  makeSuggestion() {
+    this.remove();
+    this.draw(this.plot);
+    const scale = d3.zoomTransform(this.plot.svg.node()).k;
+    if (!this.suggestion) {
+      this.suggestion = true;
+      this.circle.attr("stroke", "red")
+      .attr("stroke-width", 2/scale);
+    }
+    else{
+      this.suggestion = false;
+    }
+    }
+  removeSuggestion(){
+    this.remove();
+    this.draw(this.plot);
+  }
+
+  makeCluster() {
+    this.cluster = true;
+    this.remove();
+    this.draw(this.plot);
+  }
+
+    removeCluster() {
+    this.cluster = false;
+    this.remove();
+    this.draw(this.plot);
+    }
   draw(plotter) {
     const creationZoomScale = d3.zoomTransform(this.plot.svg.node()).k;
     this.circle = plotter.container
@@ -163,6 +195,16 @@ class Dot {
       .on("mouseout", (event) => {
         this.hideTooltip();
       });
+    this.plot.data.push(this);
+
+    if(this.cluster){
+      const scale = d3.zoomTransform(this.plot.svg.node()).k;
+      console.log("setting cluster color");
+      const colors = [ "#00FF00", "#0000FF", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8800", "#FF0088", "#00FFF0"]
+      const index = this.cluster_id % colors.length;
+        this.circle.attr("stroke", colors[index])
+      .attr("stroke-width", 2/scale);
+    }
 
     this.circle.on("contextmenu", (event) => {
     event.preventDefault();
@@ -464,6 +506,7 @@ class DotPlot {
     this.lines = [];
     this.selected = [];
     this.svg = svg;
+    this.cluster = false;
     this.button_is_set = false;
     this.container = container;
     this.point_r = 5.5;
@@ -502,7 +545,8 @@ class DotPlot {
         lines.attr("stroke-width", (this.point_r/2) / scale);
         hitbox.attr("r", this.point_r / scale);
         if (scale > 1.5) {
-          dots.attr("r", this.point_r / scale); // If original radius is this.point_r
+          dots.attr("r", this.point_r / scale)
+              .attr("stroke-width", 2/scale); // If original radius is this.point_r
         } else {
           dots.attr("r", this.point_r);
         }
@@ -627,7 +671,30 @@ class DotPlot {
         throw error;
       });
   }
+  updateClusters(){
+    return this.fetchData().then((newData) => {
+      this.renderClusters(newData);
+    });
+  }
 
+  renderClusters(newData) {
+    // make the color of all dots in this.data [red, green, blue] depending on cluster id
+    if(!this.cluster) {
+      this.cluster = true;
+      console.log("making clusters...");
+      for (const dot of this.data) {
+        dot.makeCluster();
+      }
+    }
+    else {
+      this.cluster = false;
+      console.log("removing clusters...");
+        for (const dot of this.data) {
+            dot.removeCluster();
+        }
+    }
+    console.log("done");
+  }
   update() {
     console.log("updating...");
     return this.fetchData().then((newData) => {
@@ -712,6 +779,7 @@ class DotPlot {
   render(newData) {
     // Existing Dots
     //this.container.selectAll(".dot").remove();
+    console.log("rendering...")
     if (this.filter) {
       newData = newData.filter((dot) => this.filter(dot));
     } else {
@@ -723,6 +791,7 @@ class DotPlot {
       if (existingDot) {
         existingDot.x = dotData.reduced_embedding.x;
         existingDot.y = dotData.reduced_embedding.y;
+        existingDot.cluster_id = dotData.cluster;
         existingDot.move(); // Animate transition
       } else {
         let newDot = new Dot(
@@ -732,6 +801,7 @@ class DotPlot {
           dotData.segment,
           dotData.sentence,
           dotData.code,
+          dotData.cluster,
           this,
           this.addToCode,
           this.setRightClickedId,
@@ -924,11 +994,47 @@ const isInitializedRef = useRef(false);
         <svg id="canvas" ref={canvasRef} width="100%" height="100%">
           <g id="container"></g>
         </svg>
+        <div style={{ display: 'flex', position: 'absolute', right: '20px', bottom: '20px', gap: '10px' }}>
+        <Button
+            variant="contained"
+            className="bg-blue-900 rounded"
+            ref={trainButtonRef}
+            onClick={() => {
+              plot.updateClusters();
+
+            }}
+          >
+            show_cluster
+          </Button>
+        <Button
+            variant="contained"
+            className="bg-blue-900 rounded "
+            ref={trainButtonRef}
+            onClick={() => {
+              fetch(source + "projects/" + projectId + "/clusters/errors?max_count=20", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json", // Specify that we're sending JSON data
+                },
+                }
+              ).then((response) => response.json())
+                .then((data) => {
+                 const id_list = data.data;
+                 const filtered_dots = plot.data.filter((dot) => id_list.includes(dot.dotId));
+                 console.log("len dots", plot.data)
+                 for (const dot of filtered_dots) {
+
+                   dot.makeSuggestion();
+                 }
+
+            })}}
+          >
+            Suggestions
+          </Button>
         {is_dynamic && (
           <Button
             variant="contained"
-            style={{ right: "20px", bottom: "20px" }}
-            className="bg-blue-900 rounded absolute right-5 bottom-5"
+            className="bg-blue-900 rounded"
             ref={trainButtonRef}
             onClick={() => {
               console.log("wanting to train plot");
@@ -947,6 +1053,7 @@ const isInitializedRef = useRef(false);
             Train
           </Button>
         )}
+          </div>
       </div>
       {is_dynamic && (
       <div className="itemListContainer">
