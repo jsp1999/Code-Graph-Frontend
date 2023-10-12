@@ -29,3 +29,7 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 For full functionality ensure that the backend is running.
+
+## License
+
+This project is licensed under the [Apache License, Version 2.0](LICENSE).
