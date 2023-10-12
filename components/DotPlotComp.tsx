@@ -831,11 +831,10 @@ class DotPlot {
     });
   }
 }
-interface DotPlotProps {
+export interface DotPlotProps {
   projectId: number;
   source: string;
   is_dynamic?: boolean; // Assuming this prop can be optional
-  setLoading: () => void;
 }
 
 // This is the interface for the functions you're exposing.

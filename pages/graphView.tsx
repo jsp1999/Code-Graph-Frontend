@@ -1,34 +1,23 @@
 import React, { useRef, useEffect, useState } from "react";
-import * as d3 from "d3";
 import data from "../src/NER_Tags.json";
 import { getCodeTree } from "@/pages/api/api";
-import { Button, ButtonGroup } from "@mui/material";
+import { Button } from "@mui/material";
 import Header from "@/components/Header";
 import CodeTreeView from "@/components/CodeTreeView";
-import AddToCodeModal from "@/components/AddToCodeModal";
 import LoadingModal from "@/components/LoadingModal";
-import CodeItem from "@/components/CodeItem";
-import ContextMenu from "@/components/ContextMenu";
 import { useRouter } from "next/router";
-import { getconfig, updateConfig, recalculateEntries } from "@/pages/api/api";
+import { getConfig, updateConfig, recalculateEntries } from "@/pages/api/api";
 import EditModal from "@/components/config/EditConfigModal";
-import DotPlotComp from "@/components/DotPlotComp";
-import { CircularProgress } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check";
-import { BsListColumnsReverse } from "react-icons/bs";
+import DotPlotComp, { DotPlotCompHandles } from "@/components/DotPlotComp";
 
+/**
+ * Render graph view with dot plot graph with the possibility to edit nodes and train the graph
+ */
 const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
-  const canvasRef = useRef<SVGSVGElement>(null);
   const dotPlotRef = useRef<DotPlotCompHandles | null>(null);
-  const [plot, setPlot] = useState<any>();
-  const [train, setTrain] = useState<any>();
   // From CodeView component
   const router = useRouter();
   const contextMenuRef = useRef<HTMLDivElement>(null);
-  //const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
-  const [showContextMenu, setShowContextMenu] = useState(false);
-  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
-  const [rightClickedItem, setRightClickedItem] = useState(0);
   const [jsonData, setJsonData] = useState(data);
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
@@ -36,11 +25,11 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [config, setConfig] = useState<any>();
   const [editData, setEditData] = useState<any>();
-  const [loadingRecalulate, setloadingRecalulate] = useState(false);
-  const [recalulateSuccess, setRecalulateSuccess] = useState(false);
+  const [loadingRecalculate, setLoadingRecalculate] = useState(false);
+  const [recalculateSuccess, setRecalculateSuccess] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  console.log("DOTPLOTCOMPONENT (grpahView) re rendered");
+  console.log("DOTPLOTCOMPONENT (graphView) re rendered");
   const [selectedNodes, setSelectedNodes] = useState<number[]>(() => {
     if (typeof window === "undefined") {
       // We're on the server, just return the default value
@@ -88,28 +77,6 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
     }
   }, [config]);
 
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const { clientX, clientY } = e;
-    setContextMenuPosition({ x: clientX, y: clientY });
-    setShowContextMenu(true);
-  };
-
-  const handleContextMenuAction = (action: string) => {
-    if (action === "unselect") {
-      selectedNodes.splice(selectedNodes.indexOf(rightClickedItem), 1);
-    }
-    if (action === "add to category") {
-      handleOpen();
-    }
-    setShowContextMenu(false);
-  };
-
-  const handleRightClick = (e: React.MouseEvent, value: number) => {
-    handleContextMenu(e);
-    setRightClickedItem(value);
-  };
-
   const handleUpdateSelectedNodes = (newSelectedNodes: number[]) => {
     setSelectedNodes(newSelectedNodes);
   };
@@ -127,7 +94,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const fetchAndUpdateConfigs = async () => {
     try {
       setLoading(true);
-      const configResponse = (await getconfig(projectId)).data;
+      const configResponse = (await getConfig(projectId)).data;
       setConfig(configResponse);
       setLoading(false);
     } catch (error) {
@@ -157,14 +124,14 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   const handleRecalculate = async () => {
     try {
       setLoading(true);
-      setloadingRecalulate(true);
+      setLoadingRecalculate(true);
       await recalculateEntries(projectId);
       fetchAndUpdateConfigs();
     } catch (error) {
       console.error("Error recalculate entries:", error);
     } finally {
-      setloadingRecalulate(false);
-      setRecalulateSuccess(true);
+      setLoadingRecalculate(false);
+      setRecalculateSuccess(true);
       setLoading(false);
     }
   };
@@ -186,7 +153,6 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
         <div className="float-left">
           <CodeTreeView
             taxonomyData={jsonData}
-            contextMenuRef={contextMenuRef}
             selectedNodes={selectedNodes}
             updateSelectedNodes={handleUpdateSelectedNodes}
           />

@@ -14,6 +14,9 @@ type ReducedEmbedding = {
   pos_y: number;
 };
 
+/**
+ * Data page used for displaying the positions of the reduced embeddings
+ */
 export default function ReducedEmbeddingsPage() {
   const [reducedEmbeddings, setReducedEmbeddings] = useState<ReducedEmbedding[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -102,10 +105,6 @@ export default function ReducedEmbeddingsPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const goToPage = (page: number) => {
-    setCurrentPage(page);
   };
 
   const nextPage = () => {

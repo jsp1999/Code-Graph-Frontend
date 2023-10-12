@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getconfigs, updateConfig, getProjects } from "@/pages/api/api";
+import { getConfigs, updateConfig, getProjects } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
 import EditModal from "@/components/config/EditConfigModal";
@@ -40,6 +40,9 @@ type Config = {
   };
 };
 
+/**
+ * Menu page used as an overview of existing configs and a possibility to edit them
+ */
 export default function ConfigPage() {
   const [configs, setConfigs] = useState<Config[]>([]);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
@@ -112,7 +115,7 @@ export default function ConfigPage() {
     try {
       const projectsResponse = await getProjects();
       let projects = projectsResponse.data.data;
-      const configResponse = await getconfigs();
+      const configResponse = await getConfigs();
 
       let configData: Config[] = configResponse.data;
 
@@ -161,6 +164,7 @@ export default function ConfigPage() {
         onEdit={handleEditConfig}
         config={editData}
         key={editData.config_id}
+        setLoading={() => {}}
       />
       <Header title="Configs" />
 

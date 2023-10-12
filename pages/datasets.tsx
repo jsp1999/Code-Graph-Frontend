@@ -6,7 +6,6 @@ import EditModal from "@/components/dataset/EditDatasetModal";
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import DeleteDatasetModal from "@/components/dataset/DeleteDatasetModal";
-import { AiOutlinePlus } from "react-icons/ai";
 import UploadModal from "@/components/dataset/UploadDatasetModal";
 import { Button, CircularProgress } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
@@ -18,6 +17,9 @@ type Dataset = {
   dataset_id: number;
 };
 
+/**
+ * Data page used to display all existing datasets with the possibility to edit, delete or create new ones
+ */
 export default function DatasetPage() {
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [open, setOpen] = useState<boolean>(false);

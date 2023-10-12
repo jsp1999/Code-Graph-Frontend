@@ -9,7 +9,6 @@ import {
 } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
-import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import DeleteAllDatabasesModal from "@/components/database/DeleteDatabasesModal";
 import DeleteDatabasesModal from "@/components/database/DeleteDatabaseModal";
@@ -26,6 +25,9 @@ type File = {
   name: string;
 };
 
+/**
+ * Menu page used as an overview of existing databases and a possibility to create new databases or deleting all
+ */
 export default function databasesPage() {
   const [databases, setDatabases] = useState<Database[]>([]);
   const [deleteAllModalOpen, setDeleteAllModalOpen] = useState(false);

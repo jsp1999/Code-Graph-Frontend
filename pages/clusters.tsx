@@ -13,6 +13,9 @@ type Cluster = {
   reduced_embedding_id: number;
 };
 
+/**
+ * Data page used for managing data about the clusters of a project
+ */
 export default function ClustersPage() {
   const [clusters, setClusters] = useState<Cluster[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);

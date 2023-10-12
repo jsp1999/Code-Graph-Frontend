@@ -16,10 +16,12 @@ import RenameModal from "@/components/RenameModal";
 import DeleteCodeModal from "@/components/DeleteCodeModal";
 import SearchCodeOccurrencesModal from "@/components/codeView/searchCodeOccurrences";
 
+/**
+ * Render the code view with the possibility to operate on codes e.g. merge or rearrange them
+ */
 export default function CodeView() {
   const router = useRouter();
 
-  //const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
   const canvasRef = useRef<SVGSVGElement>(null);
   const [plot, setPlot] = useState<any>();
   const [rightClickedItemId, setRightClickedItemId] = useState(0);

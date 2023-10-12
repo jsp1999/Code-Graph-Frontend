@@ -5,6 +5,9 @@ import LoadingModal from "@/components/LoadingModal";
 import { uploadTestDataset } from "@/pages/api/api";
 import Header from "@/components/Header";
 
+/**
+ *  Index page, from here a project with a dataset can be uploaded or a test project can be used
+ */
 export default function WelcomePage() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

@@ -17,7 +17,7 @@ otherwise it can be downloaded [here](https://nodejs.org/de/download).
 First, install packages:
 
 ```bash
-npm run install
+npm install
 ```
 
 Then, run the development server:

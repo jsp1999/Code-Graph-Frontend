@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getProjects, deleteProject, updateProjectName, updateProjectConfig, postProject } from "@/pages/api/api";
+import { getProjects, deleteProject, updateProjectName, postProject } from "@/pages/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
 import EditModal from "@/components/project/EditProjectModal";
@@ -16,6 +16,9 @@ type Project = {
   config_id: number;
 };
 
+/**
+ * Menu page used as an overview of existing projects and a possibility to create new projects
+ */
 export default function ProjectPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [editModalOpen, setEditModalOpen] = useState(false);

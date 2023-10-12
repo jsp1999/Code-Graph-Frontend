@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
-import { BsListColumnsReverse } from "react-icons/bs";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { getPlots, searchSentence, searchCode, searchCluster, searchSegment, exportToFiles } from "@/pages/api/api";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
@@ -22,6 +21,9 @@ type Plot = {
   cluster: number;
 };
 
+/**
+ * Data page used to display info about plots such as the sentence, position, segment, code, and cluster
+ */
 export default function PlotsPage() {
   const [plots, setPlots] = useState<Plot[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);

@@ -7,6 +7,10 @@ import { ProjectStatsResponse } from "@/pages/api/types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+/**
+ * Statistics page for visualizing data such as dataset count, code count, and model count for each project
+ * with charts
+ */
 export default function StatsPage() {
   const [projectData, setProjectData] = useState<any>(null);
 

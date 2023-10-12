@@ -1,7 +1,6 @@
 import axios from "axios";
 
 import { CodeSegmentsResponse, ProjectStatsResponse, ClusterStatsResponse } from "@/pages/api/types";
-import { types } from "util";
 
 // Define the base URL of your FastAPI server
 const baseURL = "http://localhost:8000";
@@ -32,12 +31,12 @@ export const updateProjectName = (project_id: number, projectName: string): Prom
 
 // Configs
 
-export const getconfigs = (): Promise<any> => {
+export const getConfigs = (): Promise<any> => {
   console.log(`${baseURL}/configs/`);
   return axios.get<any>(`${baseURL}/configs/`);
 };
 
-export const getconfig = (config_id: number): Promise<any> => {
+export const getConfig = (config_id: number): Promise<any> => {
   console.log(`${baseURL}/configs/${config_id}`);
   return axios.get<any>(`${baseURL}/configs/${config_id}`);
 };

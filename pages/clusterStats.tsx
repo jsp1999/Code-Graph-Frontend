@@ -7,6 +7,9 @@ import { Doughnut } from "react-chartjs-2";
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement);
 
+/**
+ * Statistics for visualizing data about clusters for each project
+ */
 export default function StatsPage() {
   const [projectData, setProjectData] = useState<any>(null);
 

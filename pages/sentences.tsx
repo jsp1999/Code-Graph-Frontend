@@ -20,6 +20,9 @@ type Sentence = {
   segments: { start_position: number; text: string }[];
 };
 
+/**
+ *  Data page used to display sentences of an uploaded dataset
+ */
 export default function SentencesPage() {
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);

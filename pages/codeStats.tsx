@@ -23,6 +23,9 @@ function findCodePath(tree: any, code_id: any, currentPath = ""): any {
   return null;
 }
 
+/**
+ * Statistics for visualizing data about codes for each project
+ */
 export default function StatsPage() {
   const [projectData, setProjectData] = useState<any>(null);
 
