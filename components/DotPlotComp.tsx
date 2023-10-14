@@ -1011,7 +1011,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
               plot.updateClusters();
             }}
           >
-            show_cluster
+            Show cluster
           </Button>
           <Button
             variant="contained"
