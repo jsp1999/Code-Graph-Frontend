@@ -2,6 +2,10 @@ import { Button, FormControlLabel, FormGroup, Modal, Switch, TextField } from "@
 import React, { useState } from "react";
 import { uploadAdvancedDataset, uploadDataset } from "@/pages/api/api";
 
+/**
+ * This component displays a modal for uploading datasets, providing both basic and advanced settings.
+ */
+
 interface CategoryModalProps {
   open: boolean;
   handleClose: () => void;

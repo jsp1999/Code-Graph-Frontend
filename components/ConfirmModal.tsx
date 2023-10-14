@@ -1,6 +1,10 @@
 import { Button, Modal } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { deleteCodeRoute, getCodeRoute } from "@/pages/api/api";
+import React from "react";
+import { deleteCodeRoute } from "@/pages/api/api";
+
+/**
+ * This component renders a confirmation modal dialog for deleting a code.
+ */
 
 interface ConfirmModalProps {
   open: boolean;

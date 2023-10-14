@@ -1,12 +1,13 @@
 import { searchCodeOccurrences } from "@/pages/api/api";
-import React, { useState, useEffect } from "react";
-import Header from "@/components/Header";
-import { BsListColumnsReverse } from "react-icons/bs";
+import React, { useState } from "react";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
-import { getPlots, searchSentence, searchCode, searchCluster, searchSegment, exportToFiles } from "@/pages/api/api";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
-import { Button, Modal, TextField } from "@mui/material";
+import { Modal, TextField } from "@mui/material";
+
+/**
+ * This component displays a modal for searching code occurrences in a project.
+ */
 
 type Plot = {
   id: number;

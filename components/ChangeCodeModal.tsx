@@ -1,6 +1,11 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import {addCodeToParent, addCodeToSegment, getCodesRoutes, updateCodeRoute} from "@/pages/api/api";
+import { addCodeToSegment, getCodesRoutes } from "@/pages/api/api";
+
+/**
+ * This component represents a modal for changing the code associated with a segment. It allows users
+ * to search for and select a new code for the segment.
+ */
 
 interface AddToCodeModalProps {
   open: boolean;

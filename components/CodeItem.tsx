@@ -3,6 +3,11 @@ import icon from "@/public/code_icon.svg";
 import React, { useEffect, useState } from "react";
 import { getCodeRoute } from "@/pages/api/api";
 
+/**
+ * This component displays information about a specific code item, including an icon and the code's name. It fetches the
+ * code's name from an API endpoint and updates the UI.
+ */
+
 interface CodeItemProps {
   id: number;
   projectId: number;

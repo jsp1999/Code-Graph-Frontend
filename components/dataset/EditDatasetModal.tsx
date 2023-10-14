@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Button, Modal, TextField } from "@mui/material";
 
+/**
+ * This component displays a modal for editing dataset information.
+ */
+
 type Dataset = {
   dataset_id: number;
   project_id: number;

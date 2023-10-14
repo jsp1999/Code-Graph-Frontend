@@ -1,5 +1,10 @@
 import * as d3 from "d3";
 
+/**
+ * This class represents a visual dot associated with a code. It is used for rendering and interacting with code dots
+ * within a plot.
+ */
+
 function newColorScale(code_id) {
   return idToColorMap[code_id] || "#808080"; // Fallback to gray
 }

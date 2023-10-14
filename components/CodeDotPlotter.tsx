@@ -3,6 +3,11 @@ import { ZoomBehavior, ZoomedElementBaseType } from "d3";
 import CodeDot from "@/components/CodeDot";
 import { getCodeStats } from "@/pages/api/api";
 
+/**
+ * This class is responsible for managing and rendering a plot of CodeDot instances (codes) within an SVG container. It includes
+ * methods for handling zoom behavior and data filtering.
+ */
+
 function hsvToRgb(h, s, v) {
   let r, g, b;
   let i = Math.floor(h * 6);

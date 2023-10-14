@@ -1,6 +1,10 @@
 import { Button, Modal } from "@mui/material";
 import React from "react";
 
+/**
+ * This component displays a modal for confirming the deletion of all databases.
+ */
+
 type ConfirmModalProps = {
   open: boolean;
   handleClose: () => void;

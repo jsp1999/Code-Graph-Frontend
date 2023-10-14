@@ -1,6 +1,11 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { deleteCodeRoute, getCodesRoutes, updateCodeRoute } from "@/pages/api/api";
+import { deleteCodeRoute, getCodesRoutes } from "@/pages/api/api";
+
+/**
+ * This component represents a modal for deleting a code.
+ * It provides a list of codes with checkboxes, allowing the user to select the code to be deleted.
+ */
 
 interface DeleteCodeModalProps {
   open: boolean;

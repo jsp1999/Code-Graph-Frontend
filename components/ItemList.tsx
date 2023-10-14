@@ -1,7 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { List, ListItem, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Button } from "@mui/material";
+
+/**
+ * This component displays a list of items, each represented by a ListItem.
+ * It is used to display train arrows and provides options to delete items and trigger training.
+ */
 
 interface ItemListProps {
   items: [];

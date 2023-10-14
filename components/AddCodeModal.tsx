@@ -2,6 +2,11 @@ import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGr
 import React, { useEffect, useState } from "react";
 import { getCodesRoutes, insertCodeRoute, insertCodeRouteWithParent } from "@/pages/api/api";
 
+/**
+ * This component represents a modal for adding new codes. It provides the user
+ * with options to specify the code name and select a parent code.
+ */
+
 interface AddCodeModalProps {
   open: boolean;
   handleClose: () => void;

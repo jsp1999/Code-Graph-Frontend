@@ -1,14 +1,14 @@
-// DotPlotComp.tsx
-
 import React, { useRef, useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import * as d3 from "d3";
 import { Button } from "@mui/material";
 import ItemList from "@/components/ItemList";
-import itemList from "@/components/ItemList";
 import ChangeCodeModal from "@/components/ChangeCodeModal";
-import AddCodeModal from "@/components/AddCodeModal";
-import { getCodeRoute } from "@/pages/api/api";
-import { getErrorSource } from "next/dist/client/components/react-dev-overlay/internal/helpers/nodeStackFrames";
+
+/**
+ * This class is responsible for managing and rendering a plot of segments. It includes
+ * methods for handling zoom behavior and data filtering.
+ */
+
 function hsvToRgb(h, s, v) {
   let r, g, b;
   let i = Math.floor(h * 6);

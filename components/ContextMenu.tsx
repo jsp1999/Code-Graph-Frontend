@@ -1,5 +1,9 @@
 import React from "react";
-import { Simulate } from "react-dom/test-utils";
+
+/**
+ * This component represents a context menu. It contains a list of context menu items,
+ * and users can select them, triggering a corresponding action.
+ */
 
 interface ContextMenuProps {
   contextMenuPosition: { x: number; y: number };
