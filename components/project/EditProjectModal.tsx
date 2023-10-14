@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Button, Modal, TextField } from "@mui/material";
 
+/**
+ * This component displays a modal for editing project data.
+ * It allows users to modify the project name.
+ */
+
 type Project = {
   project_name: string;
   project_id: number;
