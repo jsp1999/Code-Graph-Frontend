@@ -234,7 +234,7 @@ class Dot {
 
     const options = [
       { name: "Delete", type: "option" },
-      { name: "Add to other code", type: "option" },
+      { name: "Add to other category", type: "option" },
     ];
 
     const rectHeight = 30 / scale;
@@ -263,7 +263,7 @@ class Dot {
               "Content-Type": "application/json", // Specify that we're sending JSON data
             },
           }).then(() => plotter.forceUpdate());
-        } else if (d.name === "Add to other code") {
+        } else if (d.name === "Add to other category") {
           this.setRightClickedId(this.dotId);
           this.addToCode();
         }
@@ -350,7 +350,7 @@ class Dot {
       .append("div")
       .text("Segment: " + this.segment)
       .append("div")
-      .text("Code: " + findCodePath(this.plot.tree, this.code))
+      .text("Category: " + findCodePath(this.plot.tree, this.code))
       .append("div")
       .text("Sentence: " + this.sentence);
   }

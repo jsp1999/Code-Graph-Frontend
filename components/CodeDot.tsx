@@ -158,7 +158,7 @@ class CodeDot {
 
       contextMenu
         .append("div")
-        .text("Add to Top-Level Code")
+        .text("Add to Category")
         .style("border", "1px solid #000000")
         .style("background-color", "#FFFFFF")
         .on("click", () => {
@@ -169,7 +169,7 @@ class CodeDot {
 
       contextMenu
         .append("div")
-        .text("Show code occurrences")
+        .text("Show category occurrences")
         .style("border", "1px solid #000000")
         .style("background-color", "#FFFFFF")
         .on("click", () => {
