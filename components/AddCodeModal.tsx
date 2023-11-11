@@ -110,7 +110,7 @@ export default function AddCodeModal(props: AddCodeModalProps) {
             <TextField
               className="w-[25rem]"
               id="standard-basic"
-              label="New Code"
+              label="New Category"
               value={inputValue}
               onChange={handleInputChange}
             />
@@ -126,7 +126,7 @@ export default function AddCodeModal(props: AddCodeModalProps) {
                   value={searchQuery}
                   onChange={handleSearchInputChange}
                 />
-                <RadioGroup aria-label="Add to Code" name="add" value={"Add to Category"}>
+                <RadioGroup aria-label="Add to Category" name="add" value={"Add to Category"}>
                   <FormControlLabel
                     value={noneIndex}
                     control={<Radio />}

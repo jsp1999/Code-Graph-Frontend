@@ -139,7 +139,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   console.log("config_above_return", config ? config.config.model_type === "dynamic" : undefined);
   return (
     <div>
-      <Header title="Graph View" />
+      <Header title="Plot View" />
       <EditModal
         open={editModalOpen}
         handleClose={() => setEditModalOpen(false)}

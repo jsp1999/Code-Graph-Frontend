@@ -113,14 +113,14 @@ export default function MergeModal(props: MergeModalProps) {
             <TextField
               className="w-[25rem]"
               id="standard-basic"
-              label="New Code"
+              label="New Category"
               value={inputValue}
               onChange={handleInputChange}
             />
           </div>
           <div className="mt-5 w-fit mx-auto">
             <FormControl component="fieldset">
-              <FormLabel component="legend">Merge Codes</FormLabel>
+              <FormLabel component="legend">Merge Categories</FormLabel>
               <div className="overflow-auto h-[25vw]">
                 <TextField
                   className="w-[25rem]"
@@ -129,7 +129,7 @@ export default function MergeModal(props: MergeModalProps) {
                   value={searchQuery}
                   onChange={handleSearchInputChange}
                 />
-                <RadioGroup aria-label="Merge Codes" name="add" value={"Merge"}>
+                <RadioGroup aria-label="Merge Categories" name="add" value={"Merge"}>
                   {filteredCodeList != null &&
                     filteredCodeList.map((code) => (
                       <FormControlLabel
