@@ -160,7 +160,7 @@ export default function CodeView() {
 
   return (
     <div>
-      <Header title="Code View" />
+      <Header title="Category View" />
       <AddCodeModal
         open={openAddModal}
         handleClose={handleAddModalClose}
@@ -229,13 +229,13 @@ export default function CodeView() {
 
       <div className="absolute right-5 bottom-5 ">
         <Button variant="outlined" className="mr-10" onClick={() => setOpenMergeModal(true)}>
-          Merge Codes
+          Merge Categories
         </Button>
         <Button variant="outlined" className="mr-10" onClick={() => setOpenDeleteCodeModal(true)}>
-          Delete Code
+          Delete Category
         </Button>
         <Button variant="outlined" className="mr-10" onClick={() => setOpenAddModal(true)}>
-          Add new Code
+          Add new Category
         </Button>
         <Button variant="contained" className="bg-blue-900 rounded" onClick={() => router.push(`/graphView`)}>
           Change View

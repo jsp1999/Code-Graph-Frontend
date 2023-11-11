@@ -33,7 +33,7 @@ export default function ConfirmModal(props: ConfirmModalProps) {
     <>
       <Modal open={props.open} onClose={setClosed}>
         <div className="w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10vh] grid-cols-1 text-center">
-          <p>{`Do you want to delete Code "${props.codeName}"?`}</p>
+          <p>{`Do you want to delete Category "${props.codeName}"?`}</p>
           <div className="w-fit mx-auto mt-5">
             <Button className="mx-2" variant="outlined" onClick={setClosed}>
               No

@@ -90,7 +90,7 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
         <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10rem]">
           <div className="mt-5 w-fit mx-auto">
             <FormControl component="fieldset">
-              <FormLabel component="legend">Add to Code</FormLabel>
+              <FormLabel component="legend">Add to Category</FormLabel>
               <div className="overflow-auto h-[25vw]">
                 <TextField
                   className="w-[25rem]"
@@ -99,7 +99,7 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
                   value={searchQuery}
                   onChange={handleSearchInputChange}
                 />
-                <RadioGroup aria-label="Add to Code" name="add" value={"Add to Category"}>
+                <RadioGroup aria-label="Add to Category" name="add" value={"Add to Category"}>
                   {filteredCodeList != null &&
                     filteredCodeList.map((code) => (
                       <FormControlLabel
