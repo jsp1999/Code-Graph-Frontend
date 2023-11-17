@@ -13,7 +13,7 @@ import DotPlotComp, { DotPlotCompHandles } from "@/components/DotPlotComp";
 /**
  * Render graph view with dot plot graph with the possibility to edit nodes and train the graph
  */
-const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
+const DotPlotComponent: React.FC<any> = () => {
   const dotPlotRef = useRef<DotPlotCompHandles | null>(null);
   // From CodeView component
   const router = useRouter();

@@ -115,6 +115,8 @@ class CodeDotPlotter {
   private deleteCode: () => void;
   private renameCode: () => void;
   private showCode: () => void;
+  private tree: any;
+  private color_mapper: any;
 
   constructor(
     containerId: string,
@@ -241,10 +243,10 @@ class CodeDotPlotter {
       return Promise.resolve(this.fetched_data);
     } else {
       return getCodeStats(this.projectId)
-        .then(async (codeStats) => {
+        .then(async (codeStats: any) => {
           console.log("Received codeStats response:", codeStats);
           if (codeStats) {
-            console.log("Code Stats Codes:", codeStats.code_segments_count.codes);
+            //console.log("Code Stats Codes:", codeStats.code_segments_count.codes);
             this.fetched_data = codeStats.code_segments_count.codes;
             this.minRadiusOfAllCodes = Math.min(
               ...codeStats.code_segments_count.codes.map((code: any) => Math.sqrt(code.segment_count)),
@@ -307,7 +309,9 @@ class CodeDotPlotter {
           existingDot.y = dotData.average_position.y;
           existingDot.code = dotData.text;
         } else {
-          let radius = (Math.sqrt(dotData.segment_count)-this.minRadiusOfAllCodes)/ (this.maxRadiusOfAllCodes - this.minRadiusOfAllCodes);
+          let radius =
+            (Math.sqrt(dotData.segment_count) - this.minRadiusOfAllCodes) /
+            (this.maxRadiusOfAllCodes - this.minRadiusOfAllCodes);
           let newDot = new CodeDot(
             dotData.code_id,
             dotData.average_position.x,
@@ -341,4 +345,5 @@ class CodeDotPlotter {
     console.log(this.data.length);
   }
 }
+
 export default CodeDotPlotter;
