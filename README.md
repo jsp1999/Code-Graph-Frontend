@@ -11,7 +11,7 @@ https://github.com/jsp1999/Code-Graph-Frontend/blob/main/TryDemoVideo.mp4
 Ensure that a version of Node.js is installed:
 
 ```bash
-npm -v 
+npm -v
 ```
 
 otherwise it can be downloaded [here](https://nodejs.org/de/download).
@@ -28,6 +28,16 @@ Then, run the development server:
 
 ```bash
 npm run dev
+```
+
+Or, run build and run the production server:
+
+```bash
+npm run build
+```
+
+```bash
+npm run start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
