@@ -1,6 +1,11 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import {addCodeToParent, addCodeToSegment, getCodesRoutes, updateCodeRoute} from "@/pages/api/api";
+import { addCodeToSegment, getCodesRoutes } from "@/pages/api/api";
+
+/**
+ * This component represents a modal for changing the code associated with a segment. It allows users
+ * to search for and select a new code for the segment.
+ */
 
 interface AddToCodeModalProps {
   open: boolean;
@@ -86,7 +91,7 @@ export default function ChangeCodeModal(props: AddToCodeModalProps) {
         <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10rem]">
           <div className="mt-5 w-fit mx-auto">
             <FormControl component="fieldset">
-              <FormLabel component="legend">Add to Code</FormLabel>
+              <FormLabel component="legend">Add to Category</FormLabel>
               <div className="overflow-auto h-[25vw]">
                 <TextField
                   className="w-[25rem]"
@@ -95,7 +100,7 @@ export default function ChangeCodeModal(props: AddToCodeModalProps) {
                   value={searchQuery}
                   onChange={handleSearchInputChange}
                 />
-                <RadioGroup aria-label="Select Code" name="select" value={"Select a Code for the Segment"}>
+                <RadioGroup aria-label="Select Category" name="select" value={"Select a Category for the Segment"}>
                   {filteredCodeList != null &&
                     filteredCodeList.map((code) => (
                       <FormControlLabel

@@ -1,5 +1,9 @@
-import { CircularProgress, Dialog, Modal } from "@mui/material";
+import { CircularProgress, Modal } from "@mui/material";
 import React from "react";
+
+/**
+ * This component displays a loading modal. It is used to indicate ongoing operations or loading processes in the application.
+ */
 
 interface LoadingModalProps {
   open: boolean;

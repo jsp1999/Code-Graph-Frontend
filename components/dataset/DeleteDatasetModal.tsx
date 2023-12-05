@@ -1,6 +1,10 @@
 import { Button, Modal } from "@mui/material";
 import React from "react";
 
+/**
+ * This component displays a confirmation modal for deleting a dataset associated with a project.
+ */
+
 type ConfirmModalProps = {
   open: boolean;
   handleClose: () => void;

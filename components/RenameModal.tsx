@@ -1,6 +1,10 @@
 import { Button, Modal, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { getCodeRoute, renameCode, updateCodeRoute } from "@/pages/api/api";
+import React, { useState } from "react";
+import { renameCode } from "@/pages/api/api";
+
+/**
+ * This component displays a modal for renaming a code.
+ */
 
 interface RenameModalProps {
   open: boolean;
@@ -42,12 +46,12 @@ export default function RenameModal(props: RenameModalProps) {
     <>
       <Modal open={props.open} onClose={setClosed}>
         <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10rem]">
-          <p>{`Rename Code "${props.codeName}"`}</p>
+          <p>{`Rename Category "${props.codeName}"`}</p>
           <div>
             <TextField
               className="w-[25rem]"
               id="standard-basic"
-              label="New Code Name"
+              label="New Category Name"
               value={codeName}
               onChange={handleInputChange}
             />

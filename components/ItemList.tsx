@@ -1,15 +1,36 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { List, ListItem, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Button } from "@mui/material";
 
-interface ItemListProps {
-  items: [];
-  onDelete: (item) => void;
-  onTrain: (plot) => void;
+/**
+ * This component displays a list of items, each represented by a ListItem.
+ * It is used to display train arrows and provides options to delete items and trigger training.
+ */
+
+interface Item {
+  dot: {
+    color?: string;
+    codeText: string;
+    segment: string;
+    plot: string;
+    dotId: string;
+  };
 }
 
-function rgbToRgba(rgbString, alpha = 1) {
+interface ItemListProps {
+  items: Item[];
+  onDelete: (item: Item) => void;
+  onTrain: (plot: any) => void;
+}
+
+interface ItemListProps {
+  items: Item[];
+  onDelete: (item: Item) => void;
+  onTrain: (plot: any) => void;
+}
+
+function rgbToRgba(rgbString: string, alpha = 1) {
   const matches = rgbString.match(/\d+/g); // extract numbers from the rgb string
 
   if (!matches || matches.length !== 3) {

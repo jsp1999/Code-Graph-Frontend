@@ -3,6 +3,10 @@ import { TreeView, TreeItem } from "@mui/lab";
 import { ExpandMore, ChevronRight } from "@mui/icons-material";
 import { Checkbox, TextField } from "@mui/material";
 
+/**
+ * This component renders a tree view of codes and allows users to search for specific codes and select them.
+ */
+
 interface Category {
   id: number;
   name: string;
@@ -53,7 +57,7 @@ const CodeTreeView: React.FC<CodeTreeViewProps> = ({ taxonomyData, selectedNodes
     );
   };
 
-  const getAllChildIds = (node: undefined): number[] => {
+  const getAllChildIds = (node: any): number[] => {
     if (!node) return [];
     let ids = [node.id];
     for (let subcategoryKey in node.subcategories) {
@@ -98,7 +102,7 @@ const CodeTreeView: React.FC<CodeTreeViewProps> = ({ taxonomyData, selectedNodes
 
   return (
     <div className="w-fit m-12 border p-5">
-      <h1 className="text-2xl underline mb-5">Codes</h1>
+      <h1 className="text-2xl underline mb-5">Categories</h1>
       <TextField
         label="Search"
         variant="outlined"

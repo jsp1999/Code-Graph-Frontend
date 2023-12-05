@@ -2,6 +2,11 @@ import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGr
 import React, { useEffect, useState } from "react";
 import { getCodesRoutes, insertCodeRoute, insertCodeRouteWithParent } from "@/pages/api/api";
 
+/**
+ * This component represents a modal for adding new codes. It provides the user
+ * with options to specify the code name and select a parent code.
+ */
+
 interface AddCodeModalProps {
   open: boolean;
   handleClose: () => void;
@@ -105,7 +110,7 @@ export default function AddCodeModal(props: AddCodeModalProps) {
             <TextField
               className="w-[25rem]"
               id="standard-basic"
-              label="New Code"
+              label="New Category"
               value={inputValue}
               onChange={handleInputChange}
             />
@@ -121,7 +126,7 @@ export default function AddCodeModal(props: AddCodeModalProps) {
                   value={searchQuery}
                   onChange={handleSearchInputChange}
                 />
-                <RadioGroup aria-label="Add to Code" name="add" value={"Add to Category"}>
+                <RadioGroup aria-label="Add to Category" name="add" value={"Add to Category"}>
                   <FormControlLabel
                     value={noneIndex}
                     control={<Radio />}

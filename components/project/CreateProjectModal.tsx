@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Button, Modal, TextField } from "@mui/material";
 
+/**
+ * This component displays a modal for creating a new project.
+ */
+
 interface CreateModalProps {
   open: boolean;
   handleClose: () => void;

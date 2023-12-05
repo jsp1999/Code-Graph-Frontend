@@ -22,6 +22,10 @@ import PlaceIcon from "@mui/icons-material/Place";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import SchemaIcon from "@mui/icons-material/Schema";
 
+/**
+ * This component represents the header of the application, including the navigation menu, project selection, and various links to different views and statistics.
+ */
+
 interface HeaderProps {
   title: string;
 }
@@ -270,7 +274,7 @@ export default function Header(props: HeaderProps) {
         </div>
       </Drawer>
       <button className="ml-auto mr-5" onClick={() => router.push("/")}>
-        CodeGraph
+        AnnoPlot
       </button>
     </header>
   );

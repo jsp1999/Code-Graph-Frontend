@@ -28,7 +28,7 @@ type File = {
 /**
  * Menu page used as an overview of existing databases and a possibility to create new databases or deleting all
  */
-export default function databasesPage() {
+export default function DatabasesPage() {
   const [databases, setDatabases] = useState<Database[]>([]);
   const [deleteAllModalOpen, setDeleteAllModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);

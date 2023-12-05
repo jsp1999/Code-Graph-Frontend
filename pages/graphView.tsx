@@ -13,7 +13,7 @@ import DotPlotComp, { DotPlotCompHandles } from "@/components/DotPlotComp";
 /**
  * Render graph view with dot plot graph with the possibility to edit nodes and train the graph
  */
-const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
+const DotPlotComponent: React.FC<any> = () => {
   const dotPlotRef = useRef<DotPlotCompHandles | null>(null);
   // From CodeView component
   const router = useRouter();
@@ -139,7 +139,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   console.log("config_above_return", config ? config.config.model_type === "dynamic" : undefined);
   return (
     <div>
-      <Header title="Graph View" />
+      <Header title="Plot View" />
       <EditModal
         open={editModalOpen}
         handleClose={() => setEditModalOpen(false)}

@@ -3,6 +3,10 @@ import React, { useState } from "react";
 import { postProject, uploadAdvancedDataset, uploadDataset } from "@/pages/api/api";
 import { useRouter } from "next/router";
 
+/**
+ * This component displays a modal for uploading a dataset and configuring advanced settings if needed.
+ */
+
 interface CategoryModalProps {
   open: boolean;
   handleClose: () => void;

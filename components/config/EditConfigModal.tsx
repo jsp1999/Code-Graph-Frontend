@@ -8,6 +8,10 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
+/**
+ * This component displays a modal for editing the configurations of a project.
+ */
+
 type Config = {
   name: string;
   config: {
